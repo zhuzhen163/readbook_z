@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginTop="@dimen/dimen15dp"
+        android:layout_marginBottom="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:scaleType="fitXY"
+            android:id="@+id/iv_bookImg"
+            android:layout_width="@dimen/dimen60dp"
+            android:layout_height="@dimen/dimen80dp"
+            />
+        <TextView
+            android:id="@+id/tv_bookName"
+            android:layout_marginLeft="@dimen/dimen15dp"
+            android:layout_toRightOf="@id/iv_bookImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="总裁爹地宠上天"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen14dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_book_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen13dp"
+            android:textColor="@color/a2a9b2"
+            android:layout_alignLeft="@id/tv_bookName"
+            android:layout_below="@id/tv_bookName"
+            android:layout_marginTop="@dimen/dimen8dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="屌丝男刘志远遭遇网络情缘稀里糊涂和哈哈哈不知道这美女他这美女放大发范德萨发达"
+            android:layout_marginRight="@dimen/dimen15dp"
+            />
+
+        <TextView
+            android:id="@+id/tv_authorName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/a2a9b2"
+            android:textSize="@dimen/dimen12dp"
+            android:layout_toRightOf="@id/iv_bookImg"
+            android:layout_alignBottom="@id/iv_bookImg"
+            android:layout_marginLeft="@dimen/dimen15dp"
+            android:text="贝小爱"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:background="@drawable/icon_ph_bj"
+        android:layout_weight="1"
+        android:layout_width="@dimen/dimen160dp"
+        android:layout_height="@dimen/dimen90dp">
+        <ImageView
+            android:id="@+id/iv_ph_bookImg1"
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:scaleType="fitXY"
+            android:layout_width="@dimen/dimen60dp"
+            android:layout_height="@dimen/dimen80dp" />
+        <TextView
+            android:id="@+id/tv_no_1"
+            android:layout_toRightOf="@id/iv_ph_bookImg1"
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_marginTop="@dimen/dimen20dp"
+            android:layout_width="@dimen/dimen34dp"
+            android:layout_height="@dimen/dimen12dp"
+            android:textSize="@dimen/dimen9dp"
+            android:textColor="@color/white"
+            android:background="@drawable/icon_no_1"
+            android:gravity="center"
+            android:text="NO.1"/>
+        <TextView
+            android:id="@+id/tv_ph_bookName"
+            android:layout_alignLeft="@id/tv_no_1"
+            android:layout_below="@id/tv_no_1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_marginTop="@dimen/dimen10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="男神宠妻成瘾"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen12dp"/>
+
+        <LinearLayout
+            android:layout_marginTop="@dimen/dimen10dp"
+            android:layout_alignLeft="@id/tv_ph_bookName"
+            android:layout_below="@id/tv_ph_bookName"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_rd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="热度:"
+                android:textSize="@dimen/dimen11dp"
+                android:textColor="@color/a2a9b2"/>
+            <TextView
+                android:id="@+id/tv_redu"
+                android:textSize="@dimen/dimen11dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/f77f1e"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

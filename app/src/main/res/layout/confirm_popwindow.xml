@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:background="@drawable/background_corners_bg"
+        android:layout_marginRight="@dimen/dimen8dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/ll_switchModel"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="@dimen/dimen45dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_switchImg"
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_fmms" />
+
+            <TextView
+                android:id="@+id/tv_switchText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="列表模式"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/split"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/ll_refresh"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen45dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_gxlzs" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="更新连载书"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/split"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/ll_bookManager"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen45dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_sjgl" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="书架管理"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/split"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/ll_readHistory"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen45dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_zjyd" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="最近阅读"
+                android:textColor="@color/text_33"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

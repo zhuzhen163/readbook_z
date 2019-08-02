@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.huajie.readbook.widget.NoScrollViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_f1" />
+
+    <RadioGroup
+        android:id="@+id/tabradios"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen50dp"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        >
+
+        <RadioButton
+            android:paddingTop="@dimen/dimen8dp"
+            android:id="@+id/rb_bookshelf"
+            style="@style/radioButton"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:checked="true"
+            android:drawableTop="@drawable/rb_bookshelf"
+            android:text="书架"
+            android:textColor="@drawable/radiobutton_text"
+            android:textSize="@dimen/dimen10dp" />
+
+        <RadioButton
+            android:paddingTop="@dimen/dimen8dp"
+            android:id="@+id/rb_bookCity"
+            style="@style/radioButton"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:drawableTop="@drawable/rb_bookcity"
+            android:text="书城"
+            android:textColor="@drawable/radiobutton_text"
+            android:textSize="@dimen/dimen10dp" />
+
+        <RadioButton
+            android:paddingTop="@dimen/dimen8dp"
+            android:id="@+id/rb_mine"
+            style="@style/radioButton"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:drawableTop="@drawable/rb_mine"
+            android:text="我的"
+            android:textColor="@drawable/radiobutton_text"
+            android:textSize="@dimen/dimen10dp" />
+
+    </RadioGroup>
+</LinearLayout>

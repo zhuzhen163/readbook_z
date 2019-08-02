@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen45dp">
+            <TextView
+                android:id="@+id/tv_chapterNum"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="共56482章"/>
+            <TextView
+                android:id="@+id/tv_chapter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1-50章"/>
+            <ImageView
+                android:padding="@dimen/dimen5dp"
+                android:layout_width="@dimen/dimen20dp"
+                android:layout_height="@dimen/dimen15dp"
+                android:src="@drawable/icon_xiala"
+                />
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/f8f8f8"/>
+        <com.github.jdsjlzx.recyclerview.LRecyclerView
+            android:layout_weight="1"
+            android:id="@+id/lv_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:descendantFocusability="blocksDescendants"
+            />
+    </LinearLayout>
+</RelativeLayout>

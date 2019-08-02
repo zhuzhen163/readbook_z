@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.github.jdsjlzx.recyclerview.LRecyclerView
+        android:layout_weight="1"
+        android:id="@+id/lv_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:descendantFocusability="blocksDescendants"
+        />
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_bookNull"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/dimen150dp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="@dimen/dimen230dp"
+            android:layout_height="@dimen/dimen150dp"
+            android:src="@drawable/icon_sear_null"/>
+        <TextView
+            android:textColor="@color/text_33"
+            android:textStyle="bold"
+            android:textSize="@dimen/dimen16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂无书籍"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_delete"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen50dp">
+        <TextView
+            android:id="@+id/tv_checkAll"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen14dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="全选"/>
+        <View
+            android:layout_width="@dimen/dimen1dp"
+            android:layout_height="@dimen/dimen40dp"
+            android:background="@color/color_f1"/>
+        <TextView
+            android:id="@+id/tv_delete"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/ee2a2a"
+            android:textSize="@dimen/dimen14dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="删除(0)"/>
+    </LinearLayout>
+
+</LinearLayout>

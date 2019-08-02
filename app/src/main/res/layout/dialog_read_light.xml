@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/read_setting_ll_menu"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/dimen52dp"
+              android:layout_alignParentBottom="true"
+              android:background="@color/color_19"
+              android:clickable="true"
+              android:orientation="vertical"
+            android:gravity="center_vertical"
+>
+
+    <LinearLayout
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/WY.Theme.TextAppearance.Read.BottomMenu"
+            android:id="@+id/read_setting_iv_brightness_minus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:text="暗"/>
+
+        <SeekBar
+            android:id="@+id/read_setting_sb_brightness"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:maxHeight="@dimen/dimen3dp"
+            android:minHeight="@dimen/dimen3dp"
+            android:progressDrawable="@drawable/seekbar_bg"
+            android:thumb="@drawable/shap_point_thumb"
+            android:thumbOffset="@dimen/dimen10dp"/>
+
+        <TextView
+            style="@style/WY.Theme.TextAppearance.Read.BottomMenu"
+            android:id="@+id/read_setting_iv_brightness_plus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:scaleType="center"
+            android:text="亮"/>
+
+        <CheckBox
+            android:id="@+id/read_setting_cb_brightness_auto"
+            style="@style/WY.Theme.TextAppearance.Read.BottomMenu"
+            android:layout_width="@dimen/dimen50dp"
+            android:layout_height="@dimen/dimen32dp"
+            android:background="@drawable/selector_btn_read_setting"
+            android:button="@null"
+            android:gravity="center"
+            android:text="系统"
+            android:textColor="@color/selector_btn_read_setting"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.huajie.readbook.widget.ImageCycleView
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:id="@+id/icv_topView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen120dp"/>
+</RelativeLayout>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen52dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="护眼模式"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginLeft="@dimen/dimen20dp"/>
+
+        <com.huajie.readbook.utils.SwitchView
+            android:id="@+id/sv_button"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="@dimen/dimen45dp"
+            android:layout_height="@dimen/dimen28dp" />
+    </LinearLayout>
+
+    <View
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_f1"/>
+    <LinearLayout
+        android:id="@+id/ll_readLayout"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen52dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="阅读布局"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginLeft="@dimen/dimen20dp"/>
+
+        <TextView
+            android:id="@+id/tv_layout"
+            android:text="章节页码进度"
+            android:textColor="@color/a2a9b2"
+            android:textSize="@dimen/dimen12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <ImageView
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="@dimen/dimen6dp"
+            android:layout_height="@dimen/dimen10dp"
+            android:src="@drawable/icon_mine_join"/>
+    </LinearLayout>
+
+    <View
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_f1"/>
+    <LinearLayout
+        android:background="?android:attr/selectableItemBackground"
+        android:id="@+id/ll_clear"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen52dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清除缓存"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginLeft="@dimen/dimen20dp"/>
+
+        <TextView
+            android:text="0.0M"
+            android:id="@+id/tv_clear"
+            android:textColor="@color/a2a9b2"
+            android:textSize="@dimen/dimen12dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen10dp"
+        android:background="@color/f8f8f8"/>
+    <LinearLayout
+        android:id="@+id/ll_logout"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen52dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="退出登录"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginLeft="@dimen/dimen20dp"/>
+    </LinearLayout>
+    <TextView
+        android:background="@color/f8f8f8"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

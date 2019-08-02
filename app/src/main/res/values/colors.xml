@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#cc3d3a</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorTheme">#5297f7</color>
+    <color name="white">#ffffff</color>
+    <color name="text_99">#999999</color>
+    <color name="text_66">#666666</color>
+    <color name="text_33">#333333</color>
+    <color name="no_click">#ffe191</color>
+    <color name="transparency">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="dark">#5e5656</color>
+    <color name="split">#eeeeee</color>
+    <color name="f77f1e">#f77f1e</color>
+    <color name="ee2a2a">#ee2a2a</color>
+    <color name="a2a9b2">#a2a9b2</color>
+    <color name="f8f8f8">#f8f8f8</color>
+    <color name="fa4e3c">#fa4e3c</color>
+    <color name="ff9125">#ff9125</color>
+    <color name="cac9c9">#cac9c9</color>
+    <color name="d0d0d0">#d0d0d0</color>
+    <color name="dddddd">#dddddd</color>
+    <color name="color_5e">#5e5e5e</color>
+    <color name="color_4f">#4f4f4f</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="color_black_10">#10000000</color>
+    <color name="color_black_70">#70000000</color>
+    <color name="color_ebebeb">#ebebeb</color>
+    <color name="color_19">#191919</color>
+    <color name="color_cb">#595c5f</color>
+    <color name="color_de6014">#DE6014</color>
+    <color name="color_fff_99">#99ffffff</color>
+    <color name="color_0f">#0f0f0f</color>
+    <color name="color_2f332d">#2f332d</color>
+    <color name="color_110b24">#110b24</color>
+    <color name="color_383429">#383429</color>
+    <color name="color_627176">#627176</color>
+    <color name="color_ccebcc">#dfd6c5</color>
+    <color name="color_aaa">#d0bd8a</color>
+    <color name="color_cce9ce">#cce9ce</color>
+    <color name="color_051c2c">#051c2c</color>
+    <color name="color_6b7880">#6b7880</color>
+    <color name="color_ec4a48">#EC4A48</color>
+    <color name="color_cec29c_dd">#CEC29C</color>
+    <color name="color_black_88">#88000000</color>
+    <color name="color_black_23">#10ffffff</color>
+    <color name="color_e3">#e3e3e3</color>
+    <color name="color_51">#515151</color>
+    <color name="color_eee">#eeeeee</color>
+    <color name="color_ccc">#cccccc</color>
+    <color name="color_aeadad">#aeadad</color>
+    <color name="color_f1">#f1f1f1</color>
+    <color name="color_80">#808080</color>
+    <color name="color_2d">#2d2d2d</color>
+    <color name="color_0a0907">#0a0907</color>
+    <color name="color_383837">#383837</color>
+    <color name="color_c7b890">#20c7b890</color>
+
+
+    <!--通用一级标题的颜色-->
+    <color name="wy.text.common_h1">#212121</color>
+    <!--通用二级标题的颜色-->
+    <color name="wy.text.common_h2">#727272</color>
+    <!--通用三级标题的颜色-->
+    <color name="wy.text.common_h3">#B2B2B2</color>
+
+    <!--通用分割线细-->
+    <color name="wy.divider.narrow">#919191</color>
+    <!--通用分割线粗-->
+    <color name="wy.divider.wide">@color/color_eee</color>
+
+</resources>

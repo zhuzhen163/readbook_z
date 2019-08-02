@@ -1,0 +1,174 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.huajie.readbook"
+        minSdkVersion 15
+        targetSdkVersion 27
+        versionCode 7
+        versionName "1.2.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //为了解决小米测试问题Didn't find class "com.umeng.message.provider.MessageProvider"
+        multiDexEnabled true
+        flavorDimensions "default"
+
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "8ed311f443189e480dc7e563", //JPush 上注册的包名对应的 Appkey.
+                JPUSH_CHANNEL : "hjhy", //暂时填写默认值即可.
+        ]
+
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a','x86'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+    }
+
+    greendao {
+        schemaVersion 2//数据库版本号
+        daoPackage 'com.huajie.readbook.db.gen'//设置DaoMaster、DaoSession、Dao包名
+        targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled true
+            // 不显示Log
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('F:/readbook/app/huajie.jks')
+            storePassword "huajie123"
+            keyAlias "huajie123"
+            keyPassword "huajie123"
+        }
+        release {
+            keyAlias 'huajie123'
+            keyPassword 'huajie123'
+            storeFile file('F:/readbook/app/huajie.jks')
+            storePassword 'huajie123'
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    //多渠道打包支持
+    productFlavors {
+
+        D360 {//投放360
+        }
+        Tencent {//投放应用宝市场
+        }
+        Baidu {//投放百度市场
+        }
+        Wandoujia {//投放豌豆荚市场
+        }
+        Vivo {//投放vivo市场
+        }
+        Oppo {//投放oppo市场
+        }
+        Xiaomi {//投放小米市场
+        }
+        Meizu {//投放魅族市场
+        }
+        Huawei {//投放华为应用市场
+        }
+        PP {//PP助手
+        }
+        hjhy {//官网
+        }
+
+        productFlavors.all {
+            flavor -> flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+        }
+    }
+
+    //打包包名
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def fileName = "app-${variant.productFlavors[0].name}-${defaultConfig.versionName}-${releaseTime()}.apk"
+            outputFileName = fileName
+        }
+    }
+
+}
+
+def releaseTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
+}
+
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    //网络请求
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    //ConverterFactory的Gson依赖包
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    //CallAdapterFactory的Rx依赖包
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    //butterknife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.androidkun:XTabLayout:1.1.4'
+    implementation 'com.android.support:design:27.1.1'
+    implementation project(path: ':LRecyclerview_library')
+    //推送
+    implementation 'cn.jiguang.sdk:jpush:3.2.0'
+    // 此处以JPush 3.2.0 版本为例。
+    implementation 'cn.jiguang.sdk:jcore:1.2.6'
+    // 此处以JCore 2.0.0 版本为例。
+    //greendao
+    implementation 'org.greenrobot:greendao:3.2.0'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.22'
+    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
+    implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'com.contrarywind:Android-PickerView:4.1.8'
+    implementation files('libs/SocialSDK_QQ_Simplify.jar')
+    implementation files('libs/SocialSDK_Sina_Simplify.jar')
+    implementation files('libs/SocialSDK_WeChat_Simplify.jar')
+    implementation files('libs/umeng_social_api.jar')
+    implementation files('libs/umeng_social_net.jar')
+    implementation files('libs/umeng_social_shareview.jar')
+    implementation files('libs/umeng_social_tool.jar')
+    //为了解决小米测试问题Didn't find class "com.umeng.message.provider.MessageProvider"
+    implementation 'com.android.support:multidex:1.0.1'
+    //bugly
+    implementation files('libs/bugly_crash_release.jar')
+    implementation files('libs/SaaS_AppAnalytics_Android_SDK_V4.0.27.jar')
+    //加载gif
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.7'
+    implementation files('libs/OpenInstall_v2.2.2.jar')
+}

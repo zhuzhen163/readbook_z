@@ -1,0 +1,32 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparency"
+    android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:background="@drawable/loading_corner"
+            android:layout_width="@dimen/dimen110dp"
+            android:layout_height="@dimen/dimen110dp"
+            >
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gifView"
+                android:layout_marginTop="@dimen/dimen10dp"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/loading"
+                android:layout_width="@dimen/dimen85dp"
+                android:layout_height="@dimen/dimen62dp" />
+
+            <TextView
+                android:textColor="@color/white"
+                android:textSize="@dimen/dimen14dp"
+                android:layout_marginTop="@dimen/dimen5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="加载中..."/>
+        </LinearLayout>
+</RelativeLayout>

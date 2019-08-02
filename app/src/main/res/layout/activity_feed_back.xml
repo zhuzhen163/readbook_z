@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:scrollbars="none"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_marginLeft="@dimen/dimen20dp"
+                android:layout_marginTop="@dimen/dimen30dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.huajie.readbook.utils.CustomTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="我要反馈"
+                    android:textColor="@color/text_33"
+                    android:textSize="@dimen/dimen16dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="（必填）"
+                    android:textSize="@dimen/dimen12dp"
+                    android:textColor="#fa4e3c"/>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:background="@drawable/background_corners_bg"
+                android:layout_marginRight="@dimen/dimen20dp"
+                android:layout_marginLeft="@dimen/dimen20dp"
+                android:layout_marginTop="@dimen/dimen15dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen200dp">
+                <EditText
+                    android:id="@+id/et_input"
+                    android:gravity="start"
+                    android:hint="为更好解决您遇到的问题，请尽量将问题描述详细"
+                    android:textSize="@dimen/dimen13dp"
+                    android:padding="@dimen/dimen10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"/>
+                <TextView
+                    android:id="@+id/tv_textNum"
+                    android:text="(0/200字)"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/a2a9b2"
+                    android:textSize="@dimen/dimen12dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginRight="@dimen/dimen10dp"
+                    android:layout_marginBottom="@dimen/dimen10dp"/>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_marginLeft="@dimen/dimen20dp"
+                android:layout_marginTop="@dimen/dimen40dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.huajie.readbook.utils.CustomTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="联系方式"
+                    android:textColor="@color/text_33"
+                    android:textSize="@dimen/dimen16dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="（选填）"
+                    android:textSize="@dimen/dimen12dp"
+                    android:textColor="@color/a2a9b2"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/et_num"
+                android:layout_marginTop="@dimen/dimen15dp"
+                android:gravity="center_vertical"
+                android:hint="请输入手机号/QQ号"
+                android:textSize="@dimen/dimen13dp"
+                android:singleLine="true"
+                android:inputType="number"
+                android:padding="@dimen/dimen10dp"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/dimen20dp"
+                android:layout_marginRight="@dimen/dimen20dp"
+                android:layout_height="@dimen/dimen45dp"
+                android:background="@drawable/background_corners_bg"/>
+
+
+            <TextView
+                android:id="@+id/tv_submit"
+                android:background="@drawable/background_corners_search_null"
+                android:gravity="center"
+                android:textSize="@dimen/dimen15dp"
+                android:text="提交反馈"
+                android:textColor="@color/white"
+                android:layout_marginTop="@dimen/dimen40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginLeft="@dimen/dimen30dp"
+                android:layout_marginRight="@dimen/dimen30dp"
+                android:layout_height="@dimen/dimen45dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

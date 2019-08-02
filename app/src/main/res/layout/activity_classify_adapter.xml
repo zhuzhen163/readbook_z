@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_marginRight="@dimen/dimen30dp"
+        android:layout_marginTop="@dimen/dimen12dp"
+        android:layout_marginBottom="@dimen/dimen12dp"
+        android:orientation="vertical"
+        android:layout_width="@dimen/dimen140dp"
+        android:layout_height="@dimen/dimen60dp">
+        <ImageView
+            android:scaleType="fitXY"
+            android:id="@+id/iv_Img"
+            android:layout_width="@dimen/dimen45dp"
+            android:layout_height="@dimen/dimen60dp" />
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_toRightOf="@id/iv_Img"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen13dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text=""
+            android:textColor="@color/text_33"
+            />
+
+        <TextView
+            android:id="@+id/tv_count"
+            android:layout_below="@id/tv_name"
+            android:layout_alignLeft="@id/tv_name"
+            android:layout_toRightOf="@id/iv_Img"
+            android:layout_marginTop="@dimen/dimen8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen11dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:text=""
+            android:textColor="@color/a2a9b2"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

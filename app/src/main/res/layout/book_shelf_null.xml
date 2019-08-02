@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:id="@+id/ll_bookNull"
+    android:orientation="vertical">
+
+    <ImageView
+        android:layout_marginTop="@dimen/dimen100dp"
+        android:src="@drawable/icon_bookshelf_null"
+        android:layout_width="@dimen/dimen260dp"
+        android:layout_height="@dimen/dimen198dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="空空如也"
+        android:textColor="@color/text_33"
+        android:textSize="@dimen/dimen16dp"/>
+
+    <TextView
+        android:background="@drawable/background_corners_search_null"
+        android:id="@+id/tv_findBookCity"
+        android:gravity="center"
+        android:textSize="@dimen/dimen12dp"
+        android:textColor="@color/white"
+        android:text="去书城逛逛"
+        android:layout_marginTop="@dimen/dimen20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/dimen110dp"
+        android:layout_height="@dimen/dimen35dp" />
+</LinearLayout>

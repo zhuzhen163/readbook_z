@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/dimen30dp"
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.huajie.readbook.utils.CustomTextView
+            android:id="@+id/tv_tab_4"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="灵异事件薄"
+            android:textSize="@dimen/dimen18dp"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/tv_random_4"
+            android:gravity="right"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="换一换"
+            android:textColor="@color/colorTheme"
+            android:drawablePadding="@dimen/dimen10dp"
+            android:drawableRight="@drawable/icon_huanyihuan"
+            android:textSize="@dimen/dimen13dp"/>
+
+    </LinearLayout>
+
+    <com.huajie.readbook.widget.NoScrollGridView
+        android:id="@+id/gv_position_4"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginTop="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="@dimen/dimen90dp"
+        android:scrollbars="none"
+        android:gravity="center"
+        android:horizontalSpacing="@dimen/dimen30dp"
+        android:numColumns="3"
+        android:verticalSpacing="@dimen/dimen20dp"
+        >
+    </com.huajie.readbook.widget.NoScrollGridView>
+
+
+    <com.huajie.readbook.utils.CustomTextView
+        android:id="@+id/tv_tab_5"
+        android:textStyle="bold" 
+        android:layout_marginTop="@dimen/dimen30dp"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="新书抢鲜"
+        android:textSize="@dimen/dimen18dp"
+        android:textColor="@color/black"
+        />
+
+</LinearLayout>

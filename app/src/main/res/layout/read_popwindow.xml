@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:background="@color/color_19"
+        android:layout_marginRight="@dimen/dimen10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/ll_addBookMark"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_read_mark" />
+
+            <TextView
+                android:id="@+id/tv_addBookMark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="添加书签"
+                android:textColor="@color/a2a9b2"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:background="@color/color_5e"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_bookDetail"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_read_detail" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="书籍详情"
+                android:textColor="@color/a2a9b2"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:background="@color/color_5e"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_shareBook"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_read_share" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="分享本书"
+                android:textColor="@color/a2a9b2"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:background="@color/color_5e"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:id="@+id/ll_report"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="@dimen/dimen15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_read_report" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="举报"
+                android:textColor="@color/a2a9b2"
+                android:textSize="@dimen/dimen13dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

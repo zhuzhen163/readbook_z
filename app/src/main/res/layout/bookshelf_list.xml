@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+>
+
+    <RelativeLayout
+        android:id="@+id/rl_item_book"
+        android:padding="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:scaleType="fitXY"
+            android:id="@+id/iv_bookImg"
+            android:layout_width="@dimen/dimen57dp"
+            android:layout_height="@dimen/dimen75dp" />
+
+        <TextView
+            android:id="@+id/tv_bookName"
+            android:text=""
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:textColor="@color/text_33"
+            android:layout_marginLeft="@dimen/dimen15dp"
+            android:layout_toRightOf="@id/iv_bookImg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tv_progress_list"
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_alignTop="@id/tv_bookName"
+            android:layout_toRightOf="@id/tv_bookName"
+            android:layout_marginTop="@dimen/dimen2dp"
+            android:gravity="center"
+            android:textSize="@dimen/dimen10dp"
+            android:textColor="@color/white"
+            android:text="完结"
+            android:layout_width="@dimen/dimen30dp"
+            android:layout_height="@dimen/dimen15dp"
+            android:background="@drawable/text_bg_wanjie"/>
+
+        <TextView
+            android:id="@+id/tv_percent_list"
+            android:text="未读过"
+            android:layout_marginTop="@dimen/dimen10dp"
+            android:layout_below="@id/tv_bookName"
+            android:layout_alignLeft="@id/tv_bookName"
+            android:textSize="@dimen/dimen12dp"
+            android:textColor="@color/a2a9b2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_time_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1天前更新"
+            android:textColor="@color/a2a9b2"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:textSize="@dimen/dimen12dp"/>
+
+        <CheckBox
+            android:visibility="gone"
+            android:id="@+id/checkbox_list"
+            android:background="@drawable/checkbox_selector"
+            android:checked="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_width="@dimen/dimen18dp"
+            android:layout_height="@dimen/dimen18dp"
+            android:button="@null"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_add_book"
+       android:padding="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/iv_add"
+            android:background="@drawable/icon_addbook"
+            android:layout_width="@dimen/dimen57dp"
+            android:layout_height="@dimen/dimen75dp" />
+
+        <TextView
+            android:layout_marginLeft="@dimen/dimen15dp"
+            android:layout_toRightOf="@id/iv_add"
+            android:layout_centerVertical="true"
+            android:textColor="@color/text_99"
+            android:textSize="@dimen/dimen13dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加你喜欢的小说"/>
+    </RelativeLayout>
+</LinearLayout>

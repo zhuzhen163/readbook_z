@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="基于近7天活跃阅读综合指标计算"
+            android:textColor="@color/a2a9b2"
+            android:textSize="@dimen/dimen13dp"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginTop="@dimen/dimen15dp"/>
+
+        <TextView
+            android:id="@+id/tv_data"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/a2a9b2"
+            android:textSize="@dimen/dimen13dp"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginTop="@dimen/dimen15dp"/>
+    </RelativeLayout>
+    <com.github.jdsjlzx.recyclerview.LRecyclerView
+        android:layout_marginTop="@dimen/dimen10dp"
+        android:layout_weight="1"
+        android:id="@+id/lv_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:descendantFocusability="blocksDescendants"
+        />
+</LinearLayout>

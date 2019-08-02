@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/rl_titleBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen42dp">
+
+            <TextView
+                android:id="@+id/tv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="返回"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dimen20dp"
+                android:layout_centerVertical="true"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen14dp"
+                android:drawablePadding="@dimen/dimen10dp"
+                android:drawableLeft="@drawable/icon_fanhui"/>
+
+            <com.huajie.readbook.utils.CustomTextView
+                android:textSize="@dimen/dimen16dp"
+                android:textColor="@color/text_33"
+                android:id="@+id/tv_title"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:id="@+id/iv_menu"
+                android:src="@drawable/icon_share"
+                android:padding="@dimen/dimen9dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/dimen5dp"
+                android:layout_width="@dimen/dimen34dp"
+                android:layout_height="@dimen/dimen34dp" />
+
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/right_text"
+                android:textColor="@color/colorTheme"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:gravity="center"
+                android:textSize="@dimen/dimen14dp"
+                android:layout_marginRight="@dimen/dimen10dp"
+                android:layout_width="@dimen/dimen42dp"
+                android:layout_height="match_parent" />
+            <View
+                android:layout_alignParentBottom="true"
+                android:background="@color/color_f1"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <include layout="@layout/net_wok_connect"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:visibility="gone"
+        android:background="@color/color_c7b890"
+        android:id="@+id/iv_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>
