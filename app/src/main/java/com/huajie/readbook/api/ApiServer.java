@@ -133,8 +133,9 @@ public interface ApiServer {
      * 分类
      * @return
      */
+    @FormUrlEncoded
     @POST("bookmall/category/list")
-    Observable<BaseModel<ClassifysListModel>> categoryList();
+    Observable<BaseModel<ClassifysListModel>> categoryList(@Field("android") int type);
 
     /**
      * 二级分类

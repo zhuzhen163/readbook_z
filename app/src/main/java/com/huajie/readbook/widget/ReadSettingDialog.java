@@ -41,8 +41,8 @@ public class ReadSettingDialog extends Dialog {
     private static final String TAG = "ReadSettingDialog";
     private static final int DEFAULT_TEXT_SIZE = 20;
 
-    int[] colorBg = {R.color.color_ebebeb, R.color.color_ccebcc,
-            R.color.color_cce9ce, R.color.color_cce9ce, R.color.color_051c2c, R.color.color_0a0907};
+    int[] colorBg = {R.color.color_ebebeb, R.color.color_cec29c_dd,
+            R.color.color_ccebcc, R.color.color_cce9ce, R.color.color_051c2c, R.color.color_0a0907};
 
     @BindView(R.id.read_setting_tv_font_minus)
     TextView mTvFontMinus;
@@ -124,7 +124,6 @@ public class ReadSettingDialog extends Dialog {
         mPageMode = mSettingManager.getPageMode();
         mReadBgTheme = mSettingManager.getReadBgTheme();
         textLineSpace = mSettingManager.getTextLineSpace();
-        mReadBgTheme = mSettingManager.getReadBgTheme();
     }
 
     private void initWidget() {

@@ -267,6 +267,17 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
 
             tv_tag.setText(book.getClassifyName());
             tv_synopsis.setText(book.getNotes());
+            tv_synopsis.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (3>=tv_synopsis.getLineCount()){
+                        iv_xiala.setVisibility(View.GONE);
+                        setTextLine(true);
+                    }else {
+                        setTextLine(false);
+                    }
+                }
+            });
 
             tv_disclaimer.setText(book.getDisclaimer());
             totalCounts = book.getTotalCounts();
@@ -366,9 +377,14 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     protected void onDestroy() {
         super.onDestroy();
         UMShareAPI.get(this).release();
-        if (shareDialog != null && shareDialog.isShowing()){
-            shareDialog.dismiss();
+        try {
+            if (shareDialog != null){
+                shareDialog.dismiss();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
         shareDialog = null;
         TCAgent.onPageEnd(mContext, "书籍详情页");
     }

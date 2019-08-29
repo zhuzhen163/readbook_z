@@ -24,13 +24,14 @@ public class GreenDaoOpenHelper extends DaoMaster.OpenHelper{
 
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        MigrationHelper.getInstance().migrate(db,
-                BookChapterBeanDao.class,
-                BookMarkBeanDao.class,
-                BookRecordBeanDao.class,
-                CollBookBeanDao.class,
-                UserBeanDao.class,
-                DownloadTaskBeanDao.class);
-
+        if (oldVersion<newVersion){
+            MigrationHelper.migrate(db,
+                    BookChapterBeanDao.class,
+                    BookMarkBeanDao.class,
+                    BookRecordBeanDao.class,
+                    CollBookBeanDao.class,
+                    UserBeanDao.class,
+                    DownloadTaskBeanDao.class);
+        }
     }
 }

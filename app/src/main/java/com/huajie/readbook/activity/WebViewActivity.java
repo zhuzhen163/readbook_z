@@ -29,6 +29,8 @@ import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.NetWorkUtils;
 import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
+import com.huajie.readbook.utils.ToastUtil;
+import com.umeng.socialize.UMShareAPI;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,7 +90,7 @@ public class WebViewActivity extends BaseActivity {
         }
         setTitleState(View.VISIBLE);
         initWebViewSetting(webView, new MyWebViewClient(), new MyWebChromeClient());
-        webView.addJavascriptInterface(new JSClient(), "android");
+        webView.addJavascriptInterface(new JSClient(), "AndroidJs");
 
         extraHeaders = new HashMap<>();
         extraHeaders.put("User-Agent", "android");
@@ -110,6 +112,8 @@ public class WebViewActivity extends BaseActivity {
     public void setTitle(String mTitle) {
         if (StringUtils.isNotBlank(mTitle)){
             this.title = mTitle;
+        }else {
+            title = "明阅免费小说";
         }
         setTitleName(title);
 
@@ -168,7 +172,13 @@ public class WebViewActivity extends BaseActivity {
         @Override
         public void onReceivedTitle(WebView view, String title) {
             super.onReceivedTitle(view, title);
-            setTitle(title);
+            if (StringUtils.isNotBlank(title)){
+                String regex = ".*[a-zA-Z].*";
+                boolean result = title.matches(regex);
+                if (!result){
+                    setTitle(title);
+                }
+            }
         }
     }
 
@@ -229,13 +239,47 @@ public class WebViewActivity extends BaseActivity {
         return false;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+    }
+
     /**
      * js调用本地方法
      */
     public class JSClient {
 
         @JavascriptInterface
-        public void withdrawBack(){
+        public void assignToNewPages(String  title,String link){
+            if (title.equals("pullshare")){
+                ToastUtil.showToast("拉起弹窗去分享");
+            }else if (title.equals("pulllogin")){
+                ToastUtil.showToast("拉起login页面");
+            }else if (title.equals("pullhome")){
+                ToastUtil.showToast("拉起弹窗去分享");
+            }else {
+                SwitchActivityManager.startWebViewActivity(mContext,link,title);
+            }
+        }
+
+        @JavascriptInterface
+        public void sharetowx(String type){
+            switch (type){
+                case "wx":
+                    ToastUtil.showToast("wx");
+                    break;
+                case "wxcircle":
+                    ToastUtil.showToast("wxcircle");
+                    break;
+                case "qq":
+                    ToastUtil.showToast("qq");
+                    break;
+                case "qqcircle":
+                    ToastUtil.showToast("qqcircle");
+                    break;
+
+            }
         }
     }
 

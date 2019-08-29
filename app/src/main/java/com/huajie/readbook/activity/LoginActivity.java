@@ -109,10 +109,10 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
                 SwitchActivityManager.exitActivity(LoginActivity.this);
                 break;
             case R.id.tv_useragree:
-                SwitchActivityManager.startWebViewActivity(mContext,useragree);
+                SwitchActivityManager.startWebViewActivity(mContext,useragree,"用户协议");
                 break;
             case R.id.tv_privacy:
-                SwitchActivityManager.startWebViewActivity(mContext,privacy);
+                SwitchActivityManager.startWebViewActivity(mContext,privacy,"隐私政策");
                 break;
         }
     }

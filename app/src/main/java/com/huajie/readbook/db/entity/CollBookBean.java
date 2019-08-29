@@ -45,8 +45,10 @@ public class CollBookBean implements Serializable {
     private String lastChapter;
     //是否是连载
     private boolean isUpdate = true;
-    //是否是本地文件
+    //是否加入书架
     private boolean isLocal = false;
+    //是否本地导入
+    private boolean importLocal = false;
     @ToMany(referencedJoinProperty = "bookId")
     private List<BookChapterBean> bookChapterList;
     /** Used to resolve relations */
@@ -56,11 +58,12 @@ public class CollBookBean implements Serializable {
     @Generated(hash = 1552163441)
     private transient CollBookBeanDao myDao;
 
-    @Generated(hash = 958998883)
+    @Generated(hash = 335978255)
     public CollBookBean(String _id, String title, String name, String readerId, String bookId,
             String sectionId, String author, String shortIntro, String logo, String notes,
             boolean hasCp, int latelyFollower, double retentionRatio, String classifyId, String updated,
-            String lastRead, int chaptersCount, String lastChapter, boolean isUpdate, boolean isLocal) {
+            String lastRead, int chaptersCount, String lastChapter, boolean isUpdate, boolean isLocal,
+            boolean importLocal) {
         this._id = _id;
         this.title = title;
         this.name = name;
@@ -81,6 +84,7 @@ public class CollBookBean implements Serializable {
         this.lastChapter = lastChapter;
         this.isUpdate = isUpdate;
         this.isLocal = isLocal;
+        this.importLocal = importLocal;
     }
 
     @Generated(hash = 149378998)
@@ -359,6 +363,14 @@ public class CollBookBean implements Serializable {
 
     public void setClassifyId(String classifyId) {
         this.classifyId = classifyId;
+    }
+
+    public boolean getImportLocal() {
+        return this.importLocal;
+    }
+
+    public void setImportLocal(boolean importLocal) {
+        this.importLocal = importLocal;
     }
 
 

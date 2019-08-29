@@ -22,7 +22,7 @@ public class ClassifyActivityPresenter extends BasePresenter<ClassifyActivityVie
     }
 
     public void getClassify() {
-        addDisposable(apiServer.categoryList(), new BaseObserver(baseView) {
+        addDisposable(apiServer.categoryList(1), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if ("0".equals(o.getRetcode())){

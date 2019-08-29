@@ -116,6 +116,7 @@ public class MineFragment extends BaseFragment {
                 break;
             case R.id.ll_setting:
                 SwitchActivityManager.startSettingActivity(mContext);
+//                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/","");
                 break;
         }
     }

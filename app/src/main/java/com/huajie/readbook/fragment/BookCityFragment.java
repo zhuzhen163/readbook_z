@@ -38,7 +38,7 @@ public class BookCityFragment extends BaseFragment {
     @BindView(R.id.rl_search)
     RelativeLayout rl_search;
 
-    String[] titles = {"精选 ","女生 ", "男生"};
+    String[] titles = {"精选 ","男生","女生 ","出版"};
     private List<Fragment> mFragments = new ArrayList<>();
 
     @Override
@@ -49,8 +49,9 @@ public class BookCityFragment extends BaseFragment {
     @Override
     protected void initView() {
         mFragments.add(FeaturedFragment.newInstance("精选"));
-        mFragments.add(FeaturedFragment.newInstance("女生"));
         mFragments.add(FeaturedFragment.newInstance("男生"));
+        mFragments.add(FeaturedFragment.newInstance("女生"));
+        mFragments.add(FeaturedFragment.newInstance("出版"));
         vp_classify.setAdapter(new BookCityPageAdapter(getActivity().getSupportFragmentManager(), titles, mFragments));
         vp_classify.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -62,9 +63,11 @@ public class BookCityFragment extends BaseFragment {
                 if (position == 0){
                     BaseContent.tabType = 1;
                 }else if (position == 1){
-                    BaseContent.tabType = 2;
-                }else if (position == 2){
                     BaseContent.tabType = 3;
+                }else if (position == 2){
+                    BaseContent.tabType = 2;
+                }else if (position == 3){
+                    BaseContent.tabType = 7;
                 }
             }
 
@@ -77,9 +80,9 @@ public class BookCityFragment extends BaseFragment {
         tb_select.setupWithViewPager(vp_classify);
 
         if ("1".equals(ConfigUtils.getGender())){
-            vp_classify.setCurrentItem(1);
-        }else if ("0".equals(ConfigUtils.getGender())){
             vp_classify.setCurrentItem(2);
+        }else if ("0".equals(ConfigUtils.getGender())){
+            vp_classify.setCurrentItem(1);
         }
     }
 

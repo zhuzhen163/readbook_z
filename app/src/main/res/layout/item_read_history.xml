@@ -23,6 +23,8 @@
             android:layout_marginTop="@dimen/dimen5dp"
             android:layout_toRightOf="@id/iv_bookImg"
             android:layout_width="wrap_content"
+            android:singleLine="true"
+            android:ellipsize="end"
             android:layout_height="wrap_content"
             android:text="总裁爹地宠上天"
             android:textColor="@color/text_33"

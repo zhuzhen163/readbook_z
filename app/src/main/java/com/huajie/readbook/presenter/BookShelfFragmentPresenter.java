@@ -107,6 +107,7 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
                             }
 
                             collBookBean.setBookChapters(bookChapterList);
+                            collBookBean.setChaptersCount(bookChapterList.size());
                             CollBookHelper.getsInstance().saveBookWithAsync(collBookBean);
 
                             baseView.toReadActivity(collBookBean);

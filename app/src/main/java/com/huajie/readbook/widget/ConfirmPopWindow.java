@@ -22,7 +22,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
  */
 public class ConfirmPopWindow extends PopupWindow implements View.OnClickListener{
     private Context context;
-    private LinearLayout ll_switchModel,ll_bookManager,ll_refresh,ll_readHistory;
+    private LinearLayout ll_switchModel,ll_bookManager,ll_refresh,ll_readHistory,ll_local;
     private TextView tv_switchText;
     private ImageView iv_switchImg;
     public PopWindowInterface popWindowInterface;
@@ -36,6 +36,7 @@ public class ConfirmPopWindow extends PopupWindow implements View.OnClickListene
         void refreshBook();
         void readHistory();
         void bookManager();
+        void importLocal();
     }
 
     public ConfirmPopWindow(Context context) {
@@ -50,6 +51,7 @@ public class ConfirmPopWindow extends PopupWindow implements View.OnClickListene
         ll_switchModel = view.findViewById(R.id.ll_switchModel);
         ll_bookManager = view.findViewById(R.id.ll_bookManager);
         ll_readHistory = view.findViewById(R.id.ll_readHistory);
+        ll_local = view.findViewById(R.id.ll_local);
         ll_refresh = view.findViewById(R.id.ll_refresh);
         tv_switchText = view.findViewById(R.id.tv_switchText);
         iv_switchImg = view.findViewById(R.id.iv_switchImg);
@@ -57,6 +59,7 @@ public class ConfirmPopWindow extends PopupWindow implements View.OnClickListene
         ll_bookManager.setOnClickListener(this);
         ll_refresh.setOnClickListener(this);
         ll_readHistory.setOnClickListener(this);
+        ll_local.setOnClickListener(this);
         setContentView(view);
         initWindow();
     }
@@ -123,6 +126,10 @@ public class ConfirmPopWindow extends PopupWindow implements View.OnClickListene
                 break;
             case R.id.ll_readHistory:
                 popWindowInterface.readHistory();
+                dismiss();
+                break;
+            case R.id.ll_local:
+                popWindowInterface.importLocal();
                 dismiss();
                 break;
             default:

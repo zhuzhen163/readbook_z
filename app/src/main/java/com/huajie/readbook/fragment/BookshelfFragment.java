@@ -1,8 +1,12 @@
 package com.huajie.readbook.fragment;
 
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
@@ -34,6 +38,7 @@ import com.huajie.readbook.widget.DeleteBookShelfDialog;
 import com.tendcloud.tenddata.TCAgent;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -216,9 +221,28 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
         adapter.setOnClickItemListener(new BookshelfAdapter.OnClickItemListener() {
             @Override
             public void onItem(int position) {
+                if (adapter.getDataList().size() == 0 || position> adapter.getDataList().size())
+                    return;
                 BookshelfBean bookshelfBean = adapter.getDataList().get(position);
                 CollBookBean collBookBean = bookshelfBean.getCollBookBean();
-                mPresenter.setBookInfo(collBookBean);
+                if (bookshelfBean.isImportLocal()){
+                    //id表示本地文件的路径
+                    String path = collBookBean.get_id();
+                    File file = new File(path);
+                    //判断这个本地文件是否存在
+                    if (file.exists()) {
+                        SwitchActivityManager.startReadActivity(mContext,collBookBean,true);
+                    } else {
+                        if (deleteBookShelfDialog != null){
+                            deleteBookShelfDialog.show();
+                            deleteBookShelfDialog.setMessage("文件不存在，是否删除书籍？");
+                            bookshelfBean.setDelete(true);
+                        }
+                        //提示(从目录中移除这个文件)
+                    }
+                }else {
+                    mPresenter.setBookInfo(collBookBean);
+                }
             }
         });
     }
@@ -350,6 +374,7 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
                 bookshelfBean.setUpdateTime(bookBean.getUpdated());
                 bookshelfBean.setLastRead(bookBean.getLastRead());
                 bookshelfBean.setNotes(bookBean.getNotes());
+                bookshelfBean.setImportLocal(bookBean.getImportLocal());
                 beans.add(bookshelfBean);
             }
         }
@@ -391,15 +416,17 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
             if (next.isDelete()){
                 CollBookBean bookById = CollBookHelper.getsInstance().findBookById(next.getBookId());
                 if (bookById != null){
+                    BookRecordHelper.getsInstance().removeBook(bookById.get_id());
                     CollBookHelper.getsInstance().removeBookInRx(next.getCollBookBean()).subscribe(s -> {
-                                BookRecordHelper.getsInstance().removeBook(bookById.get_id());
                             }
                             , throwable -> {
                                 ToastUtil.showToast("删除失败");
                             });
                 }
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
-                    deleteList.add(Integer.parseInt(next.getBookId()));
+                    if (!next.isImportLocal()){
+                        deleteList.add(Integer.parseInt(next.getBookId()));
+                    }
                 }
                 iterator.remove();
             }
@@ -484,6 +511,17 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
             isDelete(true);
         }else {
             ToastUtil.showToast("您的书架暂无书籍");
+        }
+    }
+
+    @Override
+    public void importLocal() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},
+                    1);
+        }else{
+            SwitchActivityManager.startFileSystemActivity(mContext);
         }
     }
 

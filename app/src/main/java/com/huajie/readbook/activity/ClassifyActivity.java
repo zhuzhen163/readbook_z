@@ -39,19 +39,26 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     @BindView(R.id.lv_list)
     LRecyclerView mRecyclerView;
 
-    @BindView(R.id.rl_boy_bg)
-    RelativeLayout rl_boy_bg;
-    @BindView(R.id.view_boy)
-    View view_boy;
-    @BindView(R.id.tv_boy)
-    TextView tv_boy;
+    @BindView(R.id.rl_1_bg)
+    RelativeLayout rl_1_bg;
+    @BindView(R.id.view_1)
+    View view_1;
+    @BindView(R.id.tv_1)
+    TextView tv_1;
 
-    @BindView(R.id.rl_girl_bg)
-    RelativeLayout rl_girl_bg;
-    @BindView(R.id.view_girl)
-    View view_girl;
-    @BindView(R.id.tv_girl)
-    TextView tv_girl;
+    @BindView(R.id.rl_2_bg)
+    RelativeLayout rl_2_bg;
+    @BindView(R.id.view_2)
+    View view_2;
+    @BindView(R.id.tv_2)
+    TextView tv_2;
+
+    @BindView(R.id.rl_3_bg)
+    RelativeLayout rl_3_bg;
+    @BindView(R.id.view_3)
+    View view_3;
+    @BindView(R.id.tv_3)
+    TextView tv_3;
 
     private List<ClassifysModel> data = new ArrayList<>();
     private LRecyclerViewAdapter mLRecyclerViewAdapter = null;
@@ -66,45 +73,60 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     @Override
     protected void otherViewClick(View view) {
         switch (view.getId()){
-            case R.id.rl_boy_bg:
+            case R.id.rl_1_bg:
                 if (data.size()>1){
+                    chooseGender(0);
+                    activityAdapter.setDataList(data.get(0).getClassifys());
+                }
+                break;
+            case R.id.rl_2_bg:
+                if (data.size()>=2){
                     chooseGender(1);
                     activityAdapter.setDataList(data.get(1).getClassifys());
                 }
                 break;
-            case R.id.rl_girl_bg:
-                if (data.size()>=2){
-                    chooseGender(0);
-                    activityAdapter.setDataList(data.get(0).getClassifys());
+            case R.id.rl_3_bg:
+                if (data.size()>=3){
+                    chooseGender(2);
+                    activityAdapter.setDataList(data.get(2).getClassifys());
                 }
                 break;
         }
     }
 
-    public void chooseGender(int gender){
-        if (1 == gender){
+    public void chooseGender(int genders){
+        rl_1_bg.setBackgroundColor(getResources().getColor(R.color.f8f8f8));
+        rl_2_bg.setBackgroundColor(getResources().getColor(R.color.f8f8f8));
+        rl_3_bg.setBackgroundColor(getResources().getColor(R.color.f8f8f8));
+        tv_1.setTextColor(getResources().getColor(R.color.text_33));
+        tv_2.setTextColor(getResources().getColor(R.color.text_33));
+        tv_3.setTextColor(getResources().getColor(R.color.text_33));
+        view_1.setVisibility(View.GONE);
+        view_2.setVisibility(View.GONE);
+        view_3.setVisibility(View.GONE);
+        if (0 == genders){
             gender = 3;
-            rl_boy_bg.setBackgroundColor(getResources().getColor(R.color.white));
-            rl_girl_bg.setBackgroundColor(getResources().getColor(R.color.f8f8f8));
-            view_boy.setVisibility(View.VISIBLE);
-            view_girl.setVisibility(View.GONE);
-            tv_boy.setTextColor(getResources().getColor(R.color.colorTheme));
-            tv_girl.setTextColor(getResources().getColor(R.color.text_33));
-        }else if (0 == gender){
+            rl_1_bg.setBackgroundColor(getResources().getColor(R.color.white));
+            view_1.setVisibility(View.VISIBLE);
+            tv_1.setTextColor(getResources().getColor(R.color.colorTheme));
+        }else if (1 == genders){
             gender = 2;
-            rl_girl_bg.setBackgroundColor(getResources().getColor(R.color.white));
-            rl_boy_bg.setBackgroundColor(getResources().getColor(R.color.f8f8f8));
-            view_girl.setVisibility(View.VISIBLE);
-            view_boy.setVisibility(View.GONE);
-            tv_girl.setTextColor(getResources().getColor(R.color.colorTheme));
-            tv_boy.setTextColor(getResources().getColor(R.color.text_33));
+            rl_2_bg.setBackgroundColor(getResources().getColor(R.color.white));
+            view_2.setVisibility(View.VISIBLE);
+            tv_2.setTextColor(getResources().getColor(R.color.colorTheme));
+        }else if (2 == genders){
+            gender = 4;
+            rl_3_bg.setBackgroundColor(getResources().getColor(R.color.white));
+            view_3.setVisibility(View.VISIBLE);
+            tv_3.setTextColor(getResources().getColor(R.color.colorTheme));
         }
     }
 
     @Override
     protected void initListener() {
-        rl_boy_bg.setOnClickListener(this);
-        rl_girl_bg.setOnClickListener(this);
+        rl_1_bg.setOnClickListener(this);
+        rl_2_bg.setOnClickListener(this);
+        rl_3_bg.setOnClickListener(this);
         setBaseBackListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,8 +189,17 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     @Override
     public void classifySuccess(BaseModel<ClassifysListModel> o) {
         data = o.getData().getCategorylist();
-        ClassifysModel boyList = data.get(0);
-        activityAdapter.setDataList(boyList.getClassifys());
+
+        ClassifysModel classifysModel = data.get(0);
+        tv_1.setText(classifysModel.getName());
+        activityAdapter.setDataList(classifysModel.getClassifys());
+
+        if (data.size()<2) return;
+        tv_2.setText(data.get(1).getName());
+
+        if (data.size()<3)return;
+        tv_3.setText(data.get(2).getName());
+
         mRecyclerView.refreshComplete(10);
     }
 

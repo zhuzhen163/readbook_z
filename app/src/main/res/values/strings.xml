@@ -11,4 +11,11 @@
     <string name="wy.read.download">缓存</string>'
     <string name="wy.read.category">目录</string>
     <string name="wy.read.no_chapter">第 %1$d 章(%2$d)</string>
+
+    <!--file system-->
+    <string name="wy.file.sub_count">%1$d 项</string>
+    <string name="wy.file.path">存储卡:%1$s</string>
+    <string name="wy.file.add_shelf">加入书架</string>
+    <string name="wy.file.add_shelves">加入书架(%1$d)</string>
+    <string name="wy.file.add_succeed">成功添加%1$d本书</string>
 </resources>

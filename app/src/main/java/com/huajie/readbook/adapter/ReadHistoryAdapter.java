@@ -55,15 +55,22 @@ public class ReadHistoryAdapter extends ListBaseAdapter<BookBean> {
         tv_openBook = holder.getView(R.id.tv_openBook);
         checkbox_list = holder.getView(R.id.checkbox_list);
         BookBean historyModel = mDataList.get(position);
-
-        Glide.with(mContext).load(ImageUrl+historyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        if (historyModel.isImportLocal()){
+            Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg);
+        }else {
+            Glide.with(mContext).load(ImageUrl+historyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        }
         tv_bookName.setText(historyModel.getName());
         //从数据库取阅读数据
         mBookRecord = BookRecordHelper.getsInstance().findBookRecordById(historyModel.getId());
         if (mBookRecord != null){
             String chapterPercent = mBookRecord.getChapterPercent();
             if (!chapterPercent.equals("0.00")){
-                tv_readPercent.setText("已读"+chapterPercent+"%");
+                if (chapterPercent.equals("100.00")){
+                    tv_readPercent.setText("已读100%");
+                }else {
+                    tv_readPercent.setText("已读"+chapterPercent+"%");
+                }
                 tv_readPercent.setTextColor(Color.parseColor("#5297f7"));
             }else {
                 tv_readPercent.setText("已读"+"0.01%");
@@ -109,7 +116,11 @@ public class ReadHistoryAdapter extends ListBaseAdapter<BookBean> {
             @Override
             public void onClick(View v) {
                 BookBean readHistory = mDataList.get(position);
-                SwitchActivityManager.startReadActivity(mContext,readHistory.getCollBookBean(),readHistory.getIsJoin()==0?true:false);
+                if (readHistory.isImportLocal()){
+                    SwitchActivityManager.startReadActivity(mContext,readHistory.getCollBookBean(),true);
+                }else {
+                    SwitchActivityManager.startReadActivity(mContext,readHistory.getCollBookBean(),readHistory.getIsJoin()==0?true:false);
+                }
             }
         });
     }

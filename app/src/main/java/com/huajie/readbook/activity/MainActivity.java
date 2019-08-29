@@ -1,8 +1,13 @@
 package com.huajie.readbook.activity;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +25,7 @@ import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.bean.UpdateModel;
 import com.huajie.readbook.downloadmanger.DownloadController;
+import com.huajie.readbook.downloadmanger.DownloadTask;
 import com.huajie.readbook.fragment.BookshelfFragment;
 import com.huajie.readbook.fragment.MineFragment;
 import com.huajie.readbook.fragment.BookCityFragment;
@@ -149,9 +155,15 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         return R.layout.activity_main;
     }
 
+    //关于进度显示
+    private ProgressDialog progressDialog;
     @Override
     protected void initData() {
-
+        //相关属性
+        progressDialog =new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("正在下载中...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setCancelable(false);
     }
 
 
@@ -209,7 +221,8 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
             if (apkFile != null) {
                 downloadController.installApkByFile(apkFile, mContext);
             } else {
-                downloadController.startLauncherDownLoader(updateUrl, -1);
+                onUpdateClick(updateUrl);
+//                downloadController.startLauncherDownLoader(updateUrl, -1);
             }
         }
     }
@@ -233,5 +246,21 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     protected void protectApp() {
         startActivity(new Intent(this,SplashActivity.class));
         finish();
+    }
+
+    //升级下载按钮点击事件
+    private void onUpdateClick(String updateUrl) {
+        //第一种 asynctask
+        //onProgressUpdate和onPreExecute是运行在UI线程中的，
+        // 所以我们应该在这两个方法中更新progress。
+        final DownloadTask downloadTask = new DownloadTask(MainActivity.this,progressDialog);
+        //execute 执行一个异步任务，通过这个方法触发异步任务的执行。这个方法要在主线程调用。
+        downloadTask.execute(updateUrl);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                downloadTask.cancel(true);
+            }
+        });
     }
 }

@@ -95,10 +95,19 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
             tv_progress_list = holder.getView(R.id.tv_progress_list);
             tv_percent_list = holder.getView(R.id.tv_percent_list);
 
-            if (position < mDataList.size()) {//展示正常数据
+            //展示正常数据
+            if (position < mDataList.size()) {
                 item = mDataList.get(position);
                 tv_bookName.setText(item.getName());
-                Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+                if (item.isImportLocal()){
+                    Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg);
+                }else {
+                    if (StringUtils.isNotBlank(item.getLogo())){
+                        Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+                    }else {
+                        Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg);
+                    }
+                }
                 boolean delete = item.isDelete();
                 if (delete){
                     checkbox_list.setChecked(true);
@@ -131,7 +140,11 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                 if (mBookRecord != null){
                     String chapterPercent = mBookRecord.getChapterPercent();
                     if (!chapterPercent.equals("0.00")){
-                        tv_percent_list.setText(chapterPercent+"%");
+                        if (chapterPercent.equals("100.00")){
+                            tv_percent_list.setText("100%");
+                        }else {
+                            tv_percent_list.setText(chapterPercent+"%");
+                        }
                         tv_percent_list.setTextColor(Color.parseColor("#5297f7"));
                         if (1 == item.getProgress()){
                             boolean time = timeCompare(item.getLastRead(), item.getUpdateTime());
@@ -206,7 +219,15 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
             if (position < mDataList.size()) {//展示正常数据
                 item = mDataList.get(position);
                 tv_bookName_grid.setText(item.getName());
-                Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_grid);
+                if (item.isImportLocal()){
+                    Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg_grid);
+                }else {
+                    if (StringUtils.isNotBlank(item.getLogo())){
+                        Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_grid);
+                    }else {
+                        Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg_grid);
+                    }
+                }
                 boolean delete = item.isDelete();
                 if (delete){
                     checkbox_grid.setChecked(true);
@@ -233,7 +254,11 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                 if (mBookRecord != null){
                     String chapterPercent = mBookRecord.getChapterPercent();
                     if (!chapterPercent.equals("0.00")){
-                        tv_percent.setText("已读"+chapterPercent+"%");
+                        if (chapterPercent.equals("100.00")){
+                            tv_percent.setText("已读100%");
+                        }else {
+                            tv_percent.setText("已读"+chapterPercent+"%");
+                        }
                         tv_percent.setTextColor(Color.parseColor("#5297f7"));
                         if (1 == item.getProgress()){
                             boolean time = timeCompare(item.getLastRead(), item.getUpdateTime());

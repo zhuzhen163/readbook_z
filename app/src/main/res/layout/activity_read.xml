@@ -320,6 +320,7 @@
         </RelativeLayout>
 
         <TextView
+            android:visibility="invisible"
             android:textColor="@color/a2a9b2"
             android:textSize="@dimen/dimen13dp"
             android:paddingTop="@dimen/dimen15dp"

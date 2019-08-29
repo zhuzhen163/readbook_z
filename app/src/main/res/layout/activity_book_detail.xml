@@ -110,7 +110,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_66"
                     android:ellipsize="end"
-                    android:maxLines="3"
                     android:lineSpacingExtra="@dimen/dimen2dp"
                     android:textSize="@dimen/dimen13dp"
                     android:text=""/>

@@ -20,6 +20,7 @@ public class BookshelfBean {
     private String mtime;
     private int totalCounts;
     private String lastRead;
+    private boolean importLocal;
 
     private CollBookBean mCollBookBean;
 
@@ -43,6 +44,7 @@ public class BookshelfBean {
         bean.setClassifyId(getClassifyId());
         bean.setUpdated(getUpdateTime());
         bean.setChaptersCount(getTotalCounts());
+        bean.setImportLocal(isImportLocal());
         if (getProgress() == 1){
             bean.setIsUpdate(true);
         }else {
@@ -50,6 +52,14 @@ public class BookshelfBean {
         }
 
         return bean;
+    }
+
+    public boolean isImportLocal() {
+        return importLocal;
+    }
+
+    public void setImportLocal(boolean importLocal) {
+        this.importLocal = importLocal;
     }
 
     public String getLastRead() {

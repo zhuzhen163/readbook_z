@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
+import com.huajie.readbook.utils.StringUtils;
 
 import java.util.List;
 
@@ -61,7 +62,11 @@ public class ThreeHeadAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         BookBean bookBean = list.get(position);
-        Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
+        if (StringUtils.isNotBlank(bookBean.getLogo())){
+            Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
+        }else {
+            Glide.with(context).load(R.drawable.icon_pic_def).into(holder.iv_bookImg);
+        }
         holder.tv_bookContent.setText(bookBean.getName());
         return convertView;
     }

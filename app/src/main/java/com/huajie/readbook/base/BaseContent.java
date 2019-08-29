@@ -6,10 +6,10 @@ import com.huajie.readbook.ZApplication;
 public class BaseContent {
 
     //online
-//    public static String base = "http://pro.mingyuexiaoshuo.com/";
+    public static String base = "http://pro.huajiehuyu.com/";
 
     //test
-    public static String base = "http://test.huajiehuyu.com/";
+//    public static String base = "http://test.huajiehuyu.com/";
 
     public static String baseUrl = base+"online-book/";
     public static String ImageUrl = base+"online-imgserver/images/";
@@ -27,6 +27,6 @@ public class BaseContent {
     public static int pageSize = 10;
     //搜索跳转书城
     public static boolean searchToBookCity = false;
-    //tab类型1精选2女生3男生
+    //tab类型1精选2女生3男生    测试4出版，正式7出版
     public static int tabType = 1;
 }

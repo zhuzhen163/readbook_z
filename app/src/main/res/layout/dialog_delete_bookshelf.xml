@@ -15,6 +15,7 @@
         android:layout_height="wrap_content">
 
         <com.huajie.readbook.utils.CustomTextView
+            android:id="@+id/ct_message"
             android:layout_marginTop="@dimen/dimen5dp"
             android:textSize="@dimen/dimen15dp"
             android:textColor="@color/text_33"

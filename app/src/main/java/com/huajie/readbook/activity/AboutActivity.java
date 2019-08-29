@@ -41,10 +41,10 @@ public class AboutActivity extends BaseActivity {
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.tv_useragree:
-                SwitchActivityManager.startWebViewActivity(mContext,useragree);
+                SwitchActivityManager.startWebViewActivity(mContext,useragree,"用户协议");
                 break;
             case R.id.tv_privacy:
-                SwitchActivityManager.startWebViewActivity(mContext,privacy);
+                SwitchActivityManager.startWebViewActivity(mContext,privacy,"隐私政策");
                 break;
         }
     }

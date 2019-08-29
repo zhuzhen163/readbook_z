@@ -91,27 +91,26 @@ public class ZApplication extends Application {
 
         tf = Typeface.createFromAsset(getAssets(), "fonts/FandolSong-Bold.otf");
 
-        mMainThreadHandler.post(() -> {
-            //推送
-            JPushInterface.setDebugMode(true);
-            JPushInterface.init(mBaseApplication);
+        //TalkingData
+//      TCAgent.init(mBaseApplication,"20035FAA506F40CBA82C0172A936C350",getChannelId()); //线上！！！！！！！！！！！！！
+        TCAgent.init(mBaseApplication,"D25D2358D92D408B94635DDB6F456FC6",getChannelId()); //测试！！！！！！！！！！！！
+        TCAgent.setReportUncaughtExceptions(false);
 
-            UMShareAPI.get(mBaseApplication);//初始化sdk
-            //开启debug模式，方便定位错误，具体错误检查方式可以查看http://dev.umeng.com/social/android/quick-integration的报错必看，正式发布，请关闭该模式
-            Config.DEBUG = true;
-            //bugly
-            initAppConfigs();
+        //推送
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(mBaseApplication);
 
-            //TalkingData
-//            TCAgent.init(mBaseApplication,"20035FAA506F40CBA82C0172A936C350",getChannelId()); //线上！！！！！！！！！！！！！
-            TCAgent.init(mBaseApplication,"4F7751617C0443DBBC6F5FEE37F89A2F",getChannelId()); //测试！！！！！！！！！！！！
-            TCAgent.setReportUncaughtExceptions(false);
+        UMShareAPI.get(mBaseApplication);//初始化sdk
+        //开启debug模式，方便定位错误，具体错误检查方式可以查看http://dev.umeng.com/social/android/quick-integration的报错必看，正式发布，请关闭该模式
+        Config.DEBUG = true;
+        //bugly
+        initAppConfigs();
 
-            //openinstall
-            if (isMainProcess()) {
-                OpenInstall.init(mBaseApplication);
-            }
-        });
+        //openinstall
+        if (isMainProcess()) {
+            OpenInstall.init(mBaseApplication);
+        }
+
     }
 
     public static Handler getMainThreadHandler() {

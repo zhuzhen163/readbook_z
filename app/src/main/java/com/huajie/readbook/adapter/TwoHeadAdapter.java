@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
+import com.huajie.readbook.utils.StringUtils;
 
 import java.util.List;
 
@@ -65,7 +66,11 @@ public class TwoHeadAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         BookBean bean = list.get(position);
-        Glide.with(context).load(ImageUrl+bean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
+        if (StringUtils.isNotBlank(bean.getLogo())){
+            Glide.with(context).load(ImageUrl+bean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
+        }else {
+            Glide.with(context).load(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
+        }
         holder.tv_ph_bookName.setText(bean.getName());
 
         int heat = bean.getHeat();

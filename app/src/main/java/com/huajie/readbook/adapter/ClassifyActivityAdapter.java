@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.bean.ClassifyModel;
+import com.huajie.readbook.utils.StringUtils;
 
 import java.util.List;
 
@@ -37,8 +38,11 @@ public class ClassifyActivityAdapter extends ListBaseAdapter<ClassifyModel> {
         iv_Img = holder.getView(R.id.iv_Img);
         tv_name = holder.getView(R.id.tv_name);
         tv_count = holder.getView(R.id.tv_count);
-
-        Glide.with(mContext).load(ImageUrl+classifyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_Img);
+        if (StringUtils.isNotBlank(classifyModel.getLogo())){
+            Glide.with(mContext).load(ImageUrl+classifyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_Img);
+        }else {
+            Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_Img);
+        }
         tv_name.setText(classifyModel.getName());
         tv_count.setText(classifyModel.getBookCount()+"册");
     }

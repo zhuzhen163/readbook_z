@@ -132,6 +132,37 @@
                 android:textColor="@color/text_33"
                 android:textSize="13sp" />
         </LinearLayout>
+        <View
+            android:background="@color/split"
+            android:layout_marginLeft="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen1dp"/>
+
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/ll_local"
+            android:layout_marginLeft="@dimen/dimen20dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen45dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/dimen19dp"
+                android:layout_height="@dimen/dimen19dp"
+                android:src="@drawable/icon_bddr" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="本地导入"
+                android:textColor="@color/text_33"
+                android:textSize="13sp" />
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -241,6 +241,8 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
         mLRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                if (position>adapter.getDataList().size())
+                    return;
                 BookBean bookBean = adapter.getDataList().get(position);
                 SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
             }
@@ -250,7 +252,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 chooseClassify(-1);
-                ClassifyModel model = list.get(position);
+                ClassifyModel model = list.get(position+3);
                 model.setCheck(true);
                 gridViewAdapter.notifyDataSetChanged();
                 classifyId = model.getId();
@@ -369,6 +371,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
                 tv_classify1.setVisibility(View.VISIBLE);
                 tv_classify1.setText(list.get(0).getName());
                 classifyId2 = list.get(0).getId();
+                rl_classify.setVisibility(View.GONE);
             }else if (list.size() == 2){
                 tv_classify1.setVisibility(View.VISIBLE);
                 tv_classify1.setText(list.get(0).getName());

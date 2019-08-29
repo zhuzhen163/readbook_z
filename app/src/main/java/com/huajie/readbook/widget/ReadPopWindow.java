@@ -20,7 +20,7 @@ import com.huajie.readbook.R;
  */
 public class ReadPopWindow extends PopupWindow implements View.OnClickListener{
     private Context context;
-    private LinearLayout ll_addBookMark,ll_bookDetail,ll_shareBook,ll_report;
+    private LinearLayout ll_addBookMark,ll_bookDetail,ll_shareBook,ll_report,ll_isLocal;
     private TextView tv_addBookMark;
     public PopWindowInterface popWindowInterface;
 
@@ -50,6 +50,7 @@ public class ReadPopWindow extends PopupWindow implements View.OnClickListener{
         ll_report = view.findViewById(R.id.ll_report);
         ll_shareBook = view.findViewById(R.id.ll_shareBook);
         tv_addBookMark = view.findViewById(R.id.tv_addBookMark);
+        ll_isLocal = view.findViewById(R.id.ll_isLocal);
         ll_addBookMark.setOnClickListener(this);
         ll_report.setOnClickListener(this);
         ll_bookDetail.setOnClickListener(this);
@@ -86,10 +87,15 @@ public class ReadPopWindow extends PopupWindow implements View.OnClickListener{
         context.getWindow().setAttributes(lp);
     }
 
-    public void showAtBottom(View view) {
+    public void showAtBottom(View view, boolean importLocal) {
         //弹窗位置设置
 //        backgroundAlpha((Activity) context, 0.8f);//0.0-1.0
         showAsDropDown(view, Math.abs((view.getWidth() - getWidth()) / 2), 10);
+        if (importLocal){
+            ll_isLocal.setVisibility(View.GONE);
+        }else {
+            ll_isLocal.setVisibility(View.VISIBLE);
+        }
     }
 
     //1添加书签，2删除书签

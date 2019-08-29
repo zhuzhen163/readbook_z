@@ -45,7 +45,11 @@ public class FeaturedFragmentAdapter extends ListBaseAdapter<BookBean> {
         ll_score = holder.getView(R.id.ll_score);
         BookBean bookBean = mDataList.get(position);
 
-        Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        if (StringUtils.isNotBlank(bookBean.getLogo())){
+            Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        }else {
+            Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg);
+        }
         tv_bookName.setText(bookBean.getName());
         tv_book_content.setText(bookBean.getNotes());
         tv_authorName.setText(bookBean.getAuthorName());

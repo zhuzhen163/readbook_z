@@ -175,7 +175,9 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                 BookRecordHelper.getsInstance().removeBook(next.getId());
 
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
-                    deleteList.add(Integer.parseInt(next.getId()));
+                    if (!next.isImportLocal()){
+                        deleteList.add(Integer.parseInt(next.getId()));
+                    }
                 }
                 iterator.remove();
             }
@@ -245,6 +247,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setUpdateTime(bookById.getLastRead());
                         bookBean.setNotes(bookById.getNotes());
                         bookBean.setClassifyId(bookById.getClassifyId());
+                        bookBean.setImportLocal(bookById.getImportLocal());
                     }else {
                         bookBean.setId(bookRecordBean.getBookId());
                         bookBean.setLogo(bookRecordBean.getLogo());
@@ -252,6 +255,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setUpdateTime(bookRecordBean.getLastRead());
                         bookBean.setNotes(bookRecordBean.getNotes());
                         bookBean.setClassifyId(bookRecordBean.getClassifyId());
+                        bookBean.setImportLocal(false);
                     }
 
 
@@ -333,6 +337,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
 
                         bookBean.setNotes(bookById.getNotes());
                         bookBean.setClassifyId(bookById.getClassifyId());
+                        bookBean.setImportLocal(bookById.getImportLocal());
                     }else {
                         bookBean.setId(bookRecordBean.getBookId());
                         bookBean.setLogo(bookRecordBean.getLogo());
@@ -340,6 +345,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setUpdateTime(bookRecordBean.getLastRead());
                         bookBean.setNotes(bookRecordBean.getNotes());
                         bookBean.setClassifyId(bookRecordBean.getClassifyId());
+                        bookBean.setImportLocal(bookById.getImportLocal());
                     }
                     beans.add(bookBean);
                 }

@@ -78,6 +78,9 @@ public class BrightnessUtils {
         //转换范围为 (0~255)
         float fValue = nowBrightnessValue * 225.0f;
         Log.d(TAG,"brightness: " + fValue);
+        if (fValue == 0){//获取不到亮度默认给90
+            fValue = 90;
+        }
         return (int)fValue;
     }
 

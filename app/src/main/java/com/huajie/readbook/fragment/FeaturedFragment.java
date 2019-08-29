@@ -31,6 +31,7 @@ import com.huajie.readbook.bean.BooksModel;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.presenter.FeaturedFragmentPresenter;
 import com.huajie.readbook.utils.CustomTextView;
+import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.FeatureFragmentView;
@@ -64,7 +65,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
     private String tabName;
     private ImageCycleView icv_topView;
     private View headView_1,headView_2,headView_3,headView_4;
-    private TextView tv_bookName_1,tv_score_1,tv_book_content_1,tv_authorName_1,tv_tag_1,tv_more;
+    private TextView tv_bookName_1,tv_score_1,tv_book_content_1,tv_authorName_1,tv_tag_1,tv_more,tv_score_;
     private TextView tv_bookName_2,tv_bookName_3,tv_bookName_4,tv_random_1,tv_random_3,tv_random_4;
     private ImageView iv_bookImg_1,iv_bookImg_2,iv_bookImg_3,iv_bookImg_4;
     private CustomTextView tv_tab_1,tv_tab_2,tv_tab_3,tv_tab_4,tv_tab_5;
@@ -117,6 +118,8 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             tabNum = 2;
         }else if ("男生".equals(tabName)){
             tabNum = 3;
+        }else if ("出版".equals(tabName)){
+            tabNum = 7;
         }
         setListView();
         featuredFragmentAdapter = new FeaturedFragmentAdapter(getActivity());
@@ -135,6 +138,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         iv_bookImg_1 = headView_2.findViewById(R.id.iv_bookImg_1);
         tv_bookName_1 = headView_2.findViewById(R.id.tv_bookName_1);
         tv_score_1 = headView_2.findViewById(R.id.tv_score_1);
+        tv_score_ = headView_2.findViewById(R.id.tv_score_);
         tv_authorName_1 = headView_2.findViewById(R.id.tv_authorName_1);
         tv_book_content_1 = headView_2.findViewById(R.id.tv_book_content_1);
         tv_tag_1 = headView_2.findViewById(R.id.tv_tag_1);
@@ -368,10 +372,22 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         if (datas.size()>=1){
             rl_book_1.setVisibility(View.VISIBLE);
             BookBean bookBean = datas.get(0);
-            Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_1);
+            if (StringUtils.isNotBlank(bookBean.getLogo())){
+                Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_1);
+            }else {
+                Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_1);
+            }
             tv_bookName_1.setText(bookBean.getName());
             tv_book_content_1.setText(bookBean.getNotes());
-            tv_score_1.setText(bookBean.getScore());
+            String score = bookBean.getScore();
+            if (!"0.0".equals(score)){
+                tv_score_1.setText(score);
+                tv_score_1.setVisibility(View.VISIBLE);
+                tv_score_.setVisibility(View.VISIBLE);
+            }else {
+                tv_score_1.setVisibility(View.GONE);
+                tv_score_.setVisibility(View.GONE);
+            }
             tv_authorName_1.setText(bookBean.getAuthorName());
             tv_tag_1.setText(bookBean.getClassifyName() );
             rl_book_1.setOnClickListener(new View.OnClickListener() {
@@ -387,7 +403,11 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         if (datas.size()>=2){
             ll_book_2.setVisibility(View.VISIBLE);
             BookBean bookBean1 = datas.get(1);
-            Glide.with(mContext).load(ImageUrl+bookBean1.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_2);
+            if (StringUtils.isNotBlank(bookBean1.getLogo())){
+                Glide.with(mContext).load(ImageUrl+bookBean1.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_2);
+            }else {
+                Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_2);
+            }
             tv_bookName_2.setText(bookBean1.getName());
             ll_book_2.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -402,7 +422,11 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         if (datas.size()>=3){
             ll_book_3.setVisibility(View.VISIBLE);
             BookBean bookBean2 = datas.get(2);
-            Glide.with(mContext).load(ImageUrl+bookBean2.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_3);
+            if (StringUtils.isNotBlank(bookBean2.getLogo())){
+                Glide.with(mContext).load(ImageUrl+bookBean2.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_3);
+            }else {
+                Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_3);
+            }
             tv_bookName_3.setText(bookBean2.getName());
             ll_book_3.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -472,7 +496,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
                 }else {
                     String value = (String) imageInfo.value;
                     if (value != null){
-                        SwitchActivityManager.startWebViewActivity(mContext,value);
+                        SwitchActivityManager.startWebViewActivity(mContext,value,"");
                     }
                 }
             }
@@ -510,6 +534,8 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
                 TCAgent.onPageStart(mContext, "女生");
             }else if ("男生".equals(tabName)){
                 TCAgent.onPageStart(mContext, "男生");
+            }else if ("出版".equals(tabName)){
+                TCAgent.onPageStart(mContext, "出版");
             }
         } else {
             if ("精选".equals(tabName)){
@@ -518,6 +544,8 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
                 TCAgent.onPageEnd(mContext, "女生");
             }else if ("男生".equals(tabName)){
                 TCAgent.onPageEnd(mContext, "男生");
+            }else if ("出版".equals(tabName)){
+                TCAgent.onPageEnd(mContext, "出版");
             }
         }
     }

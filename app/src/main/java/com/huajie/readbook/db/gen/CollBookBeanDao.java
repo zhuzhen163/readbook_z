@@ -44,6 +44,7 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
         public final static Property LastChapter = new Property(17, String.class, "lastChapter", false, "LAST_CHAPTER");
         public final static Property IsUpdate = new Property(18, boolean.class, "isUpdate", false, "IS_UPDATE");
         public final static Property IsLocal = new Property(19, boolean.class, "isLocal", false, "IS_LOCAL");
+        public final static Property ImportLocal = new Property(20, boolean.class, "importLocal", false, "IMPORT_LOCAL");
     }
 
     private DaoSession daoSession;
@@ -81,7 +82,8 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
                 "\"CHAPTERS_COUNT\" INTEGER NOT NULL ," + // 16: chaptersCount
                 "\"LAST_CHAPTER\" TEXT," + // 17: lastChapter
                 "\"IS_UPDATE\" INTEGER NOT NULL ," + // 18: isUpdate
-                "\"IS_LOCAL\" INTEGER NOT NULL );"); // 19: isLocal
+                "\"IS_LOCAL\" INTEGER NOT NULL ," + // 19: isLocal
+                "\"IMPORT_LOCAL\" INTEGER NOT NULL );"); // 20: importLocal
     }
 
     /** Drops the underlying database table. */
@@ -169,6 +171,7 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
         }
         stmt.bindLong(19, entity.getIsUpdate() ? 1L: 0L);
         stmt.bindLong(20, entity.getIsLocal() ? 1L: 0L);
+        stmt.bindLong(21, entity.getImportLocal() ? 1L: 0L);
     }
 
     @Override
@@ -250,6 +253,7 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
         }
         stmt.bindLong(19, entity.getIsUpdate() ? 1L: 0L);
         stmt.bindLong(20, entity.getIsLocal() ? 1L: 0L);
+        stmt.bindLong(21, entity.getImportLocal() ? 1L: 0L);
     }
 
     @Override
@@ -285,7 +289,8 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
             cursor.getInt(offset + 16), // chaptersCount
             cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17), // lastChapter
             cursor.getShort(offset + 18) != 0, // isUpdate
-            cursor.getShort(offset + 19) != 0 // isLocal
+            cursor.getShort(offset + 19) != 0, // isLocal
+            cursor.getShort(offset + 20) != 0 // importLocal
         );
         return entity;
     }
@@ -312,6 +317,7 @@ public class CollBookBeanDao extends AbstractDao<CollBookBean, String> {
         entity.setLastChapter(cursor.isNull(offset + 17) ? null : cursor.getString(offset + 17));
         entity.setIsUpdate(cursor.getShort(offset + 18) != 0);
         entity.setIsLocal(cursor.getShort(offset + 19) != 0);
+        entity.setImportLocal(cursor.getShort(offset + 20) != 0);
      }
     
     @Override

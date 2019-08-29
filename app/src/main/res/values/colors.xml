@@ -28,23 +28,29 @@
     <color name="transparent">#00000000</color>
     <color name="color_black_10">#10000000</color>
     <color name="color_black_70">#70000000</color>
-    <color name="color_ebebeb">#ebebeb</color>
+    <color name="color_ebebeb">#F8F9F6</color>
+    <color name="color_9E9C97">#9E9C97</color>
+    <color name="color_1F241C">#1F241C</color>
+    <color name="color_948163">#948163</color>
+    <color name="color_8CA28C">#8CA28C</color>
+    <color name="color_465460">#465460</color>
+    <color name="color_363535">#363535</color>
     <color name="color_19">#191919</color>
     <color name="color_cb">#595c5f</color>
     <color name="color_de6014">#DE6014</color>
     <color name="color_fff_99">#99ffffff</color>
     <color name="color_0f">#0f0f0f</color>
-    <color name="color_2f332d">#2f332d</color>
-    <color name="color_110b24">#110b24</color>
+    <color name="color_2f332d">#564127</color>
+    <color name="color_110b24">#312C22</color>
     <color name="color_383429">#383429</color>
     <color name="color_627176">#627176</color>
-    <color name="color_ccebcc">#dfd6c5</color>
+    <color name="color_ccebcc">#FDE3A9</color>
     <color name="color_aaa">#d0bd8a</color>
-    <color name="color_cce9ce">#cce9ce</color>
-    <color name="color_051c2c">#051c2c</color>
-    <color name="color_6b7880">#6b7880</color>
+    <color name="color_cce9ce">#DBF2DC</color>
+    <color name="color_051c2c">#0C1C2C</color>
+    <color name="color_6b7880">#656F78</color>
     <color name="color_ec4a48">#EC4A48</color>
-    <color name="color_cec29c_dd">#CEC29C</color>
+    <color name="color_cec29c_dd">#EFE3CE</color>
     <color name="color_black_88">#88000000</color>
     <color name="color_black_23">#10ffffff</color>
     <color name="color_e3">#e3e3e3</color>
@@ -55,9 +61,12 @@
     <color name="color_f1">#f1f1f1</color>
     <color name="color_80">#808080</color>
     <color name="color_2d">#2d2d2d</color>
-    <color name="color_0a0907">#0a0907</color>
-    <color name="color_383837">#383837</color>
+    <color name="color_0a0907">#020203</color>
+    <color name="color_383837">#444443</color>
     <color name="color_c7b890">#20c7b890</color>
+    <color name="EFF7FF">#EFF7FF</color>
+    <color name="color_39">#393939</color>
+    <color name="color_9f">#9F9F9F</color>
 
 
     <!--通用一级标题的颜色-->

@@ -23,9 +23,27 @@ public class BookBean implements Serializable {
     private boolean isDelete;
     private double progressbar;//	Double	阅读进度
     private String updateTime;
+    private String lastRead;
     private int isJoin;//0表示加入书架
     private String classifyName;
     private String mtime;
+    private boolean importLocal;
+
+    public String getLastRead() {
+        return lastRead;
+    }
+
+    public void setLastRead(String lastRead) {
+        this.lastRead = lastRead;
+    }
+
+    public boolean isImportLocal() {
+        return importLocal;
+    }
+
+    public void setImportLocal(boolean importLocal) {
+        this.importLocal = importLocal;
+    }
 
     public String getMtime() {
         return mtime;
@@ -207,6 +225,7 @@ public class BookBean implements Serializable {
         bean.setChaptersCount(getTotalCounts());
         bean.setClassifyId(getClassifyId());
         bean.setUpdated(getMtime());
+        bean.setImportLocal(isImportLocal());
         if (getProgress() == 1){
             bean.setIsUpdate(true);
         }else {

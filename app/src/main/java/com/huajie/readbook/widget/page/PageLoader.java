@@ -131,6 +131,8 @@ public abstract class PageLoader {
     private int mMarginHeight;
     //字体的颜色
     private int mTextColor;
+    //电池及页码的颜色
+    private int mDownColor;
     //标题的大小
     private int mTitleSize;
     //字体的大小
@@ -187,15 +189,16 @@ public abstract class PageLoader {
         //初始化参数
         mMarginWidth = ScreenUtils.dpToPx(DEFAULT_MARGIN_WIDTH);
         mMarginHeight = ScreenUtils.dpToPx(DEFAULT_MARGIN_HEIGHT);
-        mTitleInterval = mTitleSize / 2;
-        mTextPara = mTextSize; //段落间距由 text 的高度决定。
-        mTitlePara = mTitleSize;
+        setUpTextInterval(60);
+//        mTitleInterval = mTitleSize / 2;
+//        mTextPara = mTextSize; //段落间距由 text 的高度决定。
+//        mTitlePara = mTitleSize;
     }
 
     private void initPaint() {
         //绘制提示的画笔
         mTipPaint = new Paint();
-        mTipPaint.setColor(mTextColor);
+        mTipPaint.setColor(mDownColor);
         mTipPaint.setTextAlign(Paint.Align.LEFT);//绘制的起始点
         mTipPaint.setTextSize(ScreenUtils.spToPx(DEFAULT_TIP_SIZE));//Tip默认的字体大小
         mTipPaint.setAntiAlias(true);
@@ -223,11 +226,7 @@ public abstract class PageLoader {
         mBatteryPaint = new Paint();
         mBatteryPaint.setAntiAlias(true);
         mBatteryPaint.setDither(true);
-        if (isNightMode) {
-            mBatteryPaint.setColor(mTextColor);
-        } else {
-            mBatteryPaint.setColor(Color.BLACK);
-        }
+        mBatteryPaint.setColor(mDownColor);
     }
 
     private void initPageView() {
@@ -338,11 +337,10 @@ public abstract class PageLoader {
 
         //设置textSize
         mTextSize = textSize;
-        mTextPara = mTextSize;
+
+        setUpTextInterval(textSize);
 
         mTitleSize = mTextSize + ScreenUtils.spToPx(EXTRA_TITLE_SIZE);
-        mTitleInterval = mTitleInterval / 2;
-        mTitlePara = mTitleSize;
 
         //设置画笔的字体大小
         mTextPaint.setTextSize(mTextSize);
@@ -399,7 +397,7 @@ public abstract class PageLoader {
         mTextInterval = size/2;
         mTitleInterval = size/2;
         //存储行间距
-        mSettingManager.setTextLineSpace(mTextInterval);
+        mSettingManager.setTextLineSpace(size);
         // 段落间距(大小为字体的高度)
         mTextPara = size;
         mTitlePara = size;
@@ -421,6 +419,7 @@ public abstract class PageLoader {
         if (isNightMode && theme == ReadSettingManager.NIGHT_MODE) {
             mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_383837);
             mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_0a0907);
+            mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_363535);
         } else if (isNightMode) {
             mBgTheme = theme;
             mSettingManager.setReadBackground(theme);
@@ -428,28 +427,34 @@ public abstract class PageLoader {
             mSettingManager.setReadBackground(theme);
             switch (theme) {
                 case ReadSettingManager.READ_BG_DEFAULT:
-                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_0f);
+                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.black);
                     mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_ebebeb);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_9E9C97);
                     break;
                 case ReadSettingManager.READ_BG_1:
-                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_2f332d);
-                    mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_ccebcc);
-                    break;
-                case ReadSettingManager.READ_BG_2:
                     mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_110b24);
                     mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_cec29c_dd);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_948163);
+                    break;
+                case ReadSettingManager.READ_BG_2:
+                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_2f332d);
+                    mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_ccebcc);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_948163);
                     break;
                 case ReadSettingManager.READ_BG_3:
-                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.black);
+                    mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_1F241C);
                     mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_cce9ce);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_8CA28C);
                     break;
                 case ReadSettingManager.READ_BG_4:
                     mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_6b7880);
                     mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_051c2c);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_465460);
                     break;
                 case ReadSettingManager.READ_BG_5:
                     mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_383837);
                     mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_0a0907);
+                    mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_363535);
                     break;
             }
         }
@@ -459,8 +464,8 @@ public abstract class PageLoader {
             mPageView.setBgColor(mPageBg);
             mTextPaint.setColor(mTextColor);
             mTitlePaint.setColor(mTextColor);
-            mTipPaint.setColor(mTextColor);
-            mBatteryPaint.setColor(mTextColor);
+            mTipPaint.setColor(mDownColor);
+            mBatteryPaint.setColor(mDownColor);
             //重绘
 //            if (mCurPage != null && mCurPage.isCustomView){
 //                //书皮不绘制
@@ -514,8 +519,8 @@ public abstract class PageLoader {
         mBookRecord.setBookId(mCollBook.get_id());
         mBookRecord.setChapter(mCurChapterPos);
         mBookRecord.setPagePos(mCurPage.position);
-        double chaptersCount = mCollBook.getBookChapters().size();
-        double percent = ((double) mCurChapterPos/chaptersCount)*100;
+        double chaptersCount = mCollBook.getChaptersCount();
+        double percent = ((double) (mCurChapterPos+1)/chaptersCount)*100;
         DecimalFormat df = new DecimalFormat("#0.00");
         mBookRecord.setChapterPercent(df.format(percent));
         mBookRecord.setClassifyId(mCollBook.getClassifyId());
@@ -989,6 +994,17 @@ public abstract class PageLoader {
                     //行间距
                     top += titleInterval;
                 }
+//                if (!mCollBook.getImportLocal()){
+//
+//                }else {
+//                    if (i == 0){
+//                        //计算文字显示的起始点
+//                        int startLocal = (int) (mDisplayWidth - mTitlePaint.measureText("明阅免费小说")) / 2;
+//                        canvas.drawText("明阅免费小说", startLocal, top, mTitlePaint);
+//                        top += titleInterval;
+//                    }
+//                }
+
             }
 
             //对内容进行绘制
@@ -1136,7 +1152,11 @@ public abstract class PageLoader {
         if (mCurChapterPos + 1 >= mChapterList.size()) {
 //            ToastUtil.showToast("已经没有下一章了");
             if (mCollBook != null){
-                SwitchActivityManager.startReadEndActivity(ZApplication.getAppContext(),mCollBook);
+                if (mCollBook.getImportLocal()){
+                    ToastUtil.showToast("已经没有下一章了");
+                }else {
+                    SwitchActivityManager.startReadEndActivity(ZApplication.getAppContext(),mCollBook);
+                }
             }
             return false;
         }
@@ -1300,7 +1320,7 @@ public abstract class PageLoader {
      * @return:获取下一的页面
      */
     private TxtPage getNextPage() {
-        if (null != mCurPage) {
+        if (null != mCurPage && mCurPageList != null) {
             int pos = mCurPage.position + 1;
             if (pos >= mCurPageList.size()) {
                 return null;
@@ -1327,10 +1347,12 @@ public abstract class PageLoader {
      * @return
      */
     private boolean checkStatus() {
-        if (mStatus == STATUS_LOADING) {
+        if (mStatus == STATUS_LOADING ) {
             ToastUtil.showToast("正在加载中，请稍等");
             return false;
-        } else if (mStatus == STATUS_ERROR) {
+        }else if (mStatus == STATUS_PARSE || mStatus == STATUS_EMPTY){
+            return false;
+        }else if (mStatus == STATUS_ERROR) {
             //点击重试
             mStatus = STATUS_ERROR;
 //          重新请求当前章节

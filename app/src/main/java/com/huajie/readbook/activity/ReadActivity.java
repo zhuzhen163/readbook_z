@@ -197,6 +197,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     private boolean isCollected = false; //是否加入书架
     private boolean isNightMode = false;
     private boolean firstRead = false;//第一次阅读书架书籍
+    private boolean mReceiverTag = false;//解决销毁广播报错
+    private boolean importLocal = false; //是否本地导入
     private String mBookId;
     private String shareUrl;
     private String pagePosContent;//当前页第一行文字
@@ -288,6 +290,10 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         isCollected = getIntent().getBooleanExtra(EXTRA_IS_COLLECTED, false);
         isNightMode = ReadSettingManager.getInstance().isNightMode();
         mBookId = mCollBook.getBookId();
+        importLocal = mCollBook.getImportLocal();
+        if (mBookId == null){
+            SwitchActivityManager.exitActivity(ReadActivity.this);
+        }
 
         first();
 
@@ -297,7 +303,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 //        notchPhone();
         //获取页面加载器
 
-        mPageLoader = mPvReadPage.getPageLoader(false);
+        mPageLoader = mPvReadPage.getPageLoader(importLocal);
         mReadDlSlide.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         //更多设置dialog
@@ -322,10 +328,13 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         toggleNightMode();
 
         //注册广播
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        intentFilter.addAction(Intent.ACTION_TIME_TICK);
-        registerReceiver(mReceiver, intentFilter);
+        if (!mReceiverTag){
+            mReceiverTag = true;
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+            intentFilter.addAction(Intent.ACTION_TIME_TICK);
+            registerReceiver(mReceiver, intentFilter);
+        }
 
         //设置当前Activity的Brightness
         if (ReadSettingManager.getInstance().isBrightnessAuto()) {
@@ -397,18 +406,28 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
             @Override
             public void onPageCountChange(int count) {
-                mReadSbChapterProgress.setEnabled(true);
-                mReadSbChapterProgress.setMax(count - 1);
-                mReadSbChapterProgress.setProgress(0);
-                mReadSbChapterProgress.setMax(Math.max(0, count - 1));
-                mReadSbChapterProgress.setProgress(0);
+                try {
+                    if (mReadSbChapterProgress != null){
+                        mReadSbChapterProgress.setEnabled(true);
+                        mReadSbChapterProgress.setMax(count - 1);
+                        mReadSbChapterProgress.setProgress(0);
+                        mReadSbChapterProgress.setMax(Math.max(0, count - 1));
+                        mReadSbChapterProgress.setProgress(0);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onPageChange(int pos) {
-                mReadSbChapterProgress.post(() -> {
-                    mReadSbChapterProgress.setProgress(pos);
-                });
+                try {
+                    mReadSbChapterProgress.post(() -> {
+                        mReadSbChapterProgress.setProgress(pos);
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -555,7 +574,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                         });
                 mPresenter.addDisposadle(disposable1);
 
-                readPopWindow.showAtBottom(tv_menu);
+                readPopWindow.showAtBottom(tv_menu,importLocal);
                 break;
             case R.id.ll_bookMark:
                 catalogOrBookMark(1);
@@ -596,39 +615,47 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         mCollBook.setIsLocal(true);
         CollBookHelper.getsInstance().saveBookWithAsync(mCollBook);
 
-        double chaptersCount = mCollBook.getBookChapters().size();
-        double chapterPos = mPageLoader.getChapterPos();
-        double percent = (chapterPos /chaptersCount)*100;
-        DecimalFormat df = new DecimalFormat("#0.00");
+        List<BookChapterBean> bookChapters = mCollBook.getBookChapters();
+        if (bookChapters!= null && bookChapters.size()>0){
+            double chaptersCount = mCollBook.getBookChapters().size();
+            double chapterPos = mPageLoader.getChapterPos();
+            double percent = (chapterPos /chaptersCount)*100;
+            DecimalFormat df = new DecimalFormat("#0.00");
 
-        mPresenter.bookRackAdd(mCollBook.getBookId(),df.format(percent));
+            mPresenter.bookRackAdd(mCollBook.getBookId(),df.format(percent));
+        }
     }
 
     @Override
     protected void initData() {
-        //如果是网络文件
-        //如果是已经收藏的，那么就从数据库中获取目录
-        if (isCollected) {
-            Disposable disposable = BookChapterHelper.getsInstance().findBookChaptersInRx(mBookId)
-                    .compose(RxUtils::toSimpleSingle)
-                    .subscribe(beans -> {
-                        if (beans != null && beans.size()>0){
-                            firstRead = false;
-                            mCollBook.setBookChapters(beans);
-                            mPageLoader.openBook(mCollBook);
-                            //如果是被标记更新的,重新从网络中获取目录
-                            if (mCollBook.isUpdate()) {
+        if (mCollBook.getImportLocal()){
+            mPageLoader.openBook(mCollBook);
+        }else {
+            //如果是网络文件
+            //如果是已经收藏的，那么就从数据库中获取目录
+            if (isCollected) {
+                Disposable disposable = BookChapterHelper.getsInstance().findBookChaptersInRx(mBookId)
+                        .compose(RxUtils::toSimpleSingle)
+                        .subscribe(beans -> {
+                            if (beans != null && beans.size()>0){
+                                firstRead = false;
+                                mCollBook.setBookChapters(beans);
+                                mCollBook.setChaptersCount(beans.size());
+                                mPageLoader.openBook(mCollBook);
+                                //如果是被标记更新的,重新从网络中获取目录
+                                if (mCollBook.isUpdate()) {
+                                    mPresenter.loadChapters(mBookId);
+                                }
+                            }else {
+                                firstRead = true;
                                 mPresenter.loadChapters(mBookId);
                             }
-                        }else {
-                            firstRead = true;
-                            mPresenter.loadChapters(mBookId);
-                        }
-                    });
-            mPresenter.addDisposadle(disposable);
-        } else {
-            //加载书籍目录
-            mPresenter.loadChapters(mBookId);
+                        });
+                mPresenter.addDisposadle(disposable);
+            } else {
+                //加载书籍目录
+                mPresenter.loadChapters(mBookId);
+            }
         }
 
     }
@@ -832,7 +859,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             view_bookMark.setBackgroundColor(getResources().getColor(R.color.transparency));
             rl_catalog.setVisibility(VISIBLE);
             rl_bookMark.setVisibility(GONE);
-            tv_catalogNum.setVisibility(VISIBLE);
+            if (bookChapterList.size()>0){
+                tv_catalogNum.setVisibility(VISIBLE);
+            }
         }else if (1== state){//书签
             tv_catalog.setTextColor(getResources().getColor(R.color.a2a9b2));
             view_catalog.setBackgroundColor(getResources().getColor(R.color.transparency));
@@ -840,7 +869,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             view_bookMark.setBackgroundColor(getResources().getColor(R.color.colorTheme));
             rl_catalog.setVisibility(GONE);
             rl_bookMark.setVisibility(VISIBLE);
-            tv_catalogNum.setVisibility(GONE);
+            tv_catalogNum.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -860,7 +889,11 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         }
 
         mCollBook.setBookChapters(bookChapterList);
-        tv_catalogNum.setText("共"+bookChapterList.size()+"章");
+        mCollBook.setChaptersCount(bookChapterList.size());
+        if (bookChapterList.size()>0){
+            tv_catalogNum.setVisibility(VISIBLE);
+            tv_catalogNum.setText("共"+bookChapterList.size()+"章");
+        }
 
         //如果是更新加载，那么重置PageLoader的Chapter
         if (mCollBook.isUpdate() && isCollected) {
@@ -1030,37 +1063,52 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
-        mHandler.removeMessages(WHAT_CATEGORY);
-        mHandler.removeMessages(WHAT_CHAPTER);
-        mHandler.removeMessages(WHAT_CLOSE_CHAPTER);
-        mHandler.removeMessages(WHAT_OPEN_BOOKMARK);
-        mPageLoader.closeBook();
-        mPageLoader = null;
-        if (addBookShelfDialog != null && addBookShelfDialog.isShowing()){
-            addBookShelfDialog.dismiss();
+        try {
+            if (mReceiverTag && mReceiver != null){
+                unregisterReceiver(mReceiver);
+            }
+            if (addBookShelfDialog != null){
+                addBookShelfDialog.dismiss();
+            }
+            if (mSettingDialog!=null){
+                mSettingDialog.dismiss();
+            }
+            if (readLightDialog!= null){
+                readLightDialog.dismiss();
+            }
+            if (shareDialog!= null){
+                shareDialog.dismiss();
+            }
+            if (readPopWindow!= null){
+                readPopWindow.dismiss();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        if (mSettingDialog!=null && mSettingDialog.isShowing()){
-            mSettingDialog.dismiss();
+
+        try {
+            if (mPageLoader != null){
+                mPageLoader.closeBook();
+                mPageLoader = null;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        if (readLightDialog!= null && readLightDialog.isShowing()){
-            readLightDialog.dismiss();
-        }
-        if (shareDialog!= null && shareDialog.isShowing()){
-            shareDialog.dismiss();
-        }
-        if (readPopWindow!= null && readPopWindow != null){
-            readPopWindow.dismiss();
-        }
+
         addBookShelfDialog = null;
         mSettingDialog = null;
         readLightDialog = null;
         shareDialog = null;
         readPopWindow = null;
 
+        mHandler.removeMessages(WHAT_CATEGORY);
+        mHandler.removeMessages(WHAT_CHAPTER);
+        mHandler.removeMessages(WHAT_CLOSE_CHAPTER);
+        mHandler.removeMessages(WHAT_OPEN_BOOKMARK);
         UMShareAPI.get(this).release();
         TCAgent.onPageEnd(mContext, "阅读器");
+
+        super.onDestroy();
     }
 
     //加入书架
@@ -1076,7 +1124,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     @Override
     public void exitReadActivity() {
-        if (mCollBook != null && mPageLoader != null){
+        if (mCollBook != null && mPageLoader != null && mCollBook.getBookChapters()!= null){
             double chaptersCount = mCollBook.getBookChapters().size();
             double chapterPos = mPageLoader.getChapterPos();
             double percent = (chapterPos /chaptersCount)*100;

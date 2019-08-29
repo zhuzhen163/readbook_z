@@ -7,8 +7,10 @@ public enum Charset {
 	UTF8("UTF-8"),
 	UTF16LE("UTF-16LE"),
 	UTF16BE("UTF-16BE"),
+	UTF32LE("UTF-32LE"),
+	UTF32BE("UTF-32BE"),
 	GBK("GBK");
-	
+
 	private String mName;
 	public static final byte BLANK = 0x0a;
 

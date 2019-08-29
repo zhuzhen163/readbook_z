@@ -13,6 +13,7 @@ import com.huajie.readbook.activity.ChooseGenderActivity;
 import com.huajie.readbook.activity.ClassifyActivity;
 import com.huajie.readbook.activity.ClassifySecondActivity;
 import com.huajie.readbook.activity.FeedBackActivity;
+import com.huajie.readbook.activity.FileSystemActivity;
 import com.huajie.readbook.activity.LoginActivity;
 import com.huajie.readbook.activity.MainActivity;
 import com.huajie.readbook.activity.RankingListActivity;
@@ -37,10 +38,17 @@ import java.util.List;
  */
 
 public class SwitchActivityManager {
+    //本地导入
+    public static void startFileSystemActivity(Context mContext){
+        Intent in = new Intent(mContext,  FileSystemActivity.class);
+        mContext.startActivity(in);
+        ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
     //webview
-    public static void startWebViewActivity(Context mContext,String loadUrl){
+    public static void startWebViewActivity(Context mContext,String loadUrl,String title){
         Intent in = new Intent(mContext,  WebViewActivity.class);
         in.putExtra("mUrl", loadUrl);
+        in.putExtra("title", title);
         mContext.startActivity(in);
         ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
     }

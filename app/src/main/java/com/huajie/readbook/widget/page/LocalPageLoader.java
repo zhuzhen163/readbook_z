@@ -7,6 +7,7 @@ import com.huajie.readbook.db.entity.CollBookBean;
 import com.huajie.readbook.db.helper.CollBookHelper;
 import com.huajie.readbook.utils.Charset;
 import com.huajie.readbook.utils.Constant;
+import com.huajie.readbook.utils.EncodeUtils;
 import com.huajie.readbook.utils.FileUtils;
 import com.huajie.readbook.utils.IOUtils;
 import com.huajie.readbook.utils.StringUtils;
@@ -64,6 +65,7 @@ public class LocalPageLoader extends PageLoader {
     private File mBookFile;
     //编码类型
     private Charset mCharset;
+    private String charset = "GBK";
 
     private Disposable mChapterDisp = null;
 
@@ -95,46 +97,58 @@ public class LocalPageLoader extends PageLoader {
         Single.create(new SingleOnSubscribe<Void>() {
             @Override
             public void subscribe(SingleEmitter<Void> e) throws Exception {
-                loadBook(mBookFile);
-                e.onSuccess(new Void());
-            }
-        }).compose(RxUtils::toSimpleSingle);
-        Single.create(new SingleOnSubscribe<Void>() {
-            @Override
-            public void subscribe(SingleEmitter<Void> e) throws Exception {
-                loadBook(mBookFile);
-                e.onSuccess(new Void());
-            }
-        }).subscribe(new SingleObserver<Void>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                mChapterDisp = d;
-            }
-
-            @Override
-            public void onSuccess(Void value) {
-                mChapterDisp = null;
-                //提示目录加载完成
-                if (mPageChangeListener != null) {
-                    mPageChangeListener.onCategoryFinish(mChapterList);
+                try {
+                    loadBook(mBookFile);
+                    e.onSuccess(new Void());
+                }catch (Exception ee){
+                    mStatus = STATUS_EMPTY;
+                    return;
                 }
-                //打开章节，并加载当前章节
-                openChapter();
             }
+        }).compose(RxUtils::toSimpleSingle)
+                .subscribe(new SingleObserver<Void>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        mChapterDisp = d;
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                //数据读取错误(弄个文章解析错误的Tip,会不会好一点)
-                mStatus = STATUS_ERROR;
-                ToastUtil.showToast("数据解析错误");
-            }
-        });
+                    @Override
+                    public void onSuccess(Void value) {
+                        mChapterDisp = null;
+                        //提示目录加载完成
+                        if (mPageChangeListener != null) {
+                            mPageChangeListener.onCategoryFinish(mChapterList);
+                            mCollBook.setChaptersCount(mChapterList.size());
+                        }
+                        //打开章节，并加载当前章节
+                        openChapter();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        //数据读取错误(弄个文章解析错误的Tip,会不会好一点)
+                        mStatus = STATUS_ERROR;
+                        ToastUtil.showToast("数据解析错误");
+                    }
+                });
     }
 
     //采用的是随机读取
     private void loadBook(File bookFile) throws IOException {
         //获取文件编码
+//        try {
+//            mCharset = EncodeUtils.getEncode(bookFile.getAbsolutePath());
+//        }catch (Exception e){
+//            mCharset = Charset.GBK;
+//            e.printStackTrace();
+//        }
         mCharset = FileUtils.getCharset(bookFile.getAbsolutePath());
+
+        try {
+            EncodeUtils.convert(bookFile.getAbsolutePath(),mCharset.getName(),bookFile.getAbsolutePath(),"GBK");
+        }catch (Exception e){
+            charset = mCharset.getName();
+        }
         //查找章节，分配章节
         loadChapters();
     }
@@ -167,7 +181,7 @@ public class LocalPageLoader extends PageLoader {
             //如果存在Chapter
             if (hasChapter) {
                 //将数据转换成String
-                String blockContent = new String(buffer, 0, length, mCharset.getName());
+                String blockContent = new String(buffer, 0, length, charset);
                 //当前Block下使过的String的指针
                 int seekPos = 0;
                 //进行正则匹配
@@ -191,7 +205,7 @@ public class LocalPageLoader extends PageLoader {
                             TxtChapter preChapter = new TxtChapter();
                             preChapter.title = "序章";
                             preChapter.start = 0;
-                            preChapter.end = chapterContent.getBytes(mCharset.getName()).length; //获取String的byte值,作为最终值
+                            preChapter.end = chapterContent.getBytes(charset).length; //获取String的byte值,作为最终值
 
                             //如果序章大小大于30才添加进去
                             if (preChapter.end - preChapter.start > 30) {
@@ -209,7 +223,7 @@ public class LocalPageLoader extends PageLoader {
                             //获取上一章节
                             TxtChapter lastChapter = chapters.get(chapters.size() - 1);
                             //将当前段落添加上一章去
-                            lastChapter.end += chapterContent.getBytes(mCharset.getName()).length;
+                            lastChapter.end += chapterContent.getBytes(charset).length;
 
                             //如果章节内容太小，则移除
                             if (lastChapter.end - lastChapter.start < 30) {
@@ -231,7 +245,7 @@ public class LocalPageLoader extends PageLoader {
 
                             //获取上一章节
                             TxtChapter lastChapter = chapters.get(chapters.size() - 1);
-                            lastChapter.end = lastChapter.start + chapterContent.getBytes(mCharset.getName()).length;
+                            lastChapter.end = lastChapter.start + chapterContent.getBytes(charset).length;
 
                             //如果章节内容太小，则移除
                             if (lastChapter.end - lastChapter.start < 30) {
@@ -331,7 +345,7 @@ public class LocalPageLoader extends PageLoader {
         ByteArrayInputStream bais = new ByteArrayInputStream(content);
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new InputStreamReader(bais, mCharset.getName()));
+            br = new BufferedReader(new InputStreamReader(bais, charset));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -377,7 +391,7 @@ public class LocalPageLoader extends PageLoader {
         //进行章节匹配
         for (String str : CHAPTER_PATTERNS) {
             Pattern pattern = Pattern.compile(str, Pattern.MULTILINE);
-            Matcher matcher = pattern.matcher(new String(buffer, 0, length, mCharset.getName()));
+            Matcher matcher = pattern.matcher(new String(buffer, 0, length, charset));
             //如果匹配存在，那么就表示当前章节使用这种匹配方式
             if (matcher.find()) {
                 mChapterPattern = pattern;

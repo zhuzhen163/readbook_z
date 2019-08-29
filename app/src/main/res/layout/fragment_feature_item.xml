@@ -67,7 +67,7 @@
             android:maxLines="2"
             android:lineSpacingExtra="@dimen/dimen2dp"
             android:ellipsize="end"
-            android:text="屌丝男刘志远遭遇网络情缘稀里糊涂和哈哈哈不知道这美女他这美女放大发范德萨发达"
+            android:text=""
             />
 
         <TextView
@@ -80,7 +80,7 @@
             android:layout_alignBottom="@id/iv_bookImg"
             android:layout_marginLeft="@dimen/dimen15dp"
             android:layout_marginBottom="@dimen/dimen5dp"
-            android:text="贝小爱"
+            android:text=""
             />
 
         <TextView
@@ -94,6 +94,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dimen5dp"
-            android:text="都市生活"/>
+            android:text=""/>
     </RelativeLayout>
 </LinearLayout>
