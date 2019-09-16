@@ -48,6 +48,7 @@ public class BookCityFragment extends BaseFragment {
 
     @Override
     protected void initView() {
+        TCAgent.onEvent(mContext, "进入书城界面");
         mFragments.add(FeaturedFragment.newInstance("精选"));
         mFragments.add(FeaturedFragment.newInstance("男生"));
         mFragments.add(FeaturedFragment.newInstance("女生"));

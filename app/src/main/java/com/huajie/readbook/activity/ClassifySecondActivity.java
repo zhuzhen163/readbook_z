@@ -348,6 +348,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
         lv_list.setLoadMoreEnabled(true);
 
         TCAgent.onPageStart(mContext, "书籍二级分类页");
+        TCAgent.onEvent(mContext,"all二级分类");
     }
 
     private void setListView() {

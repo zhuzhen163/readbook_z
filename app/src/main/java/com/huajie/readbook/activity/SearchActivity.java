@@ -2,7 +2,9 @@ package com.huajie.readbook.activity;
 
 import android.content.SharedPreferences;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -116,18 +118,39 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH){
-                    String input=et_search.getText().toString();
+                    String input=et_search.getText().toString().trim();
                     if(!TextUtils.isEmpty(input)){
+                        TCAgent.onEvent(mContext, "搜索_"+input);
+                        TCAgent.onEvent(mContext,"all搜索");
                         save(input);
                         mPresenter.searchList(input);
                         adapter.keyWork(input);
                         AppUtils.hideInputMethod(SearchActivity.this);
                     }else {
-                        ToastUtil.showToast("搜索内容不能为空");
+                        ToastUtil.showToast("请输入搜索词");
                     }
                     return true;
                 }
                 return false;
+            }
+        });
+        et_search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() >= 30) {
+                    s.delete(30, s.length());
+                }
+
             }
         });
         mLRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -170,6 +193,7 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
 
         initSearchHistory();
         TCAgent.onPageStart(mContext, "搜索页");
+
     }
 
     /**

@@ -167,6 +167,7 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
         mRecyclerView.setPullRefreshEnabled(false);
         mRecyclerView.setLoadMoreEnabled(false);
         TCAgent.onPageStart(mContext, "分类");
+        TCAgent.onEvent(mContext,"all分类");
     }
 
     @Override

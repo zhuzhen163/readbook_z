@@ -119,6 +119,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                 break;
             case R.id.tv_read:
                 if (book != null){
+                    TCAgent.onEvent(mContext, "免费阅读_<"+book.getName()+">:"+book.getAuthorName());
                     CollBookBean bookBean = book.getCollBookBean();
                     SwitchActivityManager.startReadActivity(mContext,bookBean,isCollected );
                 }
@@ -135,6 +136,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                     isCollected = true;
                     tv_addBookShelf.setTextColor(getResources().getColor(R.color.d0d0d0));
                     tv_addBookShelf.setEnabled(false);
+                    TCAgent.onEvent(mContext, "详情页_加书架_<"+book.getName()+">:"+book.getAuthorName());
+                    TCAgent.onEvent(mContext, "all加书架");
                 }
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                     mPresenter.bookRackAdd(bookId,"0.0");
@@ -209,8 +212,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         gv_book.setAdapter(detailAdapter);
 
         gv_book.setFocusable(false);
-
-        TCAgent.onPageStart(mContext, "书籍详情页");
+        TCAgent.onPageStart(mContext, "all详情页");
+        TCAgent.onEvent(mContext,"all详情页");
     }
 
     @Override
@@ -242,6 +245,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             Glide.with(mContext).load(ImageUrl+book.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
             tv_bookName.setText(book.getName());
             tv_authorName.setText(book.getAuthorName());
+            TCAgent.onPageStart(mContext, "详情_<"+book.getName()+">:"+book.getAuthorName());
+            TCAgent.onEvent(mContext, "进详情_<"+book.getName()+">:"+book.getAuthorName());
             String score = book.getScore();
             if (StringUtils.isNotBlank(score)){
                 if ("0.0".equals(score)){
@@ -386,7 +391,10 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         }
 
         shareDialog = null;
-        TCAgent.onPageEnd(mContext, "书籍详情页");
+        if (book != null){
+            TCAgent.onPageEnd(mContext, "详情_<"+book.getName()+">:"+book.getAuthorName());
+        }
+        TCAgent.onPageEnd(mContext, "all详情页");
     }
 
     @Override

@@ -325,7 +325,7 @@ public class AppUtils {
      * @return
      */
     public static String getChannelId(Context ctx) {
-        String resultData = "HJHY1";
+        String resultData = "android_main";
         try {
             PackageManager packageManager = ctx.getPackageManager();
             if (packageManager != null) {
@@ -344,7 +344,7 @@ public class AppUtils {
             e.printStackTrace();
         }
         if (TextUtils.isEmpty(resultData)) {
-            resultData = "HJHY1";
+            resultData = "android_main";
         }
         return resultData;
     }

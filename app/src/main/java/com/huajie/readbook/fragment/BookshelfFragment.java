@@ -152,7 +152,7 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
 
         deleteBookShelfDialog = new DeleteBookShelfDialog(mContext);
         deleteBookShelfDialog.setDoWhatCallBack(this);
-
+        TCAgent.onEvent(mContext, "all书架界面");
     }
 
     @Override
@@ -221,8 +221,10 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
         adapter.setOnClickItemListener(new BookshelfAdapter.OnClickItemListener() {
             @Override
             public void onItem(int position) {
-                if (adapter.getDataList().size() == 0 || position> adapter.getDataList().size())
+                if (adapter.getDataList().size() == 0 || position>= adapter.getDataList().size()){
+                    adapter.notifyDataSetChanged();
                     return;
+                }
                 BookshelfBean bookshelfBean = adapter.getDataList().get(position);
                 CollBookBean collBookBean = bookshelfBean.getCollBookBean();
                 if (bookshelfBean.isImportLocal()){

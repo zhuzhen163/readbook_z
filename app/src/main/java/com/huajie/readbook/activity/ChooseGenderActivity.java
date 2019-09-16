@@ -17,6 +17,7 @@ import com.huajie.readbook.base.BaseActivity;
 import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
+import com.tendcloud.tenddata.TCAgent;
 
 import butterknife.BindView;
 
@@ -75,6 +76,12 @@ public class ChooseGenderActivity extends BaseActivity {
                 iv_exit.setVisibility(View.VISIBLE);
                 break;
             case R.id.tv_join:
+                String gender = ConfigUtils.getGender();
+                if ("0".equals(gender)){
+                    TCAgent.onEvent(mContext, "男女生 _男");
+                }else {
+                    TCAgent.onEvent(mContext, "男女生 _女");
+                }
                 SwitchActivityManager.startMainActivity(mContext);
                 break;
             case R.id.iv_exit:
@@ -178,7 +185,7 @@ public class ChooseGenderActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-
+        TCAgent.onEvent(mContext, "进入选性别界面");
     }
 
     @Override

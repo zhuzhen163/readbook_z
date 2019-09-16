@@ -338,6 +338,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setNotes(bookById.getNotes());
                         bookBean.setClassifyId(bookById.getClassifyId());
                         bookBean.setImportLocal(bookById.getImportLocal());
+                        bookBean.setAuthorName(bookById.getAuthor());
                     }else {
                         bookBean.setId(bookRecordBean.getBookId());
                         bookBean.setLogo(bookRecordBean.getLogo());

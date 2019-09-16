@@ -41,7 +41,11 @@ public class ClassifySecondActivityAdapter extends ListBaseAdapter<BookBean> {
         tv_redu = holder.getView(R.id.tv_redu);
 
         BookBean bookBean = mDataList.get(position);
-        Glide.with(activity).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        if (StringUtils.isNotBlank(bookBean.getLogo())){
+            Glide.with(activity).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        }else {
+            Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg);
+        }
         tv_bookName.setText(bookBean.getName());
         tv_book_content.setText(bookBean.getNotes());
         tv_authorName.setText(bookBean.getAuthorName());

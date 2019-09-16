@@ -93,7 +93,7 @@ public class ZApplication extends Application {
 
         //TalkingData
 //      TCAgent.init(mBaseApplication,"20035FAA506F40CBA82C0172A936C350",getChannelId()); //线上！！！！！！！！！！！！！
-        TCAgent.init(mBaseApplication,"D25D2358D92D408B94635DDB6F456FC6",getChannelId()); //测试！！！！！！！！！！！！
+        TCAgent.init(mBaseApplication,"4F7751617C0443DBBC6F5FEE37F89A2F",getChannelId()); //测试！！！！！！！！！！！！
         TCAgent.setReportUncaughtExceptions(false);
 
         //推送

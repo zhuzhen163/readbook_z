@@ -357,7 +357,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         //初始化BottomMenu
         initBottomMenu();
 
-        TCAgent.onPageStart(mContext, "阅读器");
+        TCAgent.onPageStart(mContext, "阅读器_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
+        TCAgent.onPageStart(mContext, "all阅读器");
+        TCAgent.onEvent(mContext,"all阅读器");
 
 //        View coverPageView = LayoutInflater.from(this).inflate(R.layout.layout_cover_view, null, false);
 //        tv_cover_name = coverPageView.findViewById(R.id.tv_cover_name);
@@ -614,7 +616,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
         mCollBook.setIsLocal(true);
         CollBookHelper.getsInstance().saveBookWithAsync(mCollBook);
-
+        TCAgent.onEvent(mContext, "阅读器_加书架_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
+        TCAgent.onEvent(mContext, "all加书架");
         List<BookChapterBean> bookChapters = mCollBook.getBookChapters();
         if (bookChapters!= null && bookChapters.size()>0){
             double chaptersCount = mCollBook.getBookChapters().size();
@@ -1063,6 +1066,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         try {
             if (mReceiverTag && mReceiver != null){
                 unregisterReceiver(mReceiver);
@@ -1091,6 +1095,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 mPageLoader.closeBook();
                 mPageLoader = null;
             }
+            TCAgent.onPageEnd(mContext, "阅读器_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
+            TCAgent.onPageEnd(mContext, "all阅读器");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1106,9 +1112,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         mHandler.removeMessages(WHAT_CLOSE_CHAPTER);
         mHandler.removeMessages(WHAT_OPEN_BOOKMARK);
         UMShareAPI.get(this).release();
-        TCAgent.onPageEnd(mContext, "阅读器");
 
-        super.onDestroy();
     }
 
     //加入书架
