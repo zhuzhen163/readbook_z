@@ -84,6 +84,67 @@ public class ShareUtils {
                     .share();
         }
 
+    }
+
+    /**
+     * 分享图片
+     */
+    public static void shareImage(final Activity activity, String imageUrl, SHARE_MEDIA platform) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},
+                    1);
+        }else {
+
+            if (StringUtils.isBlank(imageUrl)){
+                return;
+            }
+            UMImage umImage = new UMImage(activity,imageUrl);
+            new ShareAction(activity)
+                    .setPlatform(platform)
+                    .withMedia(umImage)
+                    .setCallback(new UMShareListener() {
+                        @Override
+                        public void onStart(SHARE_MEDIA share_media) {
+
+                        }
+
+                        @Override
+                        public void onResult(final SHARE_MEDIA share_media) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ToastUtil.showToast( "分享成功");
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onError(final SHARE_MEDIA share_media, final Throwable throwable) {
+                            if (throwable != null) {
+                                Log.d("throw", "throw:" + throwable.getMessage());
+                            }
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ToastUtil.showToast("分享失败");
+
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancel(final SHARE_MEDIA share_media) {
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ToastUtil.showToast("分享取消");
+                                }
+                            });
+                        }
+                    })
+                    .share();
+        }
 
     }
 }

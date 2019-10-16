@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -26,8 +28,10 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.gson.Gson;
+import com.huajie.readbook.BuildConfig;
 import com.huajie.readbook.ZApplication;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
@@ -39,6 +43,133 @@ import java.util.regex.Pattern;
  */
 
 public class AppUtils {
+
+
+    public static int channel(){
+        int channel = 0;
+        if (BuildConfig.FLAVOR.equals("D360")){
+            channel = 140;
+        }else if (BuildConfig.FLAVOR.equals("Tencent")){
+            channel = 130;
+        }else if (BuildConfig.FLAVOR.equals("Baidu")){
+            channel = 210;
+        }else if (BuildConfig.FLAVOR.equals("Vivo")){
+            channel = 170;
+        }else if (BuildConfig.FLAVOR.equals("Oppo")){
+            channel = 180;
+        }else if (BuildConfig.FLAVOR.equals("Qutoutiao")){
+            channel = 220;
+        }else if (BuildConfig.FLAVOR.equals("QQ")){
+            channel = 190;
+        }else if (BuildConfig.FLAVOR.equals("Xiaomi")){
+            channel = 160;
+        }else if (BuildConfig.FLAVOR.equals("Huawei")){
+            channel = 150;
+        }else if (BuildConfig.FLAVOR.equals("android_main")){
+            channel = 120;
+        }
+        return channel;
+    }
+
+    //线束loc是本地版本号，参数server是服务器最新版本号
+    public static int compare(String loc, String server) {
+
+        if (TextUtils.isEmpty(loc)
+                || TextUtils.isEmpty(server)) {
+            return -1;
+        }
+        if (loc.trim().equals(server.trim())) {
+            return 0;
+        }
+
+        loc = loc.trim();
+        server = server.trim();
+        loc = loc.replace(".", ",");
+        server = server.replace(".", ",");
+        String[] locArr = loc.split(",");
+        String[] serArr = server.split(",");
+
+        int itemInt1, itemInt2;
+        String itemStr1, itemStr2;
+        int len = locArr.length > serArr.length ? serArr.length : locArr.length;
+
+        for (int i = 0; i < len; i++) {
+
+            itemInt1 = itemInt2 = 0;
+            itemStr1 = locArr[i].trim();
+            itemStr2 = serArr[i].trim();
+
+            if (!TextUtils.isEmpty(itemStr1)) {
+                itemInt1 = Integer.parseInt(itemStr1);
+            }
+            if (!TextUtils.isEmpty(itemStr2)) {
+                itemInt2 = Integer.parseInt(itemStr2);
+            }
+            if (itemInt1 < itemInt2) {
+                return 1;
+            } else if (itemInt1 > itemInt2) {
+                return -1;
+            }
+        }
+        //防止出现类似: 1.1 Vs 1.1.1
+        if (locArr.length < serArr.length) {
+            len = serArr.length;
+            String itemStr;
+            int itemInt;
+            for (int i = locArr.length; i < len; i++) {
+                itemInt = 0;
+                itemStr = serArr[i].trim();
+                if (!TextUtils.isEmpty(itemStr)) {
+                    itemInt = Integer.parseInt(itemStr);
+                }
+                if (itemInt > 0) {
+                    return 1;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 0代表相等，1代表version1大于version2，-1代表version1小于version2
+     * @param version1
+     * @param version2
+     * @return
+     */
+    public static int compareVersion(String version1, String version2) {
+        if (version1.equals(version2)) {
+            return 0;
+        }
+        String[] version1Array = version1.split("\\.");
+        String[] version2Array = version2.split("\\.");
+        int index = 0;
+        // 获取最小长度值
+        int minLen = Math.min(version1Array.length, version2Array.length);
+        int diff = 0;
+        // 循环判断每位的大小
+        while (index < minLen
+                && (diff = Integer.parseInt(version1Array[index])
+                - Integer.parseInt(version2Array[index])) == 0) {
+            index++;
+        }
+        if (diff == 0) {
+            // 如果位数不一致，比较多余位数
+            for (int i = index; i < version1Array.length; i++) {
+                if (Integer.parseInt(version1Array[i]) > 0) {
+                    return 1;
+                }
+            }
+
+            for (int i = index; i < version2Array.length; i++) {
+                if (Integer.parseInt(version2Array[i]) > 0) {
+                    return -1;
+                }
+            }
+            return 0;
+        } else {
+            return diff > 0 ? 1 : -1;
+        }
+    }
 
     public static int dp2px(Context context, float dipValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -374,18 +505,34 @@ public class AppUtils {
             //实例化TelephonyManager对象
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                String imei = telephonyManager.getDeviceId();
-                if (imei == null) {
-                    imei = "";
+                String imei;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    imei = telephonyManager.getImei();
+                }
+                else {
+                    imei = telephonyManager.getDeviceId();
+                }
+                if (imei == null || imei == "") {
+                    imei = getPesudoUniqueID();
                 }
                 return imei;
             }else {
-                return "";
+                return getPesudoUniqueID();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "";
+            return getPesudoUniqueID();
+        }
+    }
+
+    public static String getAndroidId (Context context) {
+        try {
+            String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+            return ANDROID_ID;
+        }catch (Exception e){
+            e.printStackTrace();
+            return getPesudoUniqueID();
         }
     }
 

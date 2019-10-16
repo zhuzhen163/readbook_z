@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
+import com.huajie.readbook.utils.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,7 +45,12 @@ public class SearchActivityAdapter extends ListBaseAdapter<BookBean> {
         tv_authorName = holder.getView(R.id.tv_authorName);
 
         BookBean bookBean = mDataList.get(position);
-        Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        if (StringUtils.isNotBlank(bookBean.getLogo())){
+            Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        }else {
+            Glide.with(context).load(R.drawable.icon_pic_def).into(iv_bookImg);
+        }
+
         try {
             tv_bookName.setText(findSearch(bookBean.getName()));
             tv_book_content.setText(findSearch(bookBean.getNotes()));

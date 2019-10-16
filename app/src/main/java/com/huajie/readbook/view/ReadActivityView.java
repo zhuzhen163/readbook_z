@@ -20,4 +20,6 @@ public interface ReadActivityView extends BaseView {
     void errorChapters();
 
     void shareUrl(BaseModel<PublicBean> url);
+
+    void refresh(BaseModel<String> num);
 }

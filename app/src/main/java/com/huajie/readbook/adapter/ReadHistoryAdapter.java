@@ -60,7 +60,15 @@ public class ReadHistoryAdapter extends ListBaseAdapter<BookBean> {
         }else {
             Glide.with(mContext).load(ImageUrl+historyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         }
-        tv_bookName.setText(historyModel.getName());
+        if (historyModel.getName() != null){
+            String name = historyModel.getName();
+            if (name.contains(" ")){
+                String[] s = name.split(" ");
+                tv_bookName.setText(s[0]);
+            }else{
+                tv_bookName.setText(name);
+            }
+        }
         //从数据库取阅读数据
         mBookRecord = BookRecordHelper.getsInstance().findBookRecordById(historyModel.getId());
         if (mBookRecord != null){

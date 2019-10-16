@@ -38,21 +38,21 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_marginLeft="@dimen/dimen50dp"
+        android:layout_marginLeft="@dimen/dimen40dp"
         android:layout_marginTop="@dimen/dimen200dp"
         android:id="@+id/iv_women"
         android:src="@drawable/icon_choose_women"
-        android:layout_width="@dimen/dimen120dp"
-        android:layout_height="@dimen/dimen120dp" />
+        android:layout_width="@dimen/dimen150dp"
+        android:layout_height="@dimen/dimen150dp" />
 
     <ImageView
-        android:layout_marginRight="@dimen/dimen50dp"
+        android:layout_marginRight="@dimen/dimen40dp"
         android:layout_alignParentRight="true"
         android:id="@+id/iv_men"
         android:layout_marginTop="@dimen/dimen200dp"
         android:src="@drawable/icon_choose_men"
-        android:layout_width="@dimen/dimen120dp"
-        android:layout_height="@dimen/dimen120dp" />
+        android:layout_width="@dimen/dimen150dp"
+        android:layout_height="@dimen/dimen150dp" />
 
     <TextView
         android:visibility="gone"

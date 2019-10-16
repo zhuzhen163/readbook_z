@@ -36,6 +36,7 @@ import com.huajie.readbook.view.BookshelfFragmentView;
 import com.huajie.readbook.widget.ConfirmPopWindow;
 import com.huajie.readbook.widget.DeleteBookShelfDialog;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 
 import java.io.File;
@@ -115,9 +116,11 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            TCAgent.onPageStart(mContext, "书架");
+            TCAgent.onPageStart(mContext, "书架界面");
+            MobclickAgent.onPageStart("书架界面");
         } else {
-            TCAgent.onPageEnd(mContext, "书架");
+            TCAgent.onPageEnd(mContext, "书架界面");
+            MobclickAgent.onPageEnd("书架界面");
         }
     }
 
@@ -152,7 +155,8 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
 
         deleteBookShelfDialog = new DeleteBookShelfDialog(mContext);
         deleteBookShelfDialog.setDoWhatCallBack(this);
-        TCAgent.onEvent(mContext, "all书架界面");
+        TCAgent.onEvent(mContext, "书架界面");
+        MobclickAgent.onEvent(mContext, "bookshelf_vc", "书架界面");
     }
 
     @Override

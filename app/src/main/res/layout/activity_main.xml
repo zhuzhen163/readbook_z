@@ -19,12 +19,13 @@
     <RadioGroup
         android:id="@+id/tabradios"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen50dp"
+        android:layout_height="@dimen/dimen60dp"
         android:background="@color/white"
         android:orientation="horizontal"
         >
 
         <RadioButton
+            android:paddingBottom="@dimen/dimen8dp"
             android:paddingTop="@dimen/dimen8dp"
             android:id="@+id/rb_bookshelf"
             style="@style/radioButton"
@@ -34,9 +35,22 @@
             android:drawableTop="@drawable/rb_bookshelf"
             android:text="书架"
             android:textColor="@drawable/radiobutton_text"
-            android:textSize="@dimen/dimen10dp" />
+            android:textSize="@dimen/dimen11dp" />
 
         <RadioButton
+            android:paddingBottom="@dimen/dimen8dp"
+            android:paddingTop="@dimen/dimen8dp"
+            android:id="@+id/rb_find"
+            style="@style/radioButton"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:drawableTop="@drawable/rb_find"
+            android:text="发现"
+            android:textColor="@drawable/radiobutton_text"
+            android:textSize="@dimen/dimen11dp" />
+
+        <RadioButton
+            android:paddingBottom="@dimen/dimen8dp"
             android:paddingTop="@dimen/dimen8dp"
             android:id="@+id/rb_bookCity"
             style="@style/radioButton"
@@ -45,9 +59,22 @@
             android:drawableTop="@drawable/rb_bookcity"
             android:text="书城"
             android:textColor="@drawable/radiobutton_text"
-            android:textSize="@dimen/dimen10dp" />
+            android:textSize="@dimen/dimen11dp" />
 
         <RadioButton
+            android:paddingBottom="@dimen/dimen8dp"
+            android:paddingTop="@dimen/dimen8dp"
+            android:id="@+id/rb_welfare"
+            style="@style/radioButton"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:drawableTop="@drawable/rb_find"
+            android:text="福利"
+            android:textColor="@drawable/radiobutton_text"
+            android:textSize="@dimen/dimen11dp" />
+
+        <RadioButton
+            android:paddingBottom="@dimen/dimen8dp"
             android:paddingTop="@dimen/dimen8dp"
             android:id="@+id/rb_mine"
             style="@style/radioButton"
@@ -56,7 +83,7 @@
             android:drawableTop="@drawable/rb_mine"
             android:text="我的"
             android:textColor="@drawable/radiobutton_text"
-            android:textSize="@dimen/dimen10dp" />
+            android:textSize="@dimen/dimen11dp" />
 
     </RadioGroup>
 </LinearLayout>

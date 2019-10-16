@@ -40,6 +40,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.SearchActivityView;
 import com.huajie.readbook.widget.FlowLayout;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,8 +121,6 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
                 if (actionId == EditorInfo.IME_ACTION_SEARCH){
                     String input=et_search.getText().toString().trim();
                     if(!TextUtils.isEmpty(input)){
-                        TCAgent.onEvent(mContext, "搜索_"+input);
-                        TCAgent.onEvent(mContext,"all搜索");
                         save(input);
                         mPresenter.searchList(input);
                         adapter.keyWork(input);
@@ -170,10 +169,22 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
                     mPresenter.searchList(input);
                     AppUtils.hideInputMethod(SearchActivity.this);
                 }else {
-                    ToastUtil.showToast("搜索内容不能为空");
+                    mPresenter.hotWords();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -192,8 +203,9 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
         lv_list.setLoadMoreEnabled(false);
 
         initSearchHistory();
-        TCAgent.onPageStart(mContext, "搜索页");
 
+        TCAgent.onEvent(mContext,"搜索页");
+        MobclickAgent.onEvent(mContext, "search_vc", "搜索页");
     }
 
     /**
@@ -358,6 +370,5 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "搜索页");
     }
 }

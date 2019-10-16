@@ -17,7 +17,7 @@ public class ReadEndActivityPresenter extends BasePresenter<ReadEndActivityView>
         addDisposable(apiServer.bookDetailsList(classifyId,bookId), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
-                if ("0".equals(o.getRetcode())){
+                if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.bookListSuccess(o);
                 }else {
                     baseView.showError(o.getMsg());

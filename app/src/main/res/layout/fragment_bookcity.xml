@@ -59,7 +59,7 @@
             <com.huajie.readbook.widget.xtablayout.XTabLayout
                 android:layout_marginLeft="@dimen/dimen10dp"
                 android:id="@+id/tb_select"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="@dimen/dimen40dp"
                 app:xTabMode="scrollable"
                 app:xTabIndicatorColor="@color/colorTheme"

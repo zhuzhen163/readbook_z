@@ -19,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.BookDetailAdapter;
 import com.huajie.readbook.base.BaseActivity;
-import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.BookDetailModel;
 import com.huajie.readbook.bean.BookMiddleModel;
@@ -39,6 +38,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.BookDetailActivityView;
 import com.huajie.readbook.widget.ShareBookDialog;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -119,7 +119,6 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                 break;
             case R.id.tv_read:
                 if (book != null){
-                    TCAgent.onEvent(mContext, "免费阅读_<"+book.getName()+">:"+book.getAuthorName());
                     CollBookBean bookBean = book.getCollBookBean();
                     SwitchActivityManager.startReadActivity(mContext,bookBean,isCollected );
                 }
@@ -129,15 +128,15 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                     book.getCollBookBean().setIsLocal(true);
                     //给个默认时间用于书架对比更新时间
                     book.getCollBookBean().setLastRead(StringUtils.
-                            dateConvert(10000000, Constant.FORMAT_BOOK_DATE));
+                            dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
                     CollBookHelper.getsInstance().saveBook(book.getCollBookBean());
                     ToastUtil.showToast("加入书架成功");
                     tv_addBookShelf.setText("已加书架");
                     isCollected = true;
                     tv_addBookShelf.setTextColor(getResources().getColor(R.color.d0d0d0));
                     tv_addBookShelf.setEnabled(false);
-                    TCAgent.onEvent(mContext, "详情页_加书架_<"+book.getName()+">:"+book.getAuthorName());
-                    TCAgent.onEvent(mContext, "all加书架");
+                    TCAgent.onEvent(mContext, "加书架");
+                    MobclickAgent.onEvent(mContext, "add_bookshelf", "加书架");
                 }
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                     mPresenter.bookRackAdd(bookId,"0.0");
@@ -212,8 +211,24 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         gv_book.setAdapter(detailAdapter);
 
         gv_book.setFocusable(false);
-        TCAgent.onPageStart(mContext, "all详情页");
-        TCAgent.onEvent(mContext,"all详情页");
+        TCAgent.onPageStart(mContext, "书籍详情页");
+        TCAgent.onEvent(mContext,"书籍详情页");
+
+        MobclickAgent.onEvent(mContext, "detail_vc", "书籍详情页");
+
+        MobclickAgent.onPageStart("书籍详情页");
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        bookId = intent.getStringExtra("bookId");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -229,6 +244,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         CollBookBean bookBy = CollBookHelper.getsInstance().findBookById(bookId);
         if (bookBy != null){
             isCollected = true;
@@ -245,8 +261,6 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             Glide.with(mContext).load(ImageUrl+book.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
             tv_bookName.setText(book.getName());
             tv_authorName.setText(book.getAuthorName());
-            TCAgent.onPageStart(mContext, "详情_<"+book.getName()+">:"+book.getAuthorName());
-            TCAgent.onEvent(mContext, "进详情_<"+book.getName()+">:"+book.getAuthorName());
             String score = book.getScore();
             if (StringUtils.isNotBlank(score)){
                 if ("0.0".equals(score)){
@@ -391,10 +405,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         }
 
         shareDialog = null;
-        if (book != null){
-            TCAgent.onPageEnd(mContext, "详情_<"+book.getName()+">:"+book.getAuthorName());
-        }
-        TCAgent.onPageEnd(mContext, "all详情页");
+        TCAgent.onPageEnd(mContext, "书籍详情页");
+        MobclickAgent.onPageEnd("书籍详情页");
     }
 
     @Override

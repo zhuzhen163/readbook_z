@@ -1,5 +1,7 @@
 package com.huajie.readbook.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -40,6 +42,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.huajie.readbook.R;
@@ -71,6 +74,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReadActivityView;
 import com.huajie.readbook.widget.AddBookShelfDialog;
+import com.huajie.readbook.widget.CircleProgressBar;
 import com.huajie.readbook.widget.ReadLightDialog;
 import com.huajie.readbook.widget.ReadPopWindow;
 import com.huajie.readbook.widget.ReadSettingDialog;
@@ -81,6 +85,7 @@ import com.huajie.readbook.widget.page.PageLoader;
 import com.huajie.readbook.widget.page.PageView;
 import com.huajie.readbook.widget.page.TxtChapter;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
@@ -154,6 +159,11 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     RelativeLayout rl_first;
     @BindView(R.id.tv_first)
     TextView tv_first;
+    @BindView(R.id.progressBar)
+    CircleProgressBar progressBar;
+    @BindView(R.id.tv_addGold)
+    TextView tv_addGold;
+
     ImageveiwUitls iv_cover_img;
     TextView tv_cover_name;
     TextView tv_cover_auth;
@@ -264,9 +274,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             if (selfChange || !readLightDialog.isBrightFollowSystem()) return;
 
             //如果系统亮度改变，则修改当前 Activity 亮度
-            if (BRIGHTNESS_MODE_URI.equals(uri)) {
-                Log.d(TAG, "亮度模式改变");
-            } else if (BRIGHTNESS_URI.equals(uri) && !BrightnessUtils.isAutoBrightness(ReadActivity.this)) {
+                if (BRIGHTNESS_MODE_URI.equals(uri)) {
+                    Log.d(TAG, "亮度模式改变");
+                } else if (BRIGHTNESS_URI.equals(uri) && !BrightnessUtils.isAutoBrightness(ReadActivity.this)) {
                 Log.d(TAG, "亮度模式为手动模式 值改变");
                 BrightnessUtils.setBrightness(ReadActivity.this, BrightnessUtils.getScreenBrightness(ReadActivity.this));
             } else if (BRIGHTNESS_ADJ_URI.equals(uri) && BrightnessUtils.isAutoBrightness(ReadActivity.this)) {
@@ -357,9 +367,12 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         //初始化BottomMenu
         initBottomMenu();
 
-        TCAgent.onPageStart(mContext, "阅读器_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
-        TCAgent.onPageStart(mContext, "all阅读器");
-        TCAgent.onEvent(mContext,"all阅读器");
+        TCAgent.onPageStart(mContext, "阅读器");
+        TCAgent.onEvent(mContext,"阅读器");
+
+        MobclickAgent.onEvent(mContext, "reader_vc", "阅读器");
+
+        MobclickAgent.onPageStart("阅读器");
 
 //        View coverPageView = LayoutInflater.from(this).inflate(R.layout.layout_cover_view, null, false);
 //        tv_cover_name = coverPageView.findViewById(R.id.tv_cover_name);
@@ -424,6 +437,10 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             @Override
             public void onPageChange(int pos) {
                 try {
+                    if (num>=45){
+                        num = 0;
+                        mHandler.postDelayed(progressChangeTask,1000);
+                    }
                     mReadSbChapterProgress.post(() -> {
                         mReadSbChapterProgress.setProgress(pos);
                     });
@@ -490,7 +507,38 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             public void cancel() {
             }
         });
+
+        add_gold = AnimatorInflater.loadAnimator(mContext, R.animator.add_gold);
+
     }
+
+    private Animator add_gold;
+    private int num = 0;
+    private String oldPosContent,newPosContent;
+    private Runnable progressChangeTask = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                num++;
+                if (num == 1){
+                    progressBar.start();
+                    oldPosContent = mPageLoader.getPagePosContent();
+                }
+                if (num == 45){
+                    newPosContent = mPageLoader.getPagePosContent();
+                    if (oldPosContent.equals(newPosContent)){
+                        progressBar.stop();
+                        mHandler.removeCallbacks(progressChangeTask);
+                        return;
+                    }
+                }
+            }catch (Exception e){
+                num = 0;
+            }
+            mHandler.postDelayed(progressChangeTask,1000);
+        }
+    };
+
 
     /**
      * 新手引导
@@ -616,15 +664,15 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
         mCollBook.setIsLocal(true);
         CollBookHelper.getsInstance().saveBookWithAsync(mCollBook);
-        TCAgent.onEvent(mContext, "阅读器_加书架_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
-        TCAgent.onEvent(mContext, "all加书架");
+        TCAgent.onEvent(mContext, "加书架");
+        MobclickAgent.onEvent(mContext, "add_bookshelf", "加书架");
         List<BookChapterBean> bookChapters = mCollBook.getBookChapters();
         if (bookChapters!= null && bookChapters.size()>0){
             double chaptersCount = mCollBook.getBookChapters().size();
             double chapterPos = mPageLoader.getChapterPos();
             double percent = (chapterPos /chaptersCount)*100;
             DecimalFormat df = new DecimalFormat("#0.00");
-
+            ToastUtil.showToast("加入书架成功");
             mPresenter.bookRackAdd(mCollBook.getBookId(),df.format(percent));
         }
     }
@@ -661,6 +709,23 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             }
         }
 
+        progressBar.setCountdownProgressListener(new CircleProgressBar.OnCircleProgressListener() {
+            @Override
+            public void onProgress(int progress) {
+                if (progress == 30){
+                    add_gold.setTarget(tv_addGold);
+                    add_gold.start();
+                    ToastUtil.showToast("请求接口");
+                }
+            }
+
+            @Override
+            public void onStop(int stop) {
+                progressBar.stop();
+            }
+        });
+
+        mHandler.postDelayed(progressChangeTask,1000);
     }
 
     /**
@@ -691,6 +756,12 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         ll_bookMark.setOnClickListener(this);
         tv_addMark.setOnClickListener(this);
         iv_night_mode.setOnClickListener(this);
+        reConnected(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initData();
+            }
+        });
     }
 
     private void setCategory() {
@@ -938,6 +1009,13 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     }
 
+    @Override
+    public void refresh(BaseModel<String> num) {
+        tv_addGold.setText(num.getData());
+        add_gold.setTarget(tv_addGold);
+        add_gold.start();
+    }
+
 
     //注册亮度观察者
     private void registerBrightObserver() {
@@ -1047,6 +1125,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         mWakeLock.acquire();
     }
 
@@ -1054,7 +1133,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     protected void onPause() {
         super.onPause();
         mWakeLock.release();
-
+        MobclickAgent.onPause(this);
         mPageLoader.saveRecord(isCollected);
     }
 
@@ -1095,8 +1174,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 mPageLoader.closeBook();
                 mPageLoader = null;
             }
-            TCAgent.onPageEnd(mContext, "阅读器_<"+mCollBook.getName()+">:"+mCollBook.getAuthor());
-            TCAgent.onPageEnd(mContext, "all阅读器");
+            TCAgent.onPageEnd(mContext, "阅读器");
+            MobclickAgent.onPageEnd("阅读器");
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1119,7 +1198,6 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     @Override
     public void addBookShelf() {
         bookRackAdd();
-        ToastUtil.showToast("加入书架成功");
         if (addBookShelfDialog != null){
             addBookShelfDialog.dismiss();
         }
@@ -1141,7 +1219,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     @Override
     public void bookRackAdd(BaseModel<PublicBean> publicBean) {
-        ToastUtil.showToast("加入书架成功");
+//        ToastUtil.showToast("加入书架成功");
 //        SwitchActivityManager.exitActivity(ReadActivity.this);
     }
 
@@ -1233,6 +1311,11 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 mPageLoader.updateLayout();
             break;
         }
+    }
+
+    @Override
+    public void netWorkConnect(boolean connect) {
+        super.netWorkConnect(connect);
     }
 
     @Override

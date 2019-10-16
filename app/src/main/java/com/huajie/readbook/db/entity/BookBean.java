@@ -28,6 +28,33 @@ public class BookBean implements Serializable {
     private String classifyName;
     private String mtime;
     private boolean importLocal;
+    private String image;
+    private String alias;
+    private String details;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
 
     public String getLastRead() {
         return lastRead;

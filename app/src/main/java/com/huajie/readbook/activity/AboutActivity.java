@@ -7,10 +7,12 @@ import android.widget.TextView;
 import com.huajie.readbook.R;
 import com.huajie.readbook.ZApplication;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 
@@ -29,9 +31,6 @@ public class AboutActivity extends BaseActivity {
     @BindView(R.id.tv_privacy)
     TextView tv_privacy;
 
-    private String useragree = "http://test.huajiehuyu.com/useragree.html";
-    private String privacy = "http://test.huajiehuyu.com/privacy.html";
-
     @Override
     protected BasePresenter createPresenter() {
         return null;
@@ -41,10 +40,10 @@ public class AboutActivity extends BaseActivity {
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.tv_useragree:
-                SwitchActivityManager.startWebViewActivity(mContext,useragree,"用户协议");
+                SwitchActivityManager.startWebViewActivity(mContext, BaseContent.base+"useragree.html","用户协议");
                 break;
             case R.id.tv_privacy:
-                SwitchActivityManager.startWebViewActivity(mContext,privacy,"隐私政策");
+                SwitchActivityManager.startWebViewActivity(mContext,BaseContent.base+"privacy.html","隐私政策");
                 break;
         }
     }
@@ -69,7 +68,8 @@ public class AboutActivity extends BaseActivity {
         tv_userId.setText(ConfigUtils.getReaderId());
         tv_version.setText("版本："+ZApplication.getAppContext().getVersion());
 
-        TCAgent.onPageStart(mContext, "关于我们");
+        TCAgent.onEvent(mContext, "关于我们");
+        MobclickAgent.onEvent(mContext, "aboutus_vc", "关于我们");
     }
 
     @Override
@@ -85,6 +85,17 @@ public class AboutActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "关于我们");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

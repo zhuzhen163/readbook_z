@@ -25,7 +25,7 @@ public class ClassifyActivityPresenter extends BasePresenter<ClassifyActivityVie
         addDisposable(apiServer.categoryList(1), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
-                if ("0".equals(o.getRetcode())){
+                if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.classifySuccess(o);
                 }else {
                     baseView.showError(o.getMsg());

@@ -17,15 +17,18 @@ import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.BookCatalogActivityAdapter;
 import com.huajie.readbook.adapter.RankingListActivityAdapter;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.db.entity.BookChapterBean;
 import com.huajie.readbook.db.entity.BookChaptersBean;
 import com.huajie.readbook.db.entity.CollBookBean;
+import com.huajie.readbook.db.helper.CollBookHelper;
 import com.huajie.readbook.presenter.BookCatalogActivityPresenter;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.view.BookCatalogActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +91,13 @@ public class BookCatalogActivity extends BaseActivity <BookCatalogActivityPresen
             public void onItemClick(View view, int position) {
 
                 collBookBean.setLatelyFollower((page*50+position));//设置选择的章节
-                SwitchActivityManager.startReadActivity(mContext,collBookBean,collBookBean.getIsLocal());
+                CollBookBean bookById = CollBookHelper.getsInstance().findBookById(bookId);
+                if (bookById != null){
+                    bookById.setLatelyFollower((page*50+position));
+                    SwitchActivityManager.startReadActivity(mContext,bookById,bookById.getIsLocal());
+                }else {
+                    SwitchActivityManager.startReadActivity(mContext,collBookBean,collBookBean.getIsLocal());
+                }
             }
         });
         reConnected(new View.OnClickListener() {
@@ -119,7 +128,9 @@ public class BookCatalogActivity extends BaseActivity <BookCatalogActivityPresen
         mRecyclerView.setPullRefreshEnabled(false);
         mRecyclerView.setLoadMoreEnabled(true);
 
-        TCAgent.onPageStart(mContext, "目录页面");
+
+        TCAgent.onEvent(mContext, "目录页面");
+        MobclickAgent.onEvent(mContext, "catalog_vc", "目录页面");
 
     }
 
@@ -182,6 +193,18 @@ public class BookCatalogActivity extends BaseActivity <BookCatalogActivityPresen
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
     public void chapterList(BaseModel<BookChaptersBean> chapterList) {
         menu = chapterList.getData().getMenu();
 
@@ -203,6 +226,5 @@ public class BookCatalogActivity extends BaseActivity <BookCatalogActivityPresen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "目录页面");
     }
 }

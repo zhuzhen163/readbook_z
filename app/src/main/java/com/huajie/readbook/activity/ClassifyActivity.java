@@ -11,6 +11,7 @@ import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.ClassifyActivityAdapter;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.bean.BookshelfBean;
@@ -22,6 +23,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ClassifyActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -167,7 +169,9 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
         mRecyclerView.setPullRefreshEnabled(false);
         mRecyclerView.setLoadMoreEnabled(false);
         TCAgent.onPageStart(mContext, "分类");
-        TCAgent.onEvent(mContext,"all分类");
+        TCAgent.onEvent(mContext,"分类");
+        MobclickAgent.onEvent(mContext, "category_vc", "分类");
+        MobclickAgent.onPageStart("分类");
     }
 
     @Override
@@ -205,6 +209,18 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
     public void showLoading() {
         super.showLoading();
     }
@@ -217,6 +233,7 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     @Override
     protected void onDestroy() {
         TCAgent.onPageEnd(mContext, "分类");
+        MobclickAgent.onPageEnd("分类");
         super.onDestroy();
     }
 }

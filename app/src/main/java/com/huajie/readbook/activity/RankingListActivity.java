@@ -24,6 +24,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.RankingListActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,6 +116,8 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
         Date date = new Date(System.currentTimeMillis());
         tv_data.setText(simpleDateFormat.format(date)+"更新");
 
+        TCAgent.onEvent(mContext, "排行榜");
+        MobclickAgent.onEvent(mContext, "rank_vc", "排行榜");
         TCAgent.onPageStart(mContext, "排行榜");
     }
 
@@ -124,6 +127,20 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
         lv_list.setFooterViewColor(R.color.colorTheme, R.color.dark ,android.R.color.white);
         //设置底部加载文字提示
         lv_list.setFooterViewHint("拼命加载中","已全部为您呈现","网络不给力啊，点击再试一次吧");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+        MobclickAgent.onPageStart("排行榜");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("排行榜");
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -179,4 +196,5 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
         super.onDestroy();
         TCAgent.onPageEnd(mContext, "排行榜");
     }
+
 }

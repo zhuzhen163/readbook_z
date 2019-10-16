@@ -5,7 +5,7 @@
         android:duration="100"
         android:propertyName="translationX"
         android:valueFrom="0"
-        android:valueTo="@dimen/dimen75dp"
+        android:valueTo="@dimen/dimen70dp"
         android:valueType="floatType" >
     </objectAnimator>
 

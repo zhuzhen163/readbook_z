@@ -12,6 +12,7 @@ import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.ReadHistoryAdapter;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.BookshelfBean;
 import com.huajie.readbook.bean.PublicBean;
@@ -30,6 +31,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReadHistoryActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -211,7 +213,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
         mRecyclerView.setPullRefreshEnabled(false);
         mRecyclerView.setLoadMoreEnabled(true);
 
-        TCAgent.onPageStart(mContext, "阅读历史");
+        TCAgent.onEvent(mContext, "阅读历史");
 
     }
 
@@ -256,14 +258,13 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setNotes(bookRecordBean.getNotes());
                         bookBean.setClassifyId(bookRecordBean.getClassifyId());
                         bookBean.setImportLocal(false);
+                        bookBean.setIsJoin(1);
                     }
 
 
                     readHistoryList.add(bookBean);
                 }
 
-                SortClass sortClass = new SortClass();
-                Collections.sort(readHistoryList,sortClass);
             }
             if (readHistoryList.size()>0){
                 readHistoryAdapter.setDataList(readHistoryList);
@@ -346,7 +347,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setUpdateTime(bookRecordBean.getLastRead());
                         bookBean.setNotes(bookRecordBean.getNotes());
                         bookBean.setClassifyId(bookRecordBean.getClassifyId());
-                        bookBean.setImportLocal(bookById.getImportLocal());
+                        bookBean.setImportLocal(false);
                     }
                     beans.add(bookBean);
                 }
@@ -368,9 +369,6 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
             }
         }
 
-        //之前数据库没有存储时间所以不能排序，所以这里手动排序，在下个版本就可以根据时间排序了
-        SortClass sortClass = new SortClass();
-        Collections.sort(beans,sortClass);
         return beans;
 
     }
@@ -405,6 +403,17 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "阅读历史");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

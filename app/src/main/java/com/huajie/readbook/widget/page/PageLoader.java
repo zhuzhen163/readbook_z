@@ -525,7 +525,7 @@ public abstract class PageLoader {
         mBookRecord.setChapterPercent(df.format(percent));
         mBookRecord.setClassifyId(mCollBook.getClassifyId());
         mBookRecord.setNotes(mCollBook.getNotes());
-        mBookRecord.setName(mCollBook.getName());
+        mBookRecord.setName(mCollBook.getName()+" "+mCurPage.title);
         mBookRecord.setLogo(mCollBook.getLogo());
         mBookRecord.setLastRead(StringUtils.
                 dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));

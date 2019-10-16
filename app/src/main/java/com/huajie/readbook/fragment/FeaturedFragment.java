@@ -23,6 +23,7 @@ import com.huajie.readbook.adapter.FeaturedFragmentAdapter;
 import com.huajie.readbook.adapter.FourHeadAdapter;
 import com.huajie.readbook.adapter.ThreeHeadAdapter;
 import com.huajie.readbook.adapter.TwoHeadAdapter;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.BaseFragment;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.AdModel;
@@ -37,6 +38,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.FeatureFragmentView;
 import com.huajie.readbook.widget.ImageCycleView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,12 +116,24 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         tabName = getArguments().getString("tabName");
         if ("精选".equals(tabName)){
             tabNum = 1;
+            TCAgent.onEvent(mContext, "书城_精选");
+            MobclickAgent.onEvent(mContext, "bookstore_pro", "书城_精选");
         }else if ("女生".equals(tabName)){
             tabNum = 2;
+            TCAgent.onEvent(mContext, "书城_女生");
+            MobclickAgent.onEvent(mContext, "bookstore_girl", "书城_女生");
         }else if ("男生".equals(tabName)){
             tabNum = 3;
+            TCAgent.onEvent(mContext, "书城_男生");
+            MobclickAgent.onEvent(mContext, "bookstore_boy", "书城_男生");
         }else if ("出版".equals(tabName)){
-            tabNum = 7;
+            if (BaseContent.base.equals("http://test.huajiehuyu.com/")){
+                tabNum = 4;
+            }else {
+                tabNum = 7;
+            }
+            TCAgent.onEvent(mContext, "书城_出版");
+            MobclickAgent.onEvent(mContext, "bookstore_publish", "书城_出版");
         }
         setListView();
         featuredFragmentAdapter = new FeaturedFragmentAdapter(getActivity());
@@ -529,23 +543,31 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
         if(isVisibleToUser){
             if ("精选".equals(tabName)){
-                TCAgent.onPageStart(mContext, "精选");
+                TCAgent.onPageStart(mContext, "书城_精选");
+                MobclickAgent.onPageStart("书城_精选");
             }else if ("女生".equals(tabName)){
-                TCAgent.onPageStart(mContext, "女生");
+                TCAgent.onPageStart(mContext, "书城_女生");
+                MobclickAgent.onPageStart("书城_女生");
             }else if ("男生".equals(tabName)){
-                TCAgent.onPageStart(mContext, "男生");
+                TCAgent.onPageStart(mContext, "书城_男生");
+                MobclickAgent.onPageStart("书城_男生");
             }else if ("出版".equals(tabName)){
-                TCAgent.onPageStart(mContext, "出版");
+                TCAgent.onPageStart(mContext, "书城_出版");
+                MobclickAgent.onPageStart("书城_出版");
             }
         } else {
             if ("精选".equals(tabName)){
-                TCAgent.onPageEnd(mContext, "精选");
+                TCAgent.onPageEnd(mContext, "书城_精选");
+                MobclickAgent.onPageEnd("书城_精选");
             }else if ("女生".equals(tabName)){
-                TCAgent.onPageEnd(mContext, "女生");
+                TCAgent.onPageEnd(mContext, "书城_女生");
+                MobclickAgent.onPageEnd("书城_女生");
             }else if ("男生".equals(tabName)){
-                TCAgent.onPageEnd(mContext, "男生");
+                TCAgent.onPageEnd(mContext, "书城_男生");
+                MobclickAgent.onPageEnd("书城_男生");
             }else if ("出版".equals(tabName)){
-                TCAgent.onPageEnd(mContext, "出版");
+                TCAgent.onPageEnd(mContext, "书城_出版");
+                MobclickAgent.onPageEnd("书城_出版");
             }
         }
     }

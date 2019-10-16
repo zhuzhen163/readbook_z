@@ -29,7 +29,7 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
         addDisposable(apiServer.initBookRack(sex), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
-                if ("0".equals(o.getRetcode())){
+                if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.initBookListSuccess(o);
                 }else {
                     baseView.showError(o.getMsg());
@@ -47,7 +47,7 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
         addDisposable(apiServer.bookRackList(), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
-                if ("0".equals(o.getRetcode())){
+                if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.bookListSuccess(o);
                 }else {
                     baseView.showError(o.getMsg());
@@ -65,7 +65,7 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
         addDisposable(apiServer.bookDelete(readerId,bookList), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
-                if ("0".equals(o.getRetcode())){
+                if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.bookDeleteSuccess(o);
                 }else {
                     baseView.showError(o.getMsg());

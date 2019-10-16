@@ -2,6 +2,7 @@ package com.huajie.readbook.presenter;
 
 
 import com.huajie.readbook.BuildConfig;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BaseObserver;
 import com.huajie.readbook.base.mvp.BasePresenter;
@@ -12,11 +13,29 @@ public class MainActivityPresenter extends BasePresenter<MainActivityView> {
         super(baseView);
     }
 
-    public void autoupdate() {
-        addDisposable(apiServer.autoupdate(BuildConfig.VERSION_NAME,1), new BaseObserver(baseView) {
+    public void autoupdate(int channel) {
+        addDisposable(apiServer.autoupdate(BuildConfig.VERSION_NAME,1,channel), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 baseView.updateSuccess(o);
+            }
+
+            @Override
+            public void onError(String msg) {
+                baseView.showError(msg);
+            }
+        });
+    }
+
+    public void activa() {
+        addDisposable(apiServer.activa(1), new BaseObserver(baseView) {
+            @Override
+            public void onSuccess(BaseModel o) {
+                if (BaseContent.basecode.equals(o.getRetcode())){
+                    baseView.activa(o);
+                }else {
+                    baseView.showError(o.getMsg());
+                }
             }
 
             @Override

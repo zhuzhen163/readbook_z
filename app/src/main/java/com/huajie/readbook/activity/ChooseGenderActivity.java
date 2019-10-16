@@ -1,10 +1,14 @@
 package com.huajie.readbook.activity;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.pm.PackageManager;
 import android.media.Image;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,10 +18,16 @@ import android.widget.Toast;
 import com.huajie.readbook.R;
 import com.huajie.readbook.ZApplication;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
+import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BasePresenter;
+import com.huajie.readbook.bean.PublicBean;
+import com.huajie.readbook.presenter.ChooseGenderPresenter;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
+import com.huajie.readbook.view.ChooseGenderActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 
@@ -25,7 +35,7 @@ import butterknife.BindView;
  * 描述：选择性别
  * 作者：Created by zhuzhen
  */
-public class ChooseGenderActivity extends BaseActivity {
+public class ChooseGenderActivity extends BaseActivity<ChooseGenderPresenter> implements ChooseGenderActivityView {
 
     @BindView(R.id.iv_men)
     ImageView iv_men;
@@ -42,8 +52,8 @@ public class ChooseGenderActivity extends BaseActivity {
     private long mExitTime;
 
     @Override
-    protected BasePresenter createPresenter() {
-        return null;
+    protected ChooseGenderPresenter createPresenter() {
+        return new ChooseGenderPresenter(this);
     }
 
     @Override
@@ -78,9 +88,11 @@ public class ChooseGenderActivity extends BaseActivity {
             case R.id.tv_join:
                 String gender = ConfigUtils.getGender();
                 if ("0".equals(gender)){
-                    TCAgent.onEvent(mContext, "男女生 _男");
+                    TCAgent.onEvent(mContext, "性别_选男生");
+                    MobclickAgent.onEvent(mContext, "sex_boy", "性别_选男生");
                 }else {
-                    TCAgent.onEvent(mContext, "男女生 _女");
+                    TCAgent.onEvent(mContext, "性别_选女生");
+                    MobclickAgent.onEvent(mContext, "sex_girl", "性别_选女生");
                 }
                 SwitchActivityManager.startMainActivity(mContext);
                 break;
@@ -176,6 +188,12 @@ public class ChooseGenderActivity extends BaseActivity {
         women_big_exit = AnimatorInflater.loadAnimator(mContext, R.animator.women_big_exit);
         men_small_exit = AnimatorInflater.loadAnimator(mContext, R.animator.men_small_exit);
 
+
+        if (ContextCompat.checkSelfPermission(ChooseGenderActivity.this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(ChooseGenderActivity.this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    1);
+        }
     }
 
     @Override
@@ -185,7 +203,9 @@ public class ChooseGenderActivity extends BaseActivity {
 
     @Override
     protected void initData() {
-        TCAgent.onEvent(mContext, "进入选性别界面");
+//        mPresenter.activa();
+        TCAgent.onEvent(mContext, "选择性别界面");
+        MobclickAgent.onEvent(mContext, "select_sex", "选择性别界面");
     }
 
     @Override
@@ -201,5 +221,36 @@ public class ChooseGenderActivity extends BaseActivity {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void activa(BaseModel<PublicBean> beanBaseModel) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if ((grantResults.length > 0) && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    //TODO
+                }
+                break;
+
+            default:
+                break;
+        }
     }
 }

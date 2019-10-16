@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.ReportGridViewAdapter;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.presenter.ReportActivityPresenter;
@@ -18,6 +19,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReportActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 
@@ -111,6 +113,18 @@ public class ReportActivity extends BaseActivity<ReportActivityPresenter> implem
     @Override
     protected void initData() {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

@@ -29,6 +29,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReadEndActivityView;
 import com.huajie.readbook.widget.ShareBookDialog;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 
 import java.util.ArrayList;
@@ -177,6 +178,18 @@ public class ReadEndActivity extends BaseActivity <ReadEndActivityPresenter> imp
             shareDialog.show();
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

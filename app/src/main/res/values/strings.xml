@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">明阅免费小说</string>
+    <string name="app_name">明阅小说</string>
 
     <!--mode-->
     <string name="wy.mode.night">夜间</string>

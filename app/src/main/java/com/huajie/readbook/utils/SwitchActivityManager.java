@@ -16,6 +16,7 @@ import com.huajie.readbook.activity.FeedBackActivity;
 import com.huajie.readbook.activity.FileSystemActivity;
 import com.huajie.readbook.activity.LoginActivity;
 import com.huajie.readbook.activity.MainActivity;
+import com.huajie.readbook.activity.MessageNoticeActivity;
 import com.huajie.readbook.activity.RankingListActivity;
 import com.huajie.readbook.activity.ReadActivity;
 import com.huajie.readbook.activity.ReadEndActivity;
@@ -25,6 +26,7 @@ import com.huajie.readbook.activity.ReportActivity;
 import com.huajie.readbook.activity.SearchActivity;
 import com.huajie.readbook.activity.SettingActivity;
 import com.huajie.readbook.activity.WebViewActivity;
+import com.huajie.readbook.adapter.MessageNoticeAdapter;
 import com.huajie.readbook.bean.ClassifyModel;
 import com.huajie.readbook.db.entity.CollBookBean;
 
@@ -38,6 +40,12 @@ import java.util.List;
  */
 
 public class SwitchActivityManager {
+    //本地导入
+    public static void startMessageNoticeActivity(Context mContext){
+        Intent in = new Intent(mContext,  MessageNoticeActivity.class);
+        mContext.startActivity(in);
+        ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
     //本地导入
     public static void startFileSystemActivity(Context mContext){
         Intent in = new Intent(mContext,  FileSystemActivity.class);

@@ -6,10 +6,14 @@ import com.huajie.readbook.ZApplication;
 public class BaseContent {
 
     //online
-    public static String base = "http://pro.huajiehuyu.com/";
+//    public static String base = "http://pro.huajiehuyu.com/";
+
+    public static String url = "http://192.168.1.13:9102/";
+
+    public static String notice = "http://192.168.1.12:9105/";
 
     //test
-//    public static String base = "http://test.huajiehuyu.com/";
+    public static String base = "http://test.huajiehuyu.com/";
 
     public static String baseUrl = base+"online-book/";
     public static String ImageUrl = base+"online-imgserver/images/";
@@ -22,7 +26,7 @@ public class BaseContent {
     //分享链接
     public static String shareUrl = base+"online-mingyue/#/share/";
     //服务器返回成功的 cdoe
-    public static String basecode = "0";
+    public static String basecode = "200";
     //默认10条数据
     public static int pageSize = 10;
     //搜索跳转书城

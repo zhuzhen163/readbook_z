@@ -13,8 +13,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huajie.readbook.R;
 import com.huajie.readbook.ZApplication;
@@ -24,33 +28,48 @@ import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.bean.UpdateModel;
+import com.huajie.readbook.db.entity.BookRecordBean;
+import com.huajie.readbook.db.entity.CollBookBean;
+import com.huajie.readbook.db.helper.BookRecordHelper;
+import com.huajie.readbook.db.helper.CollBookHelper;
 import com.huajie.readbook.downloadmanger.DownloadController;
 import com.huajie.readbook.downloadmanger.DownloadTask;
 import com.huajie.readbook.fragment.BookshelfFragment;
+import com.huajie.readbook.fragment.FindFragment;
 import com.huajie.readbook.fragment.MineFragment;
 import com.huajie.readbook.fragment.BookCityFragment;
+import com.huajie.readbook.fragment.NewMineFragment;
+import com.huajie.readbook.fragment.WelfareFragment;
 import com.huajie.readbook.presenter.MainActivityPresenter;
+import com.huajie.readbook.utils.AppUtils;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.StringUtils;
+import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.MainActivityView;
 import com.huajie.readbook.widget.NoScrollViewPager;
 import com.huajie.readbook.widget.UpdateDialog;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 import static com.huajie.readbook.base.BaseContent.FileUrl;
 import static com.huajie.readbook.base.BaseContent.base;
+import static com.huajie.readbook.base.BaseContent.pageSize;
 
 /**
  *描述：
  *作者：Created by zhuzhen
  */
-public class MainActivity extends BaseActivity<MainActivityPresenter> implements MainActivityView ,BookshelfFragment.BookShelfInterFace,UpdateDialog.UpdateCallBack{
+public class MainActivity extends BaseActivity<MainActivityPresenter> implements MainActivityView ,BookshelfFragment.BookShelfInterFace,UpdateDialog.UpdateCallBack,FindFragment.FindInterFace,WelfareFragment.BookShelfInterFace{
 
 
     @BindView(R.id.viewpager)
@@ -58,16 +77,24 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
 
     @BindView(R.id.rb_bookshelf)
     RadioButton rb_bookshelf;
+    @BindView(R.id.rb_find)
+    RadioButton rb_find;
     @BindView(R.id.rb_bookCity)
     RadioButton rb_bookCity;
     @BindView(R.id.rb_mine)
     RadioButton rb_mine;
     @BindView(R.id.tabradios)
     RadioGroup tabradios;
+    @BindView(R.id.rb_welfare)
+    RadioButton rb_welfare;
+
     private List<Fragment> viewpagerFragments;
     private BookshelfFragment bookshelfFragment;
+    private FindFragment findFragment;
     private BookCityFragment bookCityFragment;
-    private MineFragment mineFragment;
+    private WelfareFragment welfareFragment;
+//    private MineFragment mineFragment;
+    private NewMineFragment newMineFragment;
     private ViewPagerAdapter adapter;
     private long mExitTime;
     private String updateUrl;
@@ -75,6 +102,7 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     private UpdateDialog updateDialog;
     // 下载文件的广播
     private DownloadController downloadController;
+
 
     @Override
     protected MainActivityPresenter createPresenter() {
@@ -88,23 +116,41 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
             case R.id.rb_bookshelf:
                 viewpager.setCurrentItem(0);
                 break;
-            case R.id.rb_bookCity:
+            case R.id.rb_find:
                 viewpager.setCurrentItem(1);
                 break;
-            case R.id.rb_mine:
+            case R.id.rb_bookCity:
                 viewpager.setCurrentItem(2);
+                break;
+            case R.id.rb_welfare:
+                viewpager.setCurrentItem(3);
+                break;
+            case R.id.rb_mine:
+                viewpager.setCurrentItem(4);
                 if (StringUtils.isBlank(ConfigUtils.getToken())){
-                    mineFragment.onResume();
+                    newMineFragment.onResume();
                 }
                 break;
+
         }
     }
 
+
     @Override
     protected void initListener() {
+        reConnected(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int channel = AppUtils.channel();
+                mPresenter.autoupdate(channel);
+            }
+        });
         rb_bookshelf.setOnClickListener(this);
         rb_bookCity.setOnClickListener(this);
         rb_mine.setOnClickListener(this);
+        rb_find.setOnClickListener(this);
+        rb_welfare.setOnClickListener(this);
+
     }
 
     @Override
@@ -115,39 +161,58 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         viewpager.setOffscreenPageLimit(2);
         bookshelfFragment = new BookshelfFragment();
         bookshelfFragment.setInterFace(this);
+        findFragment = new FindFragment();
+        findFragment.setInterFace(this);
         bookCityFragment = new BookCityFragment();
-        mineFragment = new MineFragment();
+        welfareFragment = new WelfareFragment();
+        welfareFragment.setInterFace(this);
+//        mineFragment = new MineFragment();
+        newMineFragment = new NewMineFragment();
         viewpagerFragments.clear();
         viewpagerFragments.add(bookshelfFragment);
+        viewpagerFragments.add(findFragment);
         viewpagerFragments.add(bookCityFragment);
-        viewpagerFragments.add(mineFragment);
+        viewpagerFragments.add(welfareFragment);
+//        viewpagerFragments.add(mineFragment);
+        viewpagerFragments.add(newMineFragment);
         adapter = new ViewPagerAdapter(MainActivity.this, viewpagerFragments, getSupportFragmentManager());
         viewpager.setAdapter(adapter);
         if (!ConfigUtils.getChooseGender()){
             ConfigUtils.saveChooseGender(true);
-            rb_bookCity.setChecked(true);
-            viewpager.setCurrentItem(1);
         }
+        rb_find.setChecked(true);
+        viewpager.setCurrentItem(1);
 
-        mPresenter.autoupdate();
+        int channel = AppUtils.channel();
+        mPresenter.autoupdate(channel);
         updateDialog = new UpdateDialog(mContext);
         updateDialog.setUpdateCallBack(this);
 
         if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE},
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},
                     1);
         }
+
+        mPresenter.activa();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         if (BaseContent.searchToBookCity){
             BaseContent.searchToBookCity = false;
             rb_bookCity.setChecked(true);
-            viewpager.setCurrentItem(1);
+            viewpager.setCurrentItem(2);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -164,8 +229,13 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         progressDialog.setMessage("正在下载中...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(false);
+
     }
 
+    @Override
+    public void netWorkConnect(boolean connect) {
+//        super.netWorkConnect(connect);
+    }
 
     /**
      * 双击退出
@@ -197,8 +267,9 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     @Override
     public void toBookCity() {
         rb_bookCity.setChecked(true);
-        viewpager.setCurrentItem(1);
+        viewpager.setCurrentItem(2);
     }
+
 
     @Override
     public void hideNavigation(boolean isHide) {
@@ -233,13 +304,25 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         updateUrl = FileUrl+update.getPath();
         if (StringUtils.isNotBlank(update.getVersion())){
             if (!ZApplication.getAppContext().getVersion().equals(update.getVersion())){
-                if (0 == update.getIsforce()){//强制更新
-                    updateDialog.setContent(update.getNote(),update.getIsforce());
-                }else if (1 == update.getIsforce()){
-                    updateDialog.setContent(update.getNote(),update.getIsforce());
+                try {
+                    int compare = AppUtils.compare(ZApplication.getAppContext().getVersion(), update.getVersion());
+                    if (compare == 1){
+                        if (0 == update.getIsforce()){//强制更新
+                            updateDialog.setContent(update.getNote(),update.getIsforce());
+                        }else if (1 == update.getIsforce()){
+                            updateDialog.setContent(update.getNote(),update.getIsforce());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         }
+    }
+
+    @Override
+    public void activa(BaseModel<PublicBean> beanBaseModel) {
+
     }
 
     @Override
@@ -263,4 +346,5 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
             }
         });
     }
+
 }

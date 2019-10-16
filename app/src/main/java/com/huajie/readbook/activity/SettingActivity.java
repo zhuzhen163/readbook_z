@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.huajie.readbook.R;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.presenter.SettingActivityPresenter;
@@ -21,6 +22,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.SettingActivityView;
 import com.huajie.readbook.widget.LogoutDialog;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.bean.SHARE_MEDIA;
@@ -58,9 +60,13 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.ll_logout:
-                if (!dialog.isShowing()){
-                    dialog.show();
-                }
+//                if (!dialog.isShowing()){
+//                    dialog.show();
+//                }
+                ConfigUtils.saveToken("");
+                ConfigUtils.saveHeadImg("");
+                ConfigUtils.saveReaderId("");
+                SwitchActivityManager.exitActivity(SettingActivity.this);
                 break;
             case R.id.ll_clear:
                 try {
@@ -113,6 +119,7 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         if ("1".equals(ConfigUtils.getReadLayout())){
             tv_layout.setText("章节百分比");
         }else {
@@ -141,7 +148,8 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
             dialog.setDoWhatCallBack(this);
         }
 
-        TCAgent.onPageStart(mContext, "设置");
+        TCAgent.onEvent(mContext, "设置");
+        MobclickAgent.onEvent(mContext, "setting_vc", "设置");
     }
 
     @Override
@@ -162,11 +170,18 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
     public void logoutSuccess(BaseModel<PublicBean> logout) {
         String retcode = logout.getRetcode();
         if ("0".equals(retcode)){
             ConfigUtils.saveToken("");
             ConfigUtils.saveHeadImg("");
+            ConfigUtils.saveReaderId("");
             SwitchActivityManager.exitActivity(SettingActivity.this);
         }
     }
@@ -217,6 +232,5 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "设置");
     }
 }

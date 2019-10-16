@@ -16,6 +16,7 @@ import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.widget.xtablayout.XTabLayout;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,8 @@ public class BookCityFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        TCAgent.onEvent(mContext, "进入书城界面");
+        TCAgent.onEvent(mContext, "书城界面");
+        MobclickAgent.onEvent(mContext, "bookstore_vc", "书城界面");
         mFragments.add(FeaturedFragment.newInstance("精选"));
         mFragments.add(FeaturedFragment.newInstance("男生"));
         mFragments.add(FeaturedFragment.newInstance("女生"));
@@ -68,7 +70,11 @@ public class BookCityFragment extends BaseFragment {
                 }else if (position == 2){
                     BaseContent.tabType = 2;
                 }else if (position == 3){
-                    BaseContent.tabType = 7;
+                    if (BaseContent.base.equals("http://test.huajiehuyu.com/")){
+                        BaseContent.tabType = 4;
+                    }else {
+                        BaseContent.tabType = 7;
+                    }
                 }
             }
 
@@ -119,9 +125,11 @@ public class BookCityFragment extends BaseFragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser){
-            TCAgent.onPageStart(mContext, "书城");
+            TCAgent.onPageStart(mContext, "书城界面");
+            MobclickAgent.onPageStart("书城界面");
         } else {
-            TCAgent.onPageEnd(mContext, "书城");
+            TCAgent.onPageEnd(mContext, "书城界面");
+            MobclickAgent.onPageEnd("书城界面");
         }
     }
 

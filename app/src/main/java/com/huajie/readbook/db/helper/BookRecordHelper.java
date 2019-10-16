@@ -65,6 +65,7 @@ public class BookRecordHelper {
         return bookRecordBeanDao
                 .queryBuilder()
                 .orderDesc()
+                .orderDesc(BookRecordBeanDao.Properties.LastRead)
                 .list();
     }
 

@@ -17,6 +17,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.FeedBackActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
 
@@ -90,7 +91,8 @@ public class FeedBackActivity extends BaseActivity <FeedBackActivityPresenter> i
     protected void initView() {
         setTitleState(View.VISIBLE);
         setTitleName("反馈");
-        TCAgent.onPageStart(mContext, "我要反馈");
+        TCAgent.onEvent(mContext, "我要反馈");
+        MobclickAgent.onEvent(mContext, "feedback_vc", "我要反馈");
     }
 
     @Override
@@ -128,6 +130,17 @@ public class FeedBackActivity extends BaseActivity <FeedBackActivityPresenter> i
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        TCAgent.onPageEnd(mContext, "我要反馈");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -38,6 +38,23 @@ public class ReadActivityPresenter extends BasePresenter<ReadActivityView> {
     Disposable mDisposable;
     String title;
 
+    public void refresh(String bookId) {
+        addDisposable(apiServer.refresh(bookId), new BaseObserver(baseView) {
+            @Override
+            public void onSuccess(BaseModel o) {
+                if (BaseContent.basecode.equals(o.getRetcode())){
+                    baseView.refresh(o);
+                }
+            }
+
+            @Override
+            public void onError(String msg) {
+                baseView.showError(msg);
+            }
+
+        });
+    }
+
     public void updateRackAndHistory(String bookId,String progressbar) {
         addDisposable(apiServer.updateRackAndHistory(bookId,progressbar), new BaseObserver(baseView) {
             @Override

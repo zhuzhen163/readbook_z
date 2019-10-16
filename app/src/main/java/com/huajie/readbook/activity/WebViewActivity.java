@@ -27,10 +27,15 @@ import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.utils.AppUtils;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.NetWorkUtils;
+import com.huajie.readbook.utils.ShareUtils;
 import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.umeng.socialize.UMShareAPI;
+import com.umeng.socialize.bean.SHARE_MEDIA;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,6 +70,33 @@ public class WebViewActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         webView.onResume();
+        extraHeaders = new HashMap<>();
+        extraHeaders.put("userAgent", "android");
+        extraHeaders.put("token", ConfigUtils.getToken());
+        extraHeaders.put("version", BuildConfig.VERSION_NAME);
+        extraHeaders.put("imei",AppUtils.getIMEI(mContext));
+
+        webView.loadUrl(mUrl);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                /**
+                 * Android WebView执行----> javascript代码
+                 * Java调用----> JavaScript的show方法 把这些列表JSON数据，给JavaScript的show方法，然后HTML就把列表数据展示出来了
+                 */
+                JSONObject object = new JSONObject();
+                try {
+                    object.put("userAgent","android");
+                    object.put("version",BuildConfig.VERSION_NAME);
+                    object.put("imei",AppUtils.getIMEI(mContext));
+                    object.put("token",ConfigUtils.getToken());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                webView.loadUrl("javascript:getLoginData(" + object.toString() + ")");
+            }
+        });
     }
 
     @Override
@@ -92,11 +124,7 @@ public class WebViewActivity extends BaseActivity {
         initWebViewSetting(webView, new MyWebViewClient(), new MyWebChromeClient());
         webView.addJavascriptInterface(new JSClient(), "AndroidJs");
 
-        extraHeaders = new HashMap<>();
-        extraHeaders.put("User-Agent", "android");
-        extraHeaders.put("token", ConfigUtils.getToken());
-        extraHeaders.put("version", BuildConfig.VERSION_NAME);
-        webView.loadUrl(mUrl);
+
     }
 
     @Override
@@ -143,9 +171,10 @@ public class WebViewActivity extends BaseActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-            extraHeaders.put("User-Agent", "android");
+            extraHeaders.put("userAgent", "android");
             extraHeaders.put("token", ConfigUtils.getToken());
             extraHeaders.put("version", BuildConfig.VERSION_NAME);
+            extraHeaders.put("imei",AppUtils.getIMEI(mContext));
 
             view.loadUrl(url, extraHeaders);
             return true;
@@ -197,8 +226,8 @@ public class WebViewActivity extends BaseActivity {
             webView.setWebChromeClient(null);
             webView.setWebViewClient(null);
             webView.destroy();
-            webView = null;
             mProgressBar.clearAnimation();
+            webView = null;
         }
         super.onDestroy();
     }
@@ -252,33 +281,34 @@ public class WebViewActivity extends BaseActivity {
 
         @JavascriptInterface
         public void assignToNewPages(String  title,String link){
-            if (title.equals("pullshare")){
-                ToastUtil.showToast("拉起弹窗去分享");
-            }else if (title.equals("pulllogin")){
-                ToastUtil.showToast("拉起login页面");
-            }else if (title.equals("pullhome")){
-                ToastUtil.showToast("拉起弹窗去分享");
-            }else {
-                SwitchActivityManager.startWebViewActivity(mContext,link,title);
-            }
+            SwitchActivityManager.startWebViewActivity(mContext,link,title);
         }
 
         @JavascriptInterface
-        public void sharetowx(String type){
+        public void pulllogin(){
+            SwitchActivityManager.startLoginActivity(mContext);
+        }
+
+        @JavascriptInterface
+        public void pullTodRead(){
+            ToastUtil.showToast("去阅读");
+        }
+
+        @JavascriptInterface
+        public void sharetowx(String type,String url){
             switch (type){
                 case "wx":
-                    ToastUtil.showToast("wx");
+                    ShareUtils.shareImage(WebViewActivity.this, url,  SHARE_MEDIA.WEIXIN);
                     break;
                 case "wxcircle":
-                    ToastUtil.showToast("wxcircle");
+                    ShareUtils.shareImage(WebViewActivity.this, url,SHARE_MEDIA.WEIXIN_CIRCLE);
                     break;
                 case "qq":
-                    ToastUtil.showToast("qq");
+                    ShareUtils.shareWeb(WebViewActivity.this, "", "","","", R.mipmap.icon_logo, SHARE_MEDIA.QQ);
                     break;
                 case "qqcircle":
-                    ToastUtil.showToast("qqcircle");
+                    ShareUtils.shareWeb(WebViewActivity.this, "", "","","", R.mipmap.icon_logo, SHARE_MEDIA.QZONE);
                     break;
-
             }
         }
     }

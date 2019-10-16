@@ -37,6 +37,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ClassSecondActivityView;
 import com.huajie.readbook.widget.FlowLayout;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -347,8 +348,10 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
         lv_list.setPullRefreshEnabled(false);
         lv_list.setLoadMoreEnabled(true);
 
-        TCAgent.onPageStart(mContext, "书籍二级分类页");
-        TCAgent.onEvent(mContext,"all二级分类");
+        TCAgent.onPageStart(mContext, "二级分类页");
+        TCAgent.onEvent(mContext,"二级分类页");
+        MobclickAgent.onEvent(mContext, "two_category_vc", "二级分类页");
+        MobclickAgent.onPageStart("二级分类页");
     }
 
     private void setListView() {
@@ -498,7 +501,20 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
 
     @Override
     protected void onDestroy() {
-        TCAgent.onPageEnd(mContext, "书籍二级分类页");
+        TCAgent.onPageEnd(mContext, "二级分类页");
+        MobclickAgent.onPageEnd("二级分类页");
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -23,6 +23,7 @@ import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.LoginActivityView;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.socialize.UMAuthListener;
 import com.umeng.socialize.UMShareAPI;
 import com.umeng.socialize.UMShareConfig;
@@ -72,24 +73,7 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.tv_getCode:
-                phoneNum = et_phoneNum.getText().toString();
-                if (!TextUtils.isEmpty(phoneNum)){
-                    if (AppUtils.isMobileNO(phoneNum)){
-                        helper = new CountDownButtonHelper(tv_getCode,"点击获取验证码",59,1);
-                        helper.setOnFinishListener(new CountDownButtonHelper.OnFinishListener() {
-                            @Override
-                            public void finish() {
-                            }
-                        });
-                        helper.start();
-                        mPresenter.getAuthCode(phoneNum);
-                    }else {
-                        ToastUtil.showToast("请输入正确的手机号");
-                    }
-                }
-                else {
-                    ToastUtil.showToast("手机号不能为空");
-                }
+                getCode();
                 break;
             case R.id.tv_login:
                 String smsCode = et_smsCode.getText().toString();
@@ -117,9 +101,28 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
         }
     }
 
+    private void getCode() {
+        phoneNum = et_phoneNum.getText().toString();
+        if (!TextUtils.isEmpty(phoneNum)){
+            if (AppUtils.isMobileNO(phoneNum)){
+                helper = new CountDownButtonHelper(tv_getCode,"点击获取验证码",59,1);
+                helper.setOnFinishListener(() -> {
+                });
+                helper.start();
+                mPresenter.getAuthCode(phoneNum);
+            }else {
+                ToastUtil.showToast("请输入正确的手机号");
+            }
+        }
+        else {
+            ToastUtil.showToast("手机号不能为空");
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         iv_WeiXin_Login.setEnabled(true);
     }
 
@@ -131,6 +134,12 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
         tv_login.setOnClickListener(this);
         iv_WeiXin_Login.setOnClickListener(this);
         iv_exitLogin.setOnClickListener(this);
+        reConnected(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCode();
+            }
+        });
     }
 
     @Override
@@ -140,7 +149,8 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
         if (StringUtils.isNotBlank(phoneNum)){
             et_phoneNum.setText(phoneNum);
         }
-        TCAgent.onPageStart(mContext, "登录");
+        TCAgent.onEvent(mContext, "登录界面");
+        MobclickAgent.onEvent(mContext, "login_vc", "登录界面");
     }
 
     @Override
@@ -152,6 +162,8 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
     protected void initData() {
 
     }
+
+
 
     @Override
     public void getCodeSuccess(BaseModel<AuthCodeBean> bean) {
@@ -236,7 +248,6 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
     protected void onDestroy() {
         super.onDestroy();
         UMShareAPI.get(this).release();
-        TCAgent.onPageEnd(mContext, "登录");
     }
 
     @Override
@@ -249,4 +260,9 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
         super.hideLoading();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 }

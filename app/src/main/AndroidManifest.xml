@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.huajie.readbook">
 
+
+    <!--用于读取手机当前的状态-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
     <!-- 访问网络 -->
@@ -14,8 +17,6 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!--用于访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--用于读取手机当前的状态-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <!--友盟分享登录需要权限-->
@@ -115,6 +116,8 @@
         <activity android:name=".activity.WebViewActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.FileSystemActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.MessageNoticeActivity"
             android:screenOrientation="portrait"/>
 
 
@@ -268,6 +271,27 @@
         <meta-data
             android:name="com.openinstall.APP_KEY"
             android:value="un1gze"/>
+
+
+        <!-- User defined. 用户自定义的广播接收器 -->
+        <receiver
+            android:name=".utils.MessageReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <!-- Required 用户注册SDK的intent -->
+                <action android:name="cn.jpush.android.intent.REGISTRATION" />
+                <!-- Required 用户接收SDK消息的intent -->
+                <action android:name="cn.jpush.android.intent.MESSAGE_RECEIVED" />
+                <!-- Required 用户接收SDK通知栏信息的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED" />
+                <!-- Required 用户打开自定义通知栏的intent -->
+                <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" />
+                <!-- 接收网络变化 连接/断开 since 1.6.3 -->
+                <action android:name="cn.jpush.android.intent.CONNECTION" />
+
+                <category android:name="com.huajie.readbook" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

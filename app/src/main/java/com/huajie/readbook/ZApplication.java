@@ -14,6 +14,7 @@ import com.fm.openinstall.OpenInstall;
 import com.huajie.readbook.utils.AppUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
 import com.umeng.socialize.UMShareAPI;
@@ -92,8 +93,8 @@ public class ZApplication extends Application {
         tf = Typeface.createFromAsset(getAssets(), "fonts/FandolSong-Bold.otf");
 
         //TalkingData
-//      TCAgent.init(mBaseApplication,"20035FAA506F40CBA82C0172A936C350",getChannelId()); //线上！！！！！！！！！！！！！
-        TCAgent.init(mBaseApplication,"4F7751617C0443DBBC6F5FEE37F89A2F",getChannelId()); //测试！！！！！！！！！！！！
+//      TCAgent.init(mBaseApplication,"095B6D665E65480C8DA08A9BF3AF4228",getChannelId()); //线上！！！！！！！！！！！！！
+        TCAgent.init(mBaseApplication,"BD9B317375BB4B8E8CB7E94443D0A5AA",getChannelId()); //测试！！！！！！！！！！！！
         TCAgent.setReportUncaughtExceptions(false);
 
         //推送
@@ -103,6 +104,8 @@ public class ZApplication extends Application {
         UMShareAPI.get(mBaseApplication);//初始化sdk
         //开启debug模式，方便定位错误，具体错误检查方式可以查看http://dev.umeng.com/social/android/quick-integration的报错必看，正式发布，请关闭该模式
         Config.DEBUG = true;
+//        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, null);
+        UMConfigure.init(this,"5d19be48570df36940000259",getChannelId(), UMConfigure.DEVICE_TYPE_PHONE,null);
         //bugly
         initAppConfigs();
 
@@ -171,8 +174,7 @@ public class ZApplication extends Application {
 
     /**
      * 将activity压入栈
-     *
-     * @param activity
+     *     * @param activity
      */
     public void addActivity(Activity activity) {
         if (!activityList.contains(activity)) {
