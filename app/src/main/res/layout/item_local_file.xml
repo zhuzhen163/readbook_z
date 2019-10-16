@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="@dimen/dimen60dp">
+		<FrameLayout
+			android:id="@+id/file_fl_icon"
+			android:layout_width="@dimen/dimen60dp"
+			android:layout_height="match_parent">
+			<!--文件夹标识或已选文件标识-->
+			<ImageView
+				android:id="@+id/file_iv_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:visibility="gone"
+				tools:src="@drawable/ic_dir"/>
+		</FrameLayout>
+
+		<RelativeLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:paddingTop="@dimen/dimen10dp"
+			android:paddingBottom="@dimen/dimen10dp">
+
+			<TextView
+				style="@style/WY.Theme.TextAppearance.Common.SingleLine"
+				android:id="@+id/file_tv_name"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:textSize="@dimen/dimen14dp"
+				android:textColor="@color/color_39"
+				android:text=""/>
+
+			<LinearLayout
+				android:id="@+id/file_ll_brief"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:gravity="center_vertical"
+				android:layout_alignParentBottom="true"
+				>
+
+				<TextView
+                    android:id="@+id/tv_leixing"
+					android:textColor="@color/color_9f"
+					android:textSize="@dimen/dimen11dp"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginRight="15dp"
+					tools:text="类型：txt"/>
+
+				<TextView
+					android:textColor="@color/color_9f"
+					android:textSize="@dimen/dimen11dp"
+					android:id="@+id/file_tv_size"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginRight="15dp"
+					tools:text="324kb"/>
+
+				<TextView
+					android:textColor="@color/color_9f"
+					android:textSize="@dimen/dimen11dp"
+					android:id="@+id/file_tv_date"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					tools:text="2017-05-22"/>
+			</LinearLayout>
+
+			<TextView
+				android:textColor="@color/color_9f"
+				android:textSize="@dimen/dimen11dp"
+				android:id="@+id/file_tv_sub_count"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentBottom="true"
+				tools:text="0 项"
+				android:visibility="gone"/>
+		</RelativeLayout>
+
+		<FrameLayout
+			android:layout_width="@dimen/dimen60dp"
+			android:layout_height="match_parent">
+			<!--选择是否添加文件-->
+			<CheckBox
+				android:id="@+id/file_cb_select"
+				android:layout_width="@dimen/dimen20dp"
+				android:layout_height="@dimen/dimen20dp"
+				android:layout_gravity="center"
+				android:enabled="false"
+				android:clickable="false"
+				android:focusableInTouchMode="false"
+				android:button="@null"
+				android:background="@drawable/checkbox_selector" />
+			<TextView
+				android:id="@+id/tv_import"
+				android:visibility="gone"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="已导入"
+				android:layout_gravity="center"
+				android:textColor="@color/color_9f"
+				android:textSize="@dimen/dimen12dp"/>
+		</FrameLayout>
+
+	</LinearLayout>
+
+	<View
+		android:layout_marginLeft="@dimen/dimen20dp"
+		android:layout_width="match_parent"
+		android:layout_height="0.5dp"
+		android:background="@color/color_f1"/>
+
+</LinearLayout>

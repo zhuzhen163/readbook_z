@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/dimen8dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2019-07-26 14:05:07"
+            android:textSize="@dimen/dimen12dp"
+            android:textColor="@color/text_99"/>
+
+        <LinearLayout
+            android:paddingTop="@dimen/dimen5dp"
+            android:paddingBottom="@dimen/dimen7dp"
+            android:paddingRight="@dimen/dimen10dp"
+            android:paddingLeft="@dimen/dimen10dp"
+            android:layout_marginTop="@dimen/dimen5dp"
+            android:layout_marginRight="@dimen/dimen10dp"
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:background="@drawable/background_corners_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="哈哈"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

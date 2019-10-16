@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/f8f8f8"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ll_readHistory"
+        android:background="@color/white"
+        android:layout_marginBottom="@dimen/dimen10dp"
+        android:orientation="vertical"
+        android:paddingRight="@dimen/dimen15dp"
+        android:paddingLeft="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:text=""
+            android:lineSpacingExtra="@dimen/dimen2dp"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen16dp"
+            android:textColor="@color/text_33"/>
+
+        <ImageView
+            android:layout_marginTop="@dimen/dimen10dp"
+            android:id="@+id/civ_pic"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen170dp"
+            />
+        <TextView
+            android:id="@+id/tv_des"
+            android:text=""
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#a5a5a5"
+            android:lineSpacingExtra="@dimen/dimen3dp"
+            android:textSize="@dimen/dimen14dp"
+            android:maxLines="4"
+            android:ellipsize="end"/>
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/dimen10dp"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_weight="1"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen14dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="阅读全文"/>
+            <ImageView
+                android:layout_width="@dimen/dimen6dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:src="@drawable/icon_mine_join"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_more"
+        android:gravity="center"
+        android:textSize="@dimen/dimen15dp"
+        android:textColor="@color/text_33"
+        android:text="更多精选小说"
+        android:layout_marginBottom="@dimen/dimen25dp"
+        android:layout_marginTop="@dimen/dimen10dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/background_white"
+        android:layout_marginRight="@dimen/dimen20dp"
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen45dp" />
+</LinearLayout>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical">
+    <!--path-->
+    <LinearLayout
+        android:background="@color/EFF7FF"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/file_category_tv_path"
+            style="@style/WY.Theme.TextAppearance.Common.SingleLine"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:paddingLeft="@dimen/dimen20dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen12dp"
+            tools:text="存储卡:/"/>
+
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/file_category_tv_back_last"
+            android:layout_width="75dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="上一级"
+            android:textColor="@color/colorTheme"
+            android:textSize="@dimen/dimen12dp"/>
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_file_category"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+    </android.support.v7.widget.RecyclerView>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:id="@+id/ll_nullData"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_marginTop="@dimen/dimen100dp"
+            android:src="@drawable/icon_bookshelf_null"
+            android:layout_width="@dimen/dimen260dp"
+            android:layout_height="@dimen/dimen198dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂无数据"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen16dp"/>
+
+    </LinearLayout>
+</LinearLayout>

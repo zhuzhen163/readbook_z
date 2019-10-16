@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:id="@+id/rl_titleBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen42dp">
+
+        <com.huajie.readbook.utils.CustomTextView
+            android:textSize="@dimen/dimen16dp"
+            android:textColor="@color/text_33"
+            android:id="@+id/tv_title"
+            android:text="发现"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_centerVertical="true"
+            android:id="@+id/iv_search"
+            android:src="@drawable/icon_search"
+            android:padding="@dimen/dimen8dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/dimen5dp"
+            android:layout_width="@dimen/dimen34dp"
+            android:layout_height="@dimen/dimen34dp" />
+
+        <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/color_f1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_below="@id/rl_titleBar"
+        android:id="@+id/rl_find"
+        android:background="@color/f8f8f8"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.github.jdsjlzx.recyclerview.LRecyclerView
+            android:layout_weight="1"
+            android:id="@+id/lv_list"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:descendantFocusability="blocksDescendants"
+            />
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/ll_readHistory"
+            android:gravity="center_vertical"
+            android:background="@drawable/icon_read"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen35dp">
+            <ImageView
+                android:layout_marginRight="@dimen/dimen10dp"
+                android:layout_marginLeft="@dimen/dimen15dp"
+                android:src="@drawable/icon_find_history"
+                android:layout_width="@dimen/dimen15dp"
+                android:layout_height="@dimen/dimen15dp"
+                />
+            <TextView
+                android:id="@+id/tv_readHistory"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dimen13dp"/>
+            <ImageView
+                android:id="@+id/iv_readHistory"
+                android:layout_marginRight="@dimen/dimen5dp"
+                android:src="@drawable/icon_find_close"
+                android:padding="@dimen/dimen10dp"
+                android:layout_width="@dimen/dimen32dp"
+                android:layout_height="@dimen/dimen32dp"
+                />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/net_wok_connect"
+        android:visibility="gone"></include>
+</LinearLayout>

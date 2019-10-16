@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tl_tabs"
+        app:tabSelectedTextColor="@color/color_39"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen43dp" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen2dp">
+        <LinearLayout
+            android:id="@+id/ll_view_1"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="@dimen/dimen20dp"
+                android:layout_height="@dimen/dimen2dp"
+                android:background="@color/colorTheme"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ll_view_2"
+            android:visibility="invisible"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_width="@dimen/dimen20dp"
+                android:layout_height="@dimen/dimen2dp"
+                android:background="@color/colorTheme"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:layout_weight="1"
+        android:id="@+id/vp_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_f1"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen50dp">
+        <TextView
+            android:id="@+id/tv_checkAll"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen14dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="全选"/>
+        <View
+            android:layout_width="@dimen/dimen1dp"
+            android:layout_height="@dimen/dimen40dp"
+            android:background="@color/color_f1"/>
+        <TextView
+            android:id="@+id/tv_addShelf"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:textColor="@color/colorTheme"
+            android:textSize="@dimen/dimen14dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="加入书架(0)"/>
+    </LinearLayout>
+</LinearLayout>
