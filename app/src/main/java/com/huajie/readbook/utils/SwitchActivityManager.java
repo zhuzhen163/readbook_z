@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import com.huajie.readbook.R;
 import com.huajie.readbook.activity.AboutActivity;
+import com.huajie.readbook.activity.AccountManagerActivity;
+import com.huajie.readbook.activity.BindPhoneActivity;
 import com.huajie.readbook.activity.BookCatalogActivity;
 import com.huajie.readbook.activity.BookDetailActivity;
 import com.huajie.readbook.activity.ChooseGenderActivity;
@@ -15,6 +17,7 @@ import com.huajie.readbook.activity.ClassifySecondActivity;
 import com.huajie.readbook.activity.FeedBackActivity;
 import com.huajie.readbook.activity.FileSystemActivity;
 import com.huajie.readbook.activity.LoginActivity;
+import com.huajie.readbook.activity.LoginTransferActivity;
 import com.huajie.readbook.activity.MainActivity;
 import com.huajie.readbook.activity.MessageNoticeActivity;
 import com.huajie.readbook.activity.RankingListActivity;
@@ -28,6 +31,7 @@ import com.huajie.readbook.activity.SettingActivity;
 import com.huajie.readbook.activity.WebViewActivity;
 import com.huajie.readbook.adapter.MessageNoticeAdapter;
 import com.huajie.readbook.bean.ClassifyModel;
+import com.huajie.readbook.bean.ClassifysModel;
 import com.huajie.readbook.db.entity.CollBookBean;
 
 import java.io.Serializable;
@@ -40,7 +44,32 @@ import java.util.List;
  */
 
 public class SwitchActivityManager {
-    //本地导入
+
+    public static void startLoginTransferActivity(Context mContext){
+        Intent in = new Intent(mContext,  LoginTransferActivity.class);
+        mContext.startActivity(in);
+        ((Activity)mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
+
+    public static void startLoginTransferActivity(Context mContext,String type){
+        Intent in = new Intent(mContext,  LoginTransferActivity.class);
+        in.putExtra("type",type);
+        mContext.startActivity(in);
+        ((Activity)mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
+    //绑定手机
+    public static void startBindPhoneActivity(Context mContext){
+        Intent in = new Intent(mContext,  BindPhoneActivity.class);
+        mContext.startActivity(in);
+        ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
+    //账户管理
+    public static void startAccountManagerActivity(Context mContext){
+        Intent in = new Intent(mContext,  AccountManagerActivity.class);
+        mContext.startActivity(in);
+        ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
+    }
+    //消息通知
     public static void startMessageNoticeActivity(Context mContext){
         Intent in = new Intent(mContext,  MessageNoticeActivity.class);
         mContext.startActivity(in);
@@ -56,7 +85,7 @@ public class SwitchActivityManager {
     public static void startWebViewActivity(Context mContext,String loadUrl,String title){
         Intent in = new Intent(mContext,  WebViewActivity.class);
         in.putExtra("mUrl", loadUrl);
-        in.putExtra("title", title);
+        in.putExtra("mTitle", title);
         mContext.startActivity(in);
         ((Activity) mContext).overridePendingTransition(R.anim.left_out, R.anim.left_in);
     }
@@ -137,8 +166,8 @@ public class SwitchActivityManager {
     }
 
     //二级分类
-    public static void startClassifySecondActivity(Context mContext, String name, String id, List<ClassifyModel> list, int gender){
-        Intent in = new Intent(mContext,  ClassifySecondActivity.class);
+    public static void startClassifySecondActivity(Context mContext, String name, String id, List<ClassifysModel> list, int gender){
+        Intent in = new Intent(mContext, ClassifySecondActivity.class);
         Bundle bundle=new Bundle();
         bundle.putSerializable("list",(Serializable)list);//序列化,要注意转化(Serializable)
         bundle.putString("name",name);

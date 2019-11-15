@@ -21,12 +21,16 @@ public class ClassifyActivityPresenter extends BasePresenter<ClassifyActivityVie
         super(baseView);
     }
 
-    public void getClassify() {
-        addDisposable(apiServer.categoryList(1), new BaseObserver(baseView) {
+    public void getClassify(int channel,int parentId) {
+        addDisposable(apiServer.getClassifyListByParams(channel,parentId), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){
-                    baseView.classifySuccess(o);
+                    if (parentId == 0){
+                        baseView.classifySuccess(o);
+                    }else {
+                        baseView.twoClassifySuccess(o);
+                    }
                 }else {
                     baseView.showError(o.getMsg());
                 }

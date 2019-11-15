@@ -4,6 +4,8 @@ package com.huajie.readbook.fragment;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -14,16 +16,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdManager;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
 import com.github.jdsjlzx.interfaces.OnRefreshListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.BookshelfAdapter;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.BaseFragment;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.BookshelfBean;
 import com.huajie.readbook.bean.BookshelfListBean;
 import com.huajie.readbook.bean.PublicBean;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.db.entity.CollBookBean;
 import com.huajie.readbook.db.helper.BookRecordHelper;
 import com.huajie.readbook.db.helper.CollBookHelper;
@@ -41,10 +49,12 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
+import retrofit2.http.GET;
 
 /**
  *描述：书架
@@ -77,6 +87,8 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
     LinearLayout ll_network;
     @BindView(R.id.tv_reConnected)
     TextView tv_reConnected;
+    @BindView(R.id.iv_qiandao)
+    ImageView iv_qiandao;
 
     private DeleteBookShelfDialog deleteBookShelfDialog;
     public BookShelfInterFace interFace;//去书城接口回调
@@ -97,9 +109,14 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
 
     private LRecyclerViewAdapter mLRecyclerViewAdapter = null;
 
-    public int layout = 1;//1封面模式，0列表模式，默认封面
+    public int layout = 0;//1封面模式，0列表模式，默认封面
     private List<BookshelfBean> bookRackList = new ArrayList<>();
-    private List<Integer> deleteList = null;
+    private List<Integer> deleteList  = null;
+    private List<TTFeedAd> mData = new ArrayList<>();
+    private  List<BookshelfBean> dataList;
+
+    private TTAdNative mTTAdNative;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected BookShelfFragmentPresenter createPresenter() {
@@ -157,6 +174,59 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
         deleteBookShelfDialog.setDoWhatCallBack(this);
         TCAgent.onEvent(mContext, "书架界面");
         MobclickAgent.onEvent(mContext, "bookshelf_vc", "书架界面");
+
+        //step1:初始化sdk
+        TTAdManager ttAdManager = TTAdManagerHolder.get();
+        //step2:创建TTAdNative对象,用于调用广告请求接口
+        mTTAdNative = ttAdManager.createAdNative(mContext);
+
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadListAd();
+            }
+        }, 500);
+        switchModel(0);
+    }
+
+    /**
+     * 加载feed广告
+     */
+    public String loadListAd = "933628137";
+    private void loadListAd() {
+        //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId(loadListAd)
+                .setSupportDeepLink(true)
+                .setImageAcceptedSize(640, 320)
+                .setAdCount(3) //请求广告数量为1到3条
+                .build();
+        //step5:请求广告，调用feed广告异步请求接口，加载到广告后，拿到广告素材自定义渲染
+        mTTAdNative.loadFeedAd(adSlot, new TTAdNative.FeedAdListener() {
+
+            @Override
+            public void onError(int code, String message) {
+                if (mRecyclerView != null) {
+                    mRecyclerView.refreshComplete(10);
+                }
+            }
+
+            @Override
+            public void onFeedAdLoad(List<TTFeedAd> ads) {
+                if (mRecyclerView != null) {
+                    mRecyclerView.refreshComplete(10);
+                }
+
+                int count = adapter.getDataList().size();
+                for (TTFeedAd ad : ads) {
+                    ad.setActivityForDownloadApp(mContext);
+                    mData.add(ad);
+                }
+                Collections.shuffle(mData);
+                adapter.setAd(mData);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -169,9 +239,40 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
                 tv_checkAll.setText("全选");
                 break;
             case R.id.tv_delete:
-                if (deleteBookShelfDialog != null && !deleteBookShelfDialog.isShowing()){
-                    deleteBookShelfDialog.show();
+                deleteList = new ArrayList<>();
+                dataList = adapter.getDataList();
+                Iterator<BookshelfBean> iterator = dataList.iterator();
+                boolean local = false;
+                while (iterator.hasNext()){
+                    BookshelfBean next = iterator.next();
+                    if (next.isDelete()){
+                        CollBookBean bookById = CollBookHelper.getsInstance().findBookById(next.getBookId());
+                        if (bookById != null){
+                            BookRecordHelper.getsInstance().removeBook(bookById.get_id());
+                            CollBookHelper.getsInstance().removeBookInRx(next.getCollBookBean()).subscribe(s -> {
+                                    }
+                                    , throwable -> {
+                                        ToastUtil.showToast("删除失败");
+                                    });
+                        }
+                        if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                            if (!next.isImportLocal()){
+                                deleteList.add(Integer.parseInt(next.getBookId()));
+                            }
+                        }
+                        local = true;
+                        iterator.remove();
+                    }
                 }
+
+                if (deleteList.size()>0 || local){
+                    if (deleteBookShelfDialog != null && !deleteBookShelfDialog.isShowing()){
+                        deleteBookShelfDialog.show();
+                    }
+                }else {
+                    ToastUtil.showToast("请选择书籍");
+                }
+
                 break;
             case R.id.tv_checkAll:
                 String string = tv_checkAll.getText().toString();
@@ -194,6 +295,14 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
             case R.id.tv_reConnected:
                 initData();
                 break;
+            case R.id.iv_qiandao:
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    BaseContent.refresh = 1;
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"signin","签到日历");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
+                break;
         }
     }
 
@@ -205,6 +314,7 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
         tv_checkAll.setOnClickListener(this);
         iv_search.setOnClickListener(this);
         tv_findBookCity.setOnClickListener(this);
+        iv_qiandao.setOnClickListener(this);
         mRecyclerView.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -260,11 +370,13 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
             tv_delete_ok.setVisibility(View.VISIBLE);
             iv_search.setVisibility(View.GONE);
             iv_menu.setVisibility(View.GONE);
+            iv_qiandao.setVisibility(View.GONE);
         }else {
             ll_delete.setVisibility(View.GONE);
             tv_delete_ok.setVisibility(View.GONE);
             iv_search.setVisibility(View.VISIBLE);
             iv_menu.setVisibility(View.VISIBLE);
+            iv_qiandao.setVisibility(View.VISIBLE);
         }
         if (interFace != null){
             interFace.hideNavigation(delete);
@@ -300,7 +412,12 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
 
     protected void initData() {
         if (StringUtils.isNotBlank(ConfigUtils.getToken())){
-            mPresenter.getList();
+            String gender = ConfigUtils.getGender();
+            if ("0".equals(gender)){
+                mPresenter.getList("3");
+            }else {
+                mPresenter.getList("2");
+            }
         }else {
             if (!ConfigUtils.getInitBookShelf()){
                 ConfigUtils.saveInitBookShelf(true);
@@ -324,12 +441,13 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
 
             }
         }
+        loadListAd();
     }
 
     @Override
     public void initBookListSuccess(BaseModel<BookshelfListBean> list) {
         BookshelfListBean data = list.getData();
-        bookRackList = data.getBookrack();
+        bookRackList = data.getList();
         if (bookRackList.size()>0){
             List <CollBookBean> collBookBeanList = new ArrayList<>();
             for (int i = 0; i < bookRackList.size(); i++) {
@@ -349,7 +467,7 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
     @Override
     public void bookListSuccess(BaseModel<BookshelfListBean> list) {
         BookshelfListBean data = list.getData();
-        List<BookshelfBean> bookshelfBeans = data.getBookrack();
+        List<BookshelfBean> bookshelfBeans = data.getList();
         bookRackList = localBook(bookshelfBeans);
         if (bookRackList.size()>0){
             adapter.setDataList(bookRackList);
@@ -409,37 +527,15 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
             mRecyclerView.setVisibility(View.GONE);
             ll_bookNull.setVisibility(View.VISIBLE);
         }
+        isDelete(false);
         ToastUtil.showToast("删除成功");
     }
 
     @Override
     public void deleteSubmit() {
-        deleteList = new ArrayList<>();
-        List<BookshelfBean> dataList = adapter.getDataList();
-        Iterator<BookshelfBean> iterator = dataList.iterator();
-        while (iterator.hasNext()){
-            BookshelfBean next = iterator.next();
-            if (next.isDelete()){
-                CollBookBean bookById = CollBookHelper.getsInstance().findBookById(next.getBookId());
-                if (bookById != null){
-                    BookRecordHelper.getsInstance().removeBook(bookById.get_id());
-                    CollBookHelper.getsInstance().removeBookInRx(next.getCollBookBean()).subscribe(s -> {
-                            }
-                            , throwable -> {
-                                ToastUtil.showToast("删除失败");
-                            });
-                }
-                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
-                    if (!next.isImportLocal()){
-                        deleteList.add(Integer.parseInt(next.getBookId()));
-                    }
-                }
-                iterator.remove();
-            }
-        }
 
         if (deleteList.size()>0){
-            mPresenter.bookDelete(1,deleteList);
+            mPresenter.bookDelete(deleteList);
         }else {
             bookRackList = dataList;
             setDeleteNum(0);
@@ -534,7 +630,7 @@ public class BookshelfFragment extends BaseFragment<BookShelfFragmentPresenter> 
     @Override
     public void showError(String msg) {
         super.showError(msg);
-        ToastUtil.showToast(msg);
+//        ToastUtil.showToast(msg);
         mRecyclerView.refreshComplete(10);
     }
 

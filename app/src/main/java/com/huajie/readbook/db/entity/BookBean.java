@@ -6,17 +6,17 @@ import java.util.List;
 
 public class BookBean implements Serializable {
 
-    private String id;
+    private String bookId;
     private String name;
     private String authorId;
     private String authorName;
-    private int words;
+    private int wordCount;
     private String score;
     private String logo;
     private String notes;
     private String disclaimer;
     private int progress;
-    private int totalCounts;
+    private int chapterCount;
     private int heat;
     private String tags;
     private String classifyId;
@@ -25,35 +25,45 @@ public class BookBean implements Serializable {
     private String updateTime;
     private String lastRead;
     private int isJoin;//0表示加入书架
-    private String classifyName;
+    private String firstClassifyName;
     private String mtime;
     private boolean importLocal;
-    private String image;
-    private String alias;
-    private String details;
+    private String expandPic;
+    private String bookAlias;
+    private String bookNotes;
+    private String secondClassify;
 
-    public String getImage() {
-        return image;
+
+    public String getSecondClassify() {
+        return secondClassify;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setSecondClassify(String secondClassify) {
+        this.secondClassify = secondClassify;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getExpandPic() {
+        return expandPic;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setExpandPic(String expandPic) {
+        this.expandPic = expandPic;
     }
 
-    public String getDetails() {
-        return details;
+    public String getBookAlias() {
+        return bookAlias;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setBookAlias(String bookAlias) {
+        this.bookAlias = bookAlias;
+    }
+
+    public String getBookNotes() {
+        return bookNotes;
+    }
+
+    public void setBookNotes(String bookNotes) {
+        this.bookNotes = bookNotes;
     }
 
     public String getLastRead() {
@@ -80,12 +90,12 @@ public class BookBean implements Serializable {
         this.mtime = mtime;
     }
 
-    public String getClassifyName() {
-        return classifyName;
+    public String getFirstClassifyName() {
+        return firstClassifyName;
     }
 
-    public void setClassifyName(String classifyName) {
-        this.classifyName = classifyName;
+    public void setFirstClassifyName(String firstClassifyName) {
+        this.firstClassifyName = firstClassifyName;
     }
 
     public int getIsJoin() {
@@ -120,12 +130,12 @@ public class BookBean implements Serializable {
         isDelete = delete;
     }
 
-    public String getId() {
-        return id;
+    public String getBookId() {
+        return bookId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
     }
 
     public String getName() {
@@ -152,12 +162,12 @@ public class BookBean implements Serializable {
         this.authorName = authorName;
     }
 
-    public int getWords() {
-        return words;
+    public int getWordCount() {
+        return wordCount;
     }
 
-    public void setWords(int words) {
-        this.words = words;
+    public void setWordCount(int wordCount) {
+        this.wordCount = wordCount;
     }
 
     public String getScore() {
@@ -192,12 +202,12 @@ public class BookBean implements Serializable {
         this.progress = progress;
     }
 
-    public int getTotalCounts() {
-        return totalCounts;
+    public int getChapterCount() {
+        return chapterCount;
     }
 
-    public void setTotalCounts(int totalCounts) {
-        this.totalCounts = totalCounts;
+    public void setChapterCount(int chapterCount) {
+        this.chapterCount = chapterCount;
     }
 
     public int getHeat() {
@@ -243,13 +253,13 @@ public class BookBean implements Serializable {
 
     private CollBookBean createCollBookBean() {
         CollBookBean bean = new CollBookBean();
-        bean.set_id(getId());
-        bean.setBookId(getId());
+        bean.set_id(getBookId());
+        bean.setBookId(getBookId());
         bean.setLogo(getLogo());
         bean.setAuthor(getAuthorName());
         bean.setName(getName());
         bean.setNotes(getNotes());
-        bean.setChaptersCount(getTotalCounts());
+        bean.setChaptersCount(getChapterCount());
         bean.setClassifyId(getClassifyId());
         bean.setUpdated(getMtime());
         bean.setImportLocal(isImportLocal());

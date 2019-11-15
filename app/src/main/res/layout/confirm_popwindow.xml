@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:visibility="gone"
             android:background="?android:attr/selectableItemBackground"
             android:id="@+id/ll_switchModel"
             android:layout_marginLeft="@dimen/dimen20dp"
@@ -38,6 +39,7 @@
         </LinearLayout>
 
         <View
+            android:visibility="gone"
             android:background="@color/split"
             android:layout_marginLeft="@dimen/dimen5dp"
             android:layout_marginRight="@dimen/dimen5dp"

@@ -34,8 +34,8 @@ public class ReadHistoryActivityPresenter extends BasePresenter<ReadHistoryActiv
         });
     }
 
-    public void readHistoryDelete(String readerId, List<Integer> bookList) {
-        addDisposable(apiServer.readHistoryDelete(readerId,bookList), new BaseObserver(baseView) {
+    public void readHistoryDelete(List<Integer> bookList) {
+        addDisposable(apiServer.readHistoryDelete(bookList), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){

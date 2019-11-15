@@ -5,13 +5,13 @@ import com.huajie.readbook.db.entity.BookBean;
 import java.util.List;
 
 public class SearchModel {
-    List<BookBean> book;
+    List<BookBean> content;
 
-    public List<BookBean> getBook() {
-        return book;
+    public List<BookBean> getContent() {
+        return content;
     }
 
-    public void setBook(List<BookBean> book) {
-        this.book = book;
+    public void setContent(List<BookBean> content) {
+        this.content = content;
     }
 }

@@ -17,16 +17,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:visibility="gone"
-                    android:text="今日阅读120分钟"
-                    android:id="@+id/tv_readTime"
+                <LinearLayout
+                    android:visibility="visible"
+                    android:id="@+id/ll_readTime"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="@dimen/dimen11dp"
-                    android:textColor="@color/text_99"
-                    android:layout_marginLeft="@dimen/dimen20dp"
-                    android:layout_marginTop="@dimen/dimen10dp"/>
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:text="今日阅读 "
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dimen11dp"
+                        android:textColor="@color/text_99"
+                        android:layout_marginLeft="@dimen/dimen20dp"
+                        android:layout_marginTop="@dimen/dimen10dp"/>
+                    <com.huajie.readbook.utils.BoldTextView
+                        android:id="@+id/tv_readTime"
+                        android:text="0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dimen15dp"
+                        android:textColor="#323232"
+                        android:layout_marginTop="@dimen/dimen10dp"/>
+                    <TextView
+                        android:text=" 分钟"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/dimen11dp"
+                        android:textColor="@color/text_99"
+                        android:layout_marginTop="@dimen/dimen10dp"/>
+                </LinearLayout>
 
                 <RelativeLayout
                     android:layout_marginRight="@dimen/dimen20dp"
@@ -47,16 +66,46 @@
                         android:layout_centerVertical="true"
                         android:orientation="vertical"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/tv_user"
-                            android:textSize="@dimen/dimen20dp"
-                            android:textColor="@color/text_33"
-                            android:layout_width="@dimen/dimen150dp"
-                            android:ellipsize="end"
-                            android:singleLine="true"
-                            android:layout_height="wrap_content"
-                            android:text="注册/登录"/>
+                        android:layout_height="match_parent">
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/tv_user"
+                                android:textSize="@dimen/dimen20dp"
+                                android:textColor="@color/text_33"
+                                android:layout_width="wrap_content"
+                                android:ellipsize="end"
+                                android:singleLine="true"
+                                android:maxWidth="@dimen/dimen150dp"
+                                android:layout_height="wrap_content"
+                                android:text="注册/登录"/>
+                            <LinearLayout
+                                android:layout_marginLeft="@dimen/dimen15dp"
+                                android:visibility="gone"
+                                android:id="@+id/ll_grade"
+                                android:gravity="center"
+                                android:background="@drawable/background_corners_f5"
+                                android:layout_width="@dimen/dimen80dp"
+                                android:layout_height="@dimen/dimen20dp">
+                                <ImageView
+                                    android:id="@+id/iv_grade"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    />
+                                <TextView
+                                    android:id="@+id/tv_grade"
+                                    android:layout_marginLeft="@dimen/dimen5dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#343434"
+                                    android:textSize="@dimen/dimen10dp"
+                                    android:text="钻石收入"
+                                    />
+                            </LinearLayout>
+                        </LinearLayout>
                         <TextView
                             android:visibility="gone"
                             android:id="@+id/tv_inviteCode"
@@ -73,30 +122,7 @@
                             android:textSize="@dimen/dimen10dp"
                             android:textColor="@color/text_99"/>
                     </LinearLayout>
-                    <LinearLayout
-                        android:visibility="gone"
-                        android:id="@+id/ll_grade"
-                        android:layout_marginTop="@dimen/dimen5dp"
-                        android:gravity="center"
-                        android:background="@drawable/background_corners_f5"
-                        android:layout_toRightOf="@id/ll_login"
-                        android:layout_width="@dimen/dimen80dp"
-                        android:layout_height="@dimen/dimen20dp">
-                        <ImageView
-                            android:id="@+id/iv_grade"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/icon_zuanshi"/>
-                        <TextView
-                            android:id="@+id/tv_grade"
-                            android:layout_marginLeft="@dimen/dimen5dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#343434"
-                            android:textSize="@dimen/dimen10dp"
-                            android:text="钻石收入"
-                            />
-                    </LinearLayout>
+
                 </RelativeLayout>
 
                 <LinearLayout
@@ -111,11 +137,11 @@
                         android:id="@+id/ll_total"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:layout_weight="0"
+                        android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <com.huajie.readbook.utils.BoldTextView
                             android:id="@+id/tv_total"
                             android:gravity="center"
                             android:layout_width="@dimen/dimen80dp"
@@ -144,17 +170,23 @@
                             android:layout_width="@dimen/dimen65dp"
                             android:layout_height="@dimen/dimen17dp" />
                     </LinearLayout>
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="1dp"
+                        android:layout_height="@dimen/dimen30dp"
+                        android:background="@color/color_f1"/>
                     <LinearLayout
+                        android:id="@+id/ll_gold"
                         android:gravity="center_horizontal"
                         android:orientation="vertical"
                         android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
-                        <TextView
+                        <com.huajie.readbook.utils.BoldTextView
                             android:id="@+id/tv_goldCoin"
                             android:gravity="center"
-                            android:layout_width="@dimen/dimen80dp"
+                            android:layout_width="@dimen/dimen100dp"
                             android:layout_height="wrap_content"
                             android:singleLine="true"
                             android:ellipsize="end"
@@ -180,14 +212,20 @@
                             android:layout_width="@dimen/dimen65dp"
                             android:layout_height="@dimen/dimen17dp" />
                     </LinearLayout>
+                    <View
+                        android:layout_gravity="center_vertical"
+                        android:layout_width="1dp"
+                        android:layout_height="@dimen/dimen30dp"
+                        android:background="@color/color_f1"/>
                     <LinearLayout
+                        android:id="@+id/ll_money1"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:layout_weight="0"
+                        android:layout_weight="1"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent">
 
-                        <TextView
+                        <com.huajie.readbook.utils.BoldTextView
                             android:id="@+id/tv_cash"
                             android:gravity="center"
                             android:layout_width="@dimen/dimen80dp"
@@ -223,15 +261,15 @@
                     android:layout_marginBottom="@dimen/dimen25dp"
                     android:layout_marginTop="@dimen/dimen25dp"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen80dp"
+                    android:layout_height="@dimen/dimen75dp"
                     android:layout_marginLeft="@dimen/dimen20dp"
                     android:layout_marginRight="@dimen/dimen20dp"
                     android:background="@drawable/icon_mine_huodong" />
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:background="@color/color_f1"/>
+                    android:layout_height="@dimen/dimen10dp"
+                    android:background="@color/color_F5F5F5"/>
 
                 <RelativeLayout
                     android:id="@+id/rl_new_withdraw"
@@ -352,7 +390,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="10dp"
-                    android:background="@color/color_f1"/>
+                    android:background="@color/color_F5F5F5"/>
 
                 <LinearLayout
                     android:id="@+id/ll_friend"

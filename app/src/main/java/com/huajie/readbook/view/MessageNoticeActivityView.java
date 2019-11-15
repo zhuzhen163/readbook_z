@@ -9,8 +9,10 @@ import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.db.entity.BookChaptersBean;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface MessageNoticeActivityView extends BaseView {
-    void getNotices (BaseModel<List<MessageNoticeModel>> noticeModel);
+    void getNotices (BaseModel<MessageNoticeModel> noticeModel);
+    void getNoticesType (BaseModel<Map<String,String>> noticeTypeModel);
 }

@@ -21,13 +21,13 @@ public class CircleProgressBar extends View {
     private Paint mPaint;
     private int strokeWidth = 5;//线条宽度
     private RectF rectF;
-    private int normalColor = Color.parseColor("#A5A5A5");//普通的颜色
-    private int progressColor = Color.parseColor("#FA9025");//已经走了的进度条颜色
-    private int textColor = normalColor;//文字颜色
+    private int normalColor = Color.parseColor("#5297f7");//普通的颜色
+    private int progressColor = Color.parseColor("#5297f7");//已经走了的进度条颜色
+//    private int textColor = normalColor;//文字颜色
     private float textSize = 20;//文字大小
     private int progress = 0;//进度条
     private String centerText = "";//中心填充文字
-    private Paint fontPaint = null;
+//    private Paint fontPaint = null;
     private int stopNum = 0;
     private Paint.Style progress_style = Paint.Style.STROKE;//填充式还是环形式
 
@@ -45,8 +45,8 @@ public class CircleProgressBar extends View {
     {
         super(context, attrs, defStyleAttr);
         TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.CircleProgressBar);
-        textSize = array.getDimension(R.styleable.CircleProgressBar_text_size,textSize);
-        textColor = array.getColor(R.styleable.CircleProgressBar_text_color,textColor);
+//        textSize = array.getDimension(R.styleable.CircleProgressBar_text_size,textSize);
+//        textColor = array.getColor(R.styleable.CircleProgressBar_text_color,textColor);
         centerText = array.getString(R.styleable.CircleProgressBar_text)==null?centerText:array.getString(R.styleable.CircleProgressBar_text);
         strokeWidth = array.getInteger(R.styleable.CircleProgressBar_stroke_width,strokeWidth);
         normalColor = array.getColor(R.styleable.CircleProgressBar_normal_color,normalColor);
@@ -67,10 +67,18 @@ public class CircleProgressBar extends View {
         mPaint.setStyle(progress_style);  //设置画笔模式为描边
         mPaint.setStrokeWidth(strokeWidth);         //设置画笔宽度为10px
 
-        fontPaint = new Paint();
-        fontPaint.setTextSize(textSize);
-        fontPaint.setAntiAlias(true);
-        fontPaint.setColor(textColor);
+//        fontPaint = new Paint();
+//        fontPaint.setTextSize(textSize);
+//        fontPaint.setAntiAlias(true);
+//        fontPaint.setColor(textColor);
+    }
+
+    public void setProgressColor(int progressColor,int normalColor){
+//        mPaint.setColor(progressColor);
+        this.progressColor = progressColor;
+        this.normalColor = normalColor;
+        initPaint();
+        invalidate();
     }
 
     @Override
@@ -107,10 +115,10 @@ public class CircleProgressBar extends View {
         mPaint.setColor(progressColor);
         canvas.drawArc(rectF, 270, progress, progress_style== Paint.Style.FILL, mPaint);
 
-        fontMetrics = fontPaint.getFontMetrics();
-        float textWidth = fontPaint.measureText(centerText);
-        float textHeight = fontPaint.ascent() + fontPaint.descent();
-        canvas.drawText(centerText, width / 2 - textWidth / 2, height / 2 - textHeight / 2, fontPaint);
+//        fontMetrics = fontPaint.getFontMetrics();
+//        float textWidth = fontPaint.measureText(centerText);
+//        float textHeight = fontPaint.ascent() + fontPaint.descent();
+//        canvas.drawText(centerText, width / 2 - textWidth / 2, height / 2 - textHeight / 2, fontPaint);
     }
 
     /**
@@ -179,8 +187,8 @@ public class CircleProgressBar extends View {
      */
     public void stop() {
         if(progressChangeTask!=null){
-            removeCallbacks(progressChangeTask);
         }
+        removeCallbacks(progressChangeTask);
     }
 
     /**

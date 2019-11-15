@@ -12,8 +12,8 @@ public class ReportActivityPresenter extends BasePresenter<ReportActivityView> {
         super(baseView);
     }
 
-    public void addReport(String reportReason,String reportDetail) {
-        addDisposable(apiServer.addReport(reportReason,reportDetail), new BaseObserver(baseView) {
+    public void addReport(String reader,String reportReason,String reportDetail,String createTime) {
+        addDisposable(apiServer.addReport(reader,reportReason,reportDetail,createTime), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){

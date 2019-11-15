@@ -3,13 +3,13 @@ package com.huajie.readbook.bean;
 import java.util.List;
 
 public class ClassifysListModel {
-   private List<ClassifysModel> categorylist;
+   private List<ClassifysModel> list;
 
-    public List<ClassifysModel> getCategorylist() {
-        return categorylist;
+    public List<ClassifysModel> getList() {
+        return list;
     }
 
-    public void setCategorylist(List<ClassifysModel> categorylist) {
-        this.categorylist = categorylist;
+    public void setList(List<ClassifysModel> list) {
+        this.list = list;
     }
 }

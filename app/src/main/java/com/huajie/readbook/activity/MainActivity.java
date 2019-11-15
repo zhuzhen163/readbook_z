@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
@@ -26,8 +27,11 @@ import com.huajie.readbook.adapter.ViewPagerAdapter;
 import com.huajie.readbook.base.BaseActivity;
 import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
+import com.huajie.readbook.bean.ChannelBean;
 import com.huajie.readbook.bean.PublicBean;
+import com.huajie.readbook.bean.RefreshModel;
 import com.huajie.readbook.bean.UpdateModel;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.db.entity.BookRecordBean;
 import com.huajie.readbook.db.entity.CollBookBean;
 import com.huajie.readbook.db.helper.BookRecordHelper;
@@ -47,30 +51,28 @@ import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.MainActivityView;
+import com.huajie.readbook.widget.HotErrorDialog;
 import com.huajie.readbook.widget.NoScrollViewPager;
+import com.huajie.readbook.widget.RedPaperDialog;
 import com.huajie.readbook.widget.UpdateDialog;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.socialize.UMShareAPI;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 import butterknife.BindView;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.Disposable;
+import pl.droidsonroids.gif.GifImageView;
 
-import static com.huajie.readbook.base.BaseContent.FileUrl;
-import static com.huajie.readbook.base.BaseContent.base;
-import static com.huajie.readbook.base.BaseContent.pageSize;
 
 /**
  *描述：
  *作者：Created by zhuzhen
  */
-public class MainActivity extends BaseActivity<MainActivityPresenter> implements MainActivityView ,BookshelfFragment.BookShelfInterFace,UpdateDialog.UpdateCallBack,FindFragment.FindInterFace,WelfareFragment.BookShelfInterFace{
-
+public class MainActivity extends BaseActivity<MainActivityPresenter> implements MainActivityView ,BookshelfFragment.BookShelfInterFace,
+        UpdateDialog.UpdateCallBack,FindFragment.FindInterFace,WelfareFragment.BookInterFace,RedPaperDialog.HotCallBack{
 
     @BindView(R.id.viewpager)
     NoScrollViewPager viewpager;
@@ -87,6 +89,8 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     RadioGroup tabradios;
     @BindView(R.id.rb_welfare)
     RadioButton rb_welfare;
+    @BindView(R.id.iv_click_hot)
+    ImageView iv_click_hot;
 
     private List<Fragment> viewpagerFragments;
     private BookshelfFragment bookshelfFragment;
@@ -102,6 +106,10 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     private UpdateDialog updateDialog;
     // 下载文件的广播
     private DownloadController downloadController;
+
+    private RedPaperDialog redPaperDialog;
+    private HotErrorDialog hotErrorDialog;
+    private AnimationDrawable animationDrawable;
 
 
     @Override
@@ -127,11 +135,18 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
                 break;
             case R.id.rb_mine:
                 viewpager.setCurrentItem(4);
-                if (StringUtils.isBlank(ConfigUtils.getToken())){
-                    newMineFragment.onResume();
+                newMineFragment.onResume();
+                break;
+            case R.id.iv_click_hot:
+                if (redPaperDialog != null){
+                    redPaperDialog.show();
+                    redPaperDialog.setState(1,0);
+                    iv_click_hot.setVisibility(View.GONE);
+                    if(!animationDrawable.isRunning()){
+                        animationDrawable.stop();
+                    }
                 }
                 break;
-
         }
     }
 
@@ -150,6 +165,7 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         rb_mine.setOnClickListener(this);
         rb_find.setOnClickListener(this);
         rb_welfare.setOnClickListener(this);
+        iv_click_hot.setOnClickListener(this);
 
     }
 
@@ -158,7 +174,7 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         setTitleState(View.GONE);
         viewpagerFragments = new ArrayList<>();
         viewpager.setNoScroll(true);
-        viewpager.setOffscreenPageLimit(2);
+        viewpager.setOffscreenPageLimit(4);
         bookshelfFragment = new BookshelfFragment();
         bookshelfFragment.setInterFace(this);
         findFragment = new FindFragment();
@@ -180,21 +196,41 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         if (!ConfigUtils.getChooseGender()){
             ConfigUtils.saveChooseGender(true);
         }
-        rb_find.setChecked(true);
-        viewpager.setCurrentItem(1);
+
+//        int jumpPage = ConfigUtils.getJumpPage();
+//        if (jumpPage == 1){
+//            rb_bookshelf.setChecked(true);
+//            viewpager.setCurrentItem(0);
+//        }else if (jumpPage == 2){
+//            rb_find.setChecked(true);
+//            viewpager.setCurrentItem(1);
+//        }else {
+//            rb_bookCity.setChecked(true);
+//            viewpager.setCurrentItem(2);
+//        }
 
         int channel = AppUtils.channel();
         mPresenter.autoupdate(channel);
+        mPresenter.getViewByChannel(channel);
         updateDialog = new UpdateDialog(mContext);
         updateDialog.setUpdateCallBack(this);
 
-        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},
-                    1);
+        mPresenter.activa();
+
+        redPaperDialog = new RedPaperDialog(mContext);
+        redPaperDialog.setDoWhatCallBack(this);
+
+        if (StringUtils.isBlank(ConfigUtils.getToken())){
+            ConfigUtils.savehotLoading(1);
+            redPaperDialog.show();
+            redPaperDialog.setState(1,0);
+
+            animationDrawable = (AnimationDrawable) iv_click_hot.getBackground();
+            if(!animationDrawable.isRunning()){
+                animationDrawable.start();
+            }
         }
 
-        mPresenter.activa();
 
     }
 
@@ -202,10 +238,40 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
-        if (BaseContent.searchToBookCity){
-            BaseContent.searchToBookCity = false;
+        if (BaseContent.toHome == 1){
+            BaseContent.toHome = 0;
             rb_bookCity.setChecked(true);
             viewpager.setCurrentItem(2);
+        }else if (BaseContent.toHome == 2){
+            BaseContent.toHome = 0;
+            rb_welfare.setChecked(true);
+            viewpager.setCurrentItem(3);
+        }
+
+        if (BaseContent.showHot == 1){
+            BaseContent.showHot = 0;
+            hotVisibility();
+        }
+
+        if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+            iv_click_hot.setVisibility(View.GONE);
+            if (ConfigUtils.getHotError().contains("无法领取新手红包")){
+                ConfigUtils.saveHotError("");
+                hotErrorDialog = new HotErrorDialog(mContext);
+                hotErrorDialog.show();
+            }
+            if (ConfigUtils.getIsNewUser().equals("0") && !ConfigUtils.gethot()){
+                ConfigUtils.savehot(true);
+                if (ConfigUtils.getHotError().contains("无法领取新手红包")){
+                    hotErrorDialog = new HotErrorDialog(mContext);
+                    hotErrorDialog.show();
+                }else {
+                    if (ConfigUtils.getAward() != 0){
+                        redPaperDialog.show();
+                        redPaperDialog.setState(0,ConfigUtils.getAward());
+                    }
+                }
+            }
         }
     }
 
@@ -275,8 +341,14 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
     public void hideNavigation(boolean isHide) {
         if (isHide){
             tabradios.setVisibility(View.GONE);
+            iv_click_hot.setVisibility(View.GONE);
         }else {
             tabradios.setVisibility(View.VISIBLE);
+            if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                iv_click_hot.setVisibility(View.GONE);
+            }else {
+                iv_click_hot.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -300,8 +372,8 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
 
     @Override
     public void updateSuccess(BaseModel<UpdateModel> o) {
-        UpdateModel.Model update = o.getData().getUpdate();
-        updateUrl = FileUrl+update.getPath();
+        UpdateModel.Model update = o.getData().getAppUpdate();
+        updateUrl = update.getPath();
         if (StringUtils.isNotBlank(update.getVersion())){
             if (!ZApplication.getAppContext().getVersion().equals(update.getVersion())){
                 try {
@@ -318,6 +390,29 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
                 }
             }
         }
+    }
+
+    @Override
+    public void getViewByChannel(BaseModel<ChannelBean> o) {
+        ChannelBean data = o.getData();
+        ConfigUtils.saveJumpPage(data.getView());
+
+         int jumpPage = ConfigUtils.getJumpPage();
+          if (jumpPage == 3){
+             if (ConfigUtils.getJump()){
+                 rb_bookshelf.setChecked(true);
+                 viewpager.setCurrentItem(0);
+             }else {
+                 ConfigUtils.saveJump(true);
+                 rb_bookCity.setChecked(true);
+                 viewpager.setCurrentItem(2);
+             }
+         }else {
+              ConfigUtils.saveJump(true);
+             rb_find.setChecked(true);
+             viewpager.setCurrentItem(1);
+         }
+
     }
 
     @Override
@@ -347,4 +442,29 @@ public class MainActivity extends BaseActivity<MainActivityPresenter> implements
         });
     }
 
+    @Override
+    public void webBookCity() {
+        ZApplication.getMainThreadHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                rb_bookCity.setChecked(true);
+                viewpager.setCurrentItem(2);
+            }
+        });
+
+    }
+
+    @Override
+    public void hotVisibility() {
+        if(!animationDrawable.isRunning()){
+            animationDrawable.start();
+        }
+        iv_click_hot.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        UMShareAPI.get(this).onActivityResult(requestCode, resultCode, data);
+    }
 }

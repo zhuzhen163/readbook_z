@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.bean.ClassifyModel;
+import com.huajie.readbook.bean.ClassifysModel;
 import com.huajie.readbook.db.entity.BookBean;
 
 import java.util.List;
@@ -23,11 +24,11 @@ import java.util.List;
  */
 public class ClassifyGridViewAdapter extends BaseAdapter {
 
-    private List<ClassifyModel> list;
+    private List<ClassifysModel> list;
     private LayoutInflater layoutInflater;
     private Context context;
 
-    public ClassifyGridViewAdapter(Context context, List <ClassifyModel> list) {
+    public ClassifyGridViewAdapter(Context context, List <ClassifysModel> list) {
         this.context = context;
         this.list = list;
         layoutInflater = LayoutInflater.from(context);
@@ -61,7 +62,7 @@ public class ClassifyGridViewAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        ClassifyModel model = list.get(position);
+        ClassifysModel model = list.get(position);
         holder.tv_classify.setText(model.getName());
         if (model.isCheck()){
             holder.tv_classify.setTextColor(context.getResources().getColor(R.color.white));

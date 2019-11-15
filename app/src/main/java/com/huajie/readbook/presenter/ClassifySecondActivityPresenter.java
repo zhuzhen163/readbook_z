@@ -16,8 +16,8 @@ public class ClassifySecondActivityPresenter extends BasePresenter<ClassSecondAc
         super(baseView);
     }
 
-    public void classifyQuery(int tabType,String classifyId,String tagName,int progress,int sort,int startWord,int endWord,int pageNo,int pageSize) {
-        addDisposable(apiServer.classifyQuery(tabType,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize), new BaseObserver(baseView) {
+    public void classifyQuery(String firstClassify,String secondClassify,String progress,String sort,int startWord,int endWord,int pageNo,int pageSize) {
+        addDisposable(apiServer.classifyQuery(firstClassify,secondClassify,progress,sort,startWord,endWord,pageNo,pageSize), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){

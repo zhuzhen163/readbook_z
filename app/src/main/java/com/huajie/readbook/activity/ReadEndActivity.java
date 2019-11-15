@@ -17,6 +17,8 @@ import com.huajie.readbook.adapter.ReadEndListActivityAdapter;
 import com.huajie.readbook.base.BaseActivity;
 import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
+import com.huajie.readbook.bean.BookDetailList;
+import com.huajie.readbook.bean.BookList;
 import com.huajie.readbook.bean.BookMiddleModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.db.entity.BookBean;
@@ -37,7 +39,6 @@ import java.util.List;
 
 import butterknife.BindView;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  * 描述：阅读完跳转
@@ -94,7 +95,7 @@ public class ReadEndActivity extends BaseActivity <ReadEndActivityPresenter> imp
             public void onItemClick(View view, int position) {
                 BookBean bookBean = adapter.getDataList().get(position);
                 if (bookBean != null){
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
                 }
             }
         });
@@ -161,8 +162,8 @@ public class ReadEndActivity extends BaseActivity <ReadEndActivityPresenter> imp
 
 
     @Override
-    public void bookListSuccess(BaseModel<BookMiddleModel> o) {
-        bookBeanList = o.getData().getMiddlelist();
+    public void bookListSuccess(BaseModel<BookDetailList> o) {
+        bookBeanList = o.getData().getList();
         adapter.setDataList(bookBeanList);
 
         adapter.notifyDataSetChanged();
@@ -201,35 +202,35 @@ public class ReadEndActivity extends BaseActivity <ReadEndActivityPresenter> imp
     @Override
     public void shareWeiXin() {
         ShareUtils.shareWeb(this, shareUrl+bookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
         );
     }
 
     @Override
     public void shareWeiXinCircle() {
         ShareUtils.shareWeb(this,shareUrl+bookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
         );
     }
 
     @Override
     public void shareQQ() {
         ShareUtils.shareWeb(this, shareUrl+bookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
         );
     }
 
     @Override
     public void shareQzone() {
         ShareUtils.shareWeb(this, shareUrl+bookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
         );
     }
 
     @Override
     public void shareSina() {
         ShareUtils.shareWeb(this, shareUrl+bookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
         );
     }
 

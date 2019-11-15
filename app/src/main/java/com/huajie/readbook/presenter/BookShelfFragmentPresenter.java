@@ -43,8 +43,8 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
         });
     }
 
-    public void getList() {
-        addDisposable(apiServer.bookRackList(), new BaseObserver(baseView) {
+    public void getList(String sex) {
+        addDisposable(apiServer.bookRackList(sex), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){
@@ -61,8 +61,8 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
         });
     }
 
-    public void bookDelete(int readerId, List<Integer> bookList){
-        addDisposable(apiServer.bookDelete(readerId,bookList), new BaseObserver(baseView) {
+    public void bookDelete(List<Integer> bookList){
+        addDisposable(apiServer.bookDelete(bookList), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if (BaseContent.basecode.equals(o.getRetcode())){
@@ -96,7 +96,7 @@ public class BookShelfFragmentPresenter extends BasePresenter<BookshelfFragmentV
 
                             List<BookChapterBean> bookChapterList = new ArrayList<>();
 
-                            for (BookChapterBean bean : bookChaptersBean.getMenu()) {
+                            for (BookChapterBean bean : bookChaptersBean.getContent()) {
                                 BookChapterBean chapterBean = new BookChapterBean();
                                 chapterBean.setBookId(bookChaptersBean.getBook());
                                 chapterBean.setContent(bean.getContent());

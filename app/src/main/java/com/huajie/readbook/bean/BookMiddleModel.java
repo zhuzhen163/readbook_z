@@ -9,13 +9,13 @@ import java.util.List;
  * 作者：Created by zhuzhen
  */
 public class BookMiddleModel {
-    List<BookBean> middlelist;
+    List<BookBean> list;
 
-    public List<BookBean> getMiddlelist() {
-        return middlelist;
+    public List<BookBean> getList() {
+        return list;
     }
 
-    public void setMiddlelist(List<BookBean> middlelist) {
-        this.middlelist = middlelist;
+    public void setList(List<BookBean> list) {
+        this.list = list;
     }
 }

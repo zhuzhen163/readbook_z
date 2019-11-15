@@ -103,7 +103,7 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
                 searchState(1);
                 break;
             case R.id.tv_toBookCity:
-                BaseContent.searchToBookCity = true;
+                BaseContent.toHome = 1;
                 SwitchActivityManager.startMainActivity(mContext);
                 break;
         }
@@ -156,7 +156,7 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
             @Override
             public void onItemClick(View view, int position) {
                 BookBean bookBean = bookList.get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
         reConnected(new View.OnClickListener() {
@@ -280,7 +280,7 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
                 }
             });
             fl_hot.addView(tv);
@@ -308,7 +308,7 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
 
     @Override
     public void bookListSuccess(BaseModel<SearchModel> searchModel) {
-        bookList = searchModel.getData().getBook();
+        bookList = searchModel.getData().getContent();
         if (bookList.size()>0){
             searchState(2);
             adapter.setDataList(bookList);
@@ -321,19 +321,15 @@ public class SearchActivity extends BaseActivity<SearchActivityPresenter> implem
 
     @Override
     public void hotWordsSuccess(BaseModel<HotWordsModel> hotWordsModel) {
-        List<HotWordsModel.Books> books = hotWordsModel.getData().getBooks();
-        if (books.size()>0){
-            HotWordsModel.Books hot_book = books.get(0);
-            tv_tab.setText(hot_book.getName());
-
-            List<BookBean> datas = hot_book.getDatas();
-            if (datas.size()>0){
-                for (int i = 0; i <datas.size() ; i++) {
-                    String name = datas.get(i).getName();
+        List<BookBean> list = hotWordsModel.getData().getList();
+        if (list.size()>0){
+            if (list.size()>0){
+                for (int i = 0; i <list.size() ; i++) {
+                    String name = list.get(i).getName();
                     hotWords.add(name);
                 }
             }
-            setHotWords(hotWords,datas);
+            setHotWords(hotWords,list);
         }
     }
 

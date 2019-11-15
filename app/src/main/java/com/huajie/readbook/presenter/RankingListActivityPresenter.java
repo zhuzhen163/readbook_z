@@ -13,8 +13,8 @@ public class RankingListActivityPresenter extends BasePresenter<RankingListActiv
         super(view);
     }
 
-    public void bookList(int tabType,int type,boolean isRandom,int pageNo,int pageSize) {
-        addDisposable(apiServer.bookList(tabType,type,isRandom,pageNo,pageSize), new BaseObserver(baseView) {
+    public void bookList(int tabType,int type,int isRandom,int secondClassify,int pageNo,int pageSize) {
+        addDisposable(apiServer.bookList(tabType,type,isRandom,secondClassify,pageNo,pageSize), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if ((BaseContent.basecode.equals(o.getRetcode()))){

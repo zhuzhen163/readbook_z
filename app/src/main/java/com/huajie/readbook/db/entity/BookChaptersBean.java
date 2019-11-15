@@ -9,7 +9,7 @@ import java.util.List;
 public class BookChaptersBean {
 
     private String book;
-    private List<BookChapterBean> menu;
+    private List<BookChapterBean> content;
 
     public String getBook() {
         return book;
@@ -19,11 +19,11 @@ public class BookChaptersBean {
         this.book = book;
     }
 
-    public List<BookChapterBean> getMenu() {
-        return menu;
+    public List<BookChapterBean> getContent() {
+        return content;
     }
 
-    public void setMenu(List<BookChapterBean> menu) {
-        this.menu = menu;
+    public void setContent(List<BookChapterBean> content) {
+        this.content = content;
     }
 }

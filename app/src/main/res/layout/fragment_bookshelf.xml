@@ -25,6 +25,16 @@
                 />
 
             <ImageView
+                android:id="@+id/iv_qiandao"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/dimen100dp"
+                android:src="@drawable/icon_qiandao"
+                android:padding="@dimen/dimen9dp"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/dimen40dp"
+                android:layout_height="@dimen/dimen40dp" />
+
+            <ImageView
                 android:id="@+id/iv_search"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="@dimen/dimen50dp"

@@ -3,6 +3,7 @@ package com.huajie.readbook.view;
 
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BaseView;
+import com.huajie.readbook.bean.GoldBean;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.db.entity.BookChaptersBean;
 
@@ -13,6 +14,8 @@ import com.huajie.readbook.db.entity.BookChaptersBean;
 public interface ReadActivityView extends BaseView {
     void bookChapters(BaseModel<BookChaptersBean> bookChaptersBean);
 
+    void chapterList(BaseModel<BookChaptersBean> chapterList);
+
     void bookRackAdd(BaseModel<PublicBean> publicBean);
 
     void finishChapters();
@@ -21,5 +24,5 @@ public interface ReadActivityView extends BaseView {
 
     void shareUrl(BaseModel<PublicBean> url);
 
-    void refresh(BaseModel<String> num);
+    void refresh(BaseModel<GoldBean> num);
 }

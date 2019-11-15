@@ -11,14 +11,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.bean.ClassifyModel;
+import com.huajie.readbook.bean.ClassifysModel;
 import com.huajie.readbook.utils.StringUtils;
 
-import java.util.List;
-
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
-public class ClassifyActivityAdapter extends ListBaseAdapter<ClassifyModel> {
+
+public class ClassifyActivityAdapter extends ListBaseAdapter<ClassifysModel> {
 
     private ImageView iv_Img;
     private TextView tv_name,tv_count;
@@ -34,16 +33,16 @@ public class ClassifyActivityAdapter extends ListBaseAdapter<ClassifyModel> {
 
     @Override
     public void onBindItemHolder(SuperViewHolder holder, int position) {
-        ClassifyModel classifyModel = mDataList.get(position);
+        ClassifysModel classifysModel = mDataList.get(position);
         iv_Img = holder.getView(R.id.iv_Img);
         tv_name = holder.getView(R.id.tv_name);
         tv_count = holder.getView(R.id.tv_count);
-        if (StringUtils.isNotBlank(classifyModel.getLogo())){
-            Glide.with(mContext).load(ImageUrl+classifyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_Img);
+        if (StringUtils.isNotBlank(classifysModel.getLogo())){
+            Glide.with(mContext).load(classifysModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_Img);
         }else {
             Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_Img);
         }
-        tv_name.setText(classifyModel.getName());
-        tv_count.setText(classifyModel.getBookCount()+"册");
+        tv_name.setText(classifysModel.getName());
+        tv_count.setText(classifysModel.getBookCount()+"册");
     }
 }

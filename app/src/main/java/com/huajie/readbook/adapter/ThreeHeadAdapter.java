@@ -15,7 +15,6 @@ import com.huajie.readbook.utils.StringUtils;
 
 import java.util.List;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  * 描述：
@@ -63,7 +62,7 @@ public class ThreeHeadAdapter extends BaseAdapter {
         }
         BookBean bookBean = list.get(position);
         if (StringUtils.isNotBlank(bookBean.getLogo())){
-            Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
+            Glide.with(context).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
         }else {
             Glide.with(context).load(R.drawable.icon_pic_def).into(holder.iv_bookImg);
         }

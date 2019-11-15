@@ -8,8 +8,6 @@ import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
-
 
 public class ReadEndListActivityAdapter extends ListBaseAdapter<BookBean> {
 
@@ -36,10 +34,10 @@ public class ReadEndListActivityAdapter extends ListBaseAdapter<BookBean> {
         tv_tag = holder.getView(R.id.tv_tag);
 
         BookBean bookBean = mDataList.get(position);
-        Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+        Glide.with(context).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         tv_bookName.setText(bookBean.getName());
         tv_book_content.setText(bookBean.getNotes());
         tv_authorName.setText(bookBean.getAuthorName());
-        tv_tag.setText(bookBean.getClassifyName());
+        tv_tag.setText(bookBean.getFirstClassifyName());
     }
 }

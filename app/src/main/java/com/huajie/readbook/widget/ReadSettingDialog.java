@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 
 import com.huajie.readbook.R;
+import com.huajie.readbook.activity.ReadActivity;
 import com.huajie.readbook.activity.SettingActivity;
 import com.huajie.readbook.adapter.ReadBgAdapter;
 import com.huajie.readbook.bean.ReadBgBean;
@@ -79,7 +80,7 @@ public class ReadSettingDialog extends Dialog {
     private ReadBgAdapter mReadBgAdapter;
     private ReadSettingManager mSettingManager;
     private PageLoader mPageLoader;
-    private Activity mActivity;
+    private ReadActivity mActivity;
 
     private int mTextSize;
     private boolean isTextDefault;
@@ -91,7 +92,7 @@ public class ReadSettingDialog extends Dialog {
 
     public ReadSettingDialog(@NonNull Activity activity, PageLoader mPageLoader) {
         super(activity, R.style.ShareDialog);
-        mActivity = activity;
+        mActivity = (ReadActivity) activity;
         this.mPageLoader = mPageLoader;
     }
 
@@ -271,6 +272,7 @@ public class ReadSettingDialog extends Dialog {
         //背景的点击事件
         mReadBgAdapter.setOnItemClickListener((adapter, view, position) -> {
             mPageLoader.setBgColor(position);
+            mActivity.setBgColor(position);
             setReadBg(position);
             adapter.notifyDataSetChanged();
         });

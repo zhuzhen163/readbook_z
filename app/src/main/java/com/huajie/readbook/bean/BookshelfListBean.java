@@ -4,13 +4,13 @@ import java.util.List;
 
 public class BookshelfListBean {
 
-   List<BookshelfBean> bookrack;
+   List<BookshelfBean> list;
 
-    public List<BookshelfBean> getBookrack() {
-        return bookrack;
+    public List<BookshelfBean> getList() {
+        return list;
     }
 
-    public void setBookrack(List<BookshelfBean> bookrack) {
-        this.bookrack = bookrack;
+    public void setList(List<BookshelfBean> list) {
+        this.list = list;
     }
 }

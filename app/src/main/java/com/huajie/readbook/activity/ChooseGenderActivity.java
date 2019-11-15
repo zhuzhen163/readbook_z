@@ -68,7 +68,7 @@ public class ChooseGenderActivity extends BaseActivity<ChooseGenderPresenter> im
                     women_big.start();
                 }
                 isCheck = false;
-                ConfigUtils.saveGender("1");
+                ConfigUtils.saveGender("2");
                 tv_join.setClickable(true);
                 iv_exit.setVisibility(View.VISIBLE);
                 break;
@@ -81,7 +81,7 @@ public class ChooseGenderActivity extends BaseActivity<ChooseGenderPresenter> im
                     women_small.start();
                 }
                 isCheck = false;
-                ConfigUtils.saveGender("0");
+                ConfigUtils.saveGender("3");
                 tv_join.setClickable(true);
                 iv_exit.setVisibility(View.VISIBLE);
                 break;
@@ -99,7 +99,7 @@ public class ChooseGenderActivity extends BaseActivity<ChooseGenderPresenter> im
             case R.id.iv_exit:
                 iv_exit.setVisibility(View.GONE);
                 isCheck = true;
-                if ("1".equals(ConfigUtils.getGender())){
+                if ("2".equals(ConfigUtils.getGender())){
                     women_big_exit.setTarget(iv_women);
                     women_big_exit.start();
                     men_small_exit.setTarget(iv_men);
@@ -190,8 +190,7 @@ public class ChooseGenderActivity extends BaseActivity<ChooseGenderPresenter> im
 
 
         if (ContextCompat.checkSelfPermission(ChooseGenderActivity.this, Manifest.permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(ChooseGenderActivity.this,
-                    new String[]{Manifest.permission.READ_PHONE_STATE},
+            ActivityCompat.requestPermissions(ChooseGenderActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},
                     1);
         }
     }

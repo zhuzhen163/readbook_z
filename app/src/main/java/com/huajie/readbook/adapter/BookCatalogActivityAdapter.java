@@ -9,7 +9,6 @@ import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.db.entity.BookChapterBean;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
 public class BookCatalogActivityAdapter extends ListBaseAdapter<BookChapterBean> {

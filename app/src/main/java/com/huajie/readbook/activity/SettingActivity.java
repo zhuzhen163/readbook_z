@@ -48,6 +48,8 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
     LinearLayout ll_readLayout;
     @BindView(R.id.tv_layout)
     TextView tv_layout;
+    @BindView(R.id.ll_manager)
+    LinearLayout ll_manager;
 
     private LogoutDialog dialog;
 
@@ -63,9 +65,13 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
 //                if (!dialog.isShowing()){
 //                    dialog.show();
 //                }
+                BaseContent.showHot = 1;
+                BaseContent.refresh = 1;
                 ConfigUtils.saveToken("");
                 ConfigUtils.saveHeadImg("");
                 ConfigUtils.saveReaderId("");
+                ConfigUtils.savePhoneNum("");
+                ConfigUtils.saveChatId("");
                 SwitchActivityManager.exitActivity(SettingActivity.this);
                 break;
             case R.id.ll_clear:
@@ -85,11 +91,19 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
             case R.id.ll_readLayout:
                 SwitchActivityManager.startReadLayoutActivity(mContext);
                 break;
+            case R.id.ll_manager:
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startAccountManagerActivity(mContext);
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
+                break;
         }
     }
 
     @Override
     protected void initListener() {
+        ll_manager.setOnClickListener(this);
         ll_logout.setOnClickListener(this);
         ll_clear.setOnClickListener(this);
         sv_button.setOnClickListener(this);
@@ -182,6 +196,8 @@ public class SettingActivity extends BaseActivity <SettingActivityPresenter> imp
             ConfigUtils.saveToken("");
             ConfigUtils.saveHeadImg("");
             ConfigUtils.saveReaderId("");
+            ConfigUtils.savePhoneNum("");
+            ConfigUtils.saveChatId("");
             SwitchActivityManager.exitActivity(SettingActivity.this);
         }
     }

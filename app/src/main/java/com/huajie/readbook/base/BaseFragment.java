@@ -155,7 +155,13 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     @Override
     public void showError(String msg) {
-        showToast(msg);
+        String regex = ".*[a-zA-Z].*";
+        boolean result = msg.matches(regex);
+        if (!result){
+            showToast(msg);
+        }else {
+            showToast("数据异常");
+        }
     }
 
     @Override
@@ -212,74 +218,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-    }
-
-
-    /**
-     * 初始化WebView
-     *
-     * @param webView
-     * @param webViewClient
-     * @param webChromeClient
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void initWebViewSetting(WebView webView, WebViewClient webViewClient, WebChromeClient webChromeClient) {
-        this.baseWebView = webView;
-        disableAccessibility();
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setLoadsImagesAutomatically(true);//支持自动加载图片
-        String user_agent = AppUtils.getUserAgent();
-        webView.getSettings().setUserAgentString(user_agent);
-        int skdInt = Build.VERSION.SDK_INT;
-        if (skdInt <= 18) {
-            webView.getSettings().setSavePassword(false);
-        }
-        if (skdInt >= 19) {
-            webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        }
-        if (skdInt >= Build.VERSION_CODES.LOLLIPOP) {
-            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        if (skdInt >= 11) {
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-        webView.setWebViewClient(webViewClient);
-        webView.setWebChromeClient(webChromeClient);
-    }
-
-    /**
-     * 关闭辅助功能，针对4.2.1和4.2.2 崩溃问题 java.lang.NullPointerException at
-     * android.webkit.AccessibilityInjector$TextToSpeechWrapper$1.onInit(
-     * AccessibilityInjector.java: 753) ... ... at
-     * android.webkit.CallbackProxy.handleMessage(CallbackProxy.java:321)
-     */
-    private void disableAccessibility() {
-        /*
-         * 4.2
-         * (Build.VERSION_CODES.JELLY_BEAN_MR1)
-         */
-        if (Build.VERSION.SDK_INT == 17) {
-            try {
-                AccessibilityManager am = (AccessibilityManager) mContext
-                        .getSystemService(Context.ACCESSIBILITY_SERVICE);
-                if (!am.isEnabled()) {
-                    return;
-                }
-                Method set = am.getClass().getDeclaredMethod("setState", int.class);
-                set.setAccessible(true);
-                set.invoke(am, 0);
-            } catch (Exception e) {
-            }
-        }
     }
 
 }

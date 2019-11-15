@@ -1,6 +1,7 @@
 package com.huajie.readbook.fragment;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,13 +9,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdManager;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.FindFragmentAdapter;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.BaseFragment;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.FindFragmentModel;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.db.entity.BookRecordBean;
 import com.huajie.readbook.db.entity.CollBookBean;
@@ -29,6 +36,7 @@ import com.huajie.readbook.view.FindFragmentView;
 import com.tendcloud.tenddata.TCAgent;
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,6 +76,9 @@ public class FindFragment extends BaseFragment <FindFragmentPresenter> implement
 
     private int sexType;
 
+    private TTAdNative mTTAdNative;
+    private List<TTFeedAd> mData = new ArrayList<>();
+
     public interface FindInterFace{
         void toBookCity();
     }
@@ -91,10 +102,63 @@ public class FindFragment extends BaseFragment <FindFragmentPresenter> implement
             recordBean = bookRecordBeans.get(0);
             tv_readHistory.setText("继续阅读："+recordBean.getName());
         }
-        if (recordBean != null && NetWorkUtils.isAvailableByPing()){
-            ll_readHistory.setVisibility(View.VISIBLE);
-            new Handler().postDelayed(() -> ll_readHistory.setVisibility(View.GONE),15000);
+        try {
+            if (recordBean != null && NetWorkUtils.isAvailableByPing()){
+                ll_readHistory.setVisibility(View.VISIBLE);
+                new Handler().postDelayed(() -> ll_readHistory.setVisibility(View.GONE),15000);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+        //step1:初始化sdk
+        TTAdManager ttAdManager = TTAdManagerHolder.get();
+        //step2:创建TTAdNative对象,用于调用广告请求接口
+        mTTAdNative = ttAdManager.createAdNative(mContext);
+
+        try {
+            loadListAd();
+        }catch (Exception e){
+
+        }
+    }
+
+    /**
+     * 加载feed广告
+     */
+    public String loadListAd = "933628137";
+    private void loadListAd() {
+        //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId(loadListAd)
+                .setSupportDeepLink(true)
+                .setImageAcceptedSize(640, 320)
+                .setAdCount(3) //请求广告数量为1到3条
+                .build();
+        //step5:请求广告，调用feed广告异步请求接口，加载到广告后，拿到广告素材自定义渲染
+        mTTAdNative.loadFeedAd(adSlot, new TTAdNative.FeedAdListener() {
+            @Override
+            public void onError(int code, String message) {
+                if (lv_list != null) {
+                    lv_list.refreshComplete(10);
+                }
+            }
+
+            @Override
+            public void onFeedAdLoad(List<TTFeedAd> ads) {
+                if (lv_list != null) {
+                    lv_list.refreshComplete(10);
+                }
+
+                for (TTFeedAd ad : ads) {
+                    ad.setActivityForDownloadApp(mContext);
+                    mData.add(ad);
+                }
+                Collections.shuffle(mData);
+                adapter.setAd(mData);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -155,6 +219,11 @@ public class FindFragment extends BaseFragment <FindFragmentPresenter> implement
             }
             int channel = AppUtils.channel ();
             mPresenter.getBookListByChannel(channel,sexType);
+            try {
+                loadListAd();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         });
     }
 
@@ -178,7 +247,7 @@ public class FindFragment extends BaseFragment <FindFragmentPresenter> implement
         lv_list.setLoadMoreEnabled(false);
 
         String gender = ConfigUtils.getGender();
-        if ("0".equals(gender)){
+        if ("3".equals(gender)){
             sexType = 3;
         }else {
             sexType = 2;
@@ -200,7 +269,7 @@ public class FindFragment extends BaseFragment <FindFragmentPresenter> implement
     @Override
     public void findList(BaseModel<FindFragmentModel> findList) {
         adapter.clear();
-        List<BookBean> bookList = findList.getData().getBookList();
+        List<BookBean> bookList = findList.getData().getList();
         if (bookList.size()>0){
             Collections.shuffle(bookList);
 

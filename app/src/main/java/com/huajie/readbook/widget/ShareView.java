@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.huajie.readbook.R;
+import com.huajie.readbook.utils.ConfigUtils;
 
 /**
  * 描述：
@@ -32,6 +33,8 @@ public class ShareView extends FrameLayout {
 
     private void init() {
         View layout = View.inflate(getContext(), R.layout.share_view_layout, this);
+        tvInfo = layout.findViewById(R.id.tvInfo);
+        tvInfo.setText(ConfigUtils.getRedCode());
     }
 
     /**
@@ -57,7 +60,7 @@ public class ShareView extends FrameLayout {
 
         measure(widthMeasureSpec, heightMeasureSpec);
         layout(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
-        Bitmap bitmap = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(IMAGE_WIDTH, IMAGE_HEIGHT, Bitmap.Config.ARGB_4444);
 
         Canvas canvas = new Canvas(bitmap);
         draw(canvas);

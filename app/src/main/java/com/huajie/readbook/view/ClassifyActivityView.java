@@ -12,4 +12,6 @@ import java.util.List;
 
 public interface ClassifyActivityView extends BaseView {
     void classifySuccess(BaseModel<ClassifysListModel> o);
+
+    void twoClassifySuccess(BaseModel<ClassifysListModel> o);
 }

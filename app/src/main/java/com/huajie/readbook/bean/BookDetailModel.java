@@ -3,13 +3,13 @@ package com.huajie.readbook.bean;
 import com.huajie.readbook.db.entity.BookBean;
 
 public class BookDetailModel {
-    BookBean book;
+    BookBean appBook;
 
-    public BookBean getBook() {
-        return book;
+    public BookBean getAppBook() {
+        return appBook;
     }
 
-    public void setBook(BookBean book) {
-        this.book = book;
+    public void setAppBook(BookBean appBook) {
+        this.appBook = appBook;
     }
 }

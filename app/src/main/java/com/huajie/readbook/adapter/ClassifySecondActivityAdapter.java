@@ -12,7 +12,6 @@ import com.huajie.readbook.activity.ClassifySecondActivity;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.utils.StringUtils;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
 public class ClassifySecondActivityAdapter extends ListBaseAdapter<BookBean> {
@@ -42,7 +41,7 @@ public class ClassifySecondActivityAdapter extends ListBaseAdapter<BookBean> {
 
         BookBean bookBean = mDataList.get(position);
         if (StringUtils.isNotBlank(bookBean.getLogo())){
-            Glide.with(activity).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+            Glide.with(activity).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         }else {
             Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg);
         }
@@ -60,7 +59,7 @@ public class ClassifySecondActivityAdapter extends ListBaseAdapter<BookBean> {
         }else {
             String score = bookBean.getScore();
             if (StringUtils.isNotBlank(score)){
-                if ("0.0".equals(score)){
+                if ("0.00".equals(score) || "0.0".equals(score)){
                     tv_redu.setVisibility(View.GONE);
                 }else {
                     tv_redu.setVisibility(View.VISIBLE);

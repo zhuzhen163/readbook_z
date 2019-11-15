@@ -2,14 +2,14 @@ package com.huajie.readbook.bean;
 
 public class UpdateModel {
 
-    Model update;
+    Model appUpdate;
 
-    public Model getUpdate() {
-        return update;
+    public Model getAppUpdate() {
+        return appUpdate;
     }
 
-    public void setUpdate(Model update) {
-        this.update = update;
+    public void setAppUpdate(Model appUpdate) {
+        this.appUpdate = appUpdate;
     }
 
     public class Model{

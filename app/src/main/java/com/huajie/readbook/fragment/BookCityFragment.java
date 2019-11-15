@@ -86,9 +86,9 @@ public class BookCityFragment extends BaseFragment {
         vp_classify.setOffscreenPageLimit(2);
         tb_select.setupWithViewPager(vp_classify);
 
-        if ("1".equals(ConfigUtils.getGender())){
+        if ("2".equals(ConfigUtils.getGender())){
             vp_classify.setCurrentItem(2);
-        }else if ("0".equals(ConfigUtils.getGender())){
+        }else if ("3".equals(ConfigUtils.getGender())){
             vp_classify.setCurrentItem(1);
         }
     }

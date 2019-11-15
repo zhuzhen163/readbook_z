@@ -15,7 +15,6 @@ import com.huajie.readbook.utils.StringUtils;
 
 import java.util.List;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  * 描述：
@@ -67,7 +66,7 @@ public class TwoHeadAdapter extends BaseAdapter {
         }
         BookBean bean = list.get(position);
         if (StringUtils.isNotBlank(bean.getLogo())){
-            Glide.with(context).load(ImageUrl+bean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
+            Glide.with(context).load(bean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
         }else {
             Glide.with(context).load(R.drawable.icon_pic_def).into(holder.iv_ph_bookImg1);
         }

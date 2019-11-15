@@ -17,7 +17,6 @@ import com.huajie.readbook.utils.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
 public class SearchActivityAdapter extends ListBaseAdapter<BookBean> {
@@ -46,7 +45,7 @@ public class SearchActivityAdapter extends ListBaseAdapter<BookBean> {
 
         BookBean bookBean = mDataList.get(position);
         if (StringUtils.isNotBlank(bookBean.getLogo())){
-            Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+            Glide.with(context).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         }else {
             Glide.with(context).load(R.drawable.icon_pic_def).into(iv_bookImg);
         }

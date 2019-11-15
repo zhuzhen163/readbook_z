@@ -1,19 +1,16 @@
 package com.huajie.readbook.presenter;
 
 
-import com.huajie.readbook.activity.ReadActivity;
 import com.huajie.readbook.api.ApiRetrofit;
 import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BaseObserver;
 import com.huajie.readbook.base.mvp.BasePresenter;
-import com.huajie.readbook.bean.ChapterInfoBean;
 import com.huajie.readbook.db.entity.ChapterContentBean;
 import com.huajie.readbook.utils.BookManager;
 import com.huajie.readbook.utils.BookSaveUtils;
 import com.huajie.readbook.utils.DesUtil;
 import com.huajie.readbook.utils.LogUtil;
-import com.huajie.readbook.view.MainActivityView;
 import com.huajie.readbook.view.ReadActivityView;
 import com.huajie.readbook.widget.page.TxtChapter;
 
@@ -45,6 +42,23 @@ public class ReadActivityPresenter extends BasePresenter<ReadActivityView> {
                 if (BaseContent.basecode.equals(o.getRetcode())){
                     baseView.refresh(o);
                 }
+            }
+
+            @Override
+            public void onError(String msg) {
+                baseView.showError(msg);
+            }
+
+        });
+    }
+
+    public void save(String bookId,int channelId) {
+        addDisposable(apiServer.save(bookId,channelId), new BaseObserver(baseView) {
+            @Override
+            public void onSuccess(BaseModel o) {
+//                if (BaseContent.basecode.equals(o.getRetcode())){
+//                    baseView.refresh(o);
+//                }
             }
 
             @Override
@@ -112,6 +126,24 @@ public class ReadActivityPresenter extends BasePresenter<ReadActivityView> {
         });
     }
 
+    public void bookDetails(String bookId,String pageNo,int pageSize) {
+        addDisposable(apiServer.chapterList(bookId,pageNo,pageSize), new BaseObserver(baseView) {
+            @Override
+            public void onSuccess(BaseModel o) {
+                if (BaseContent.basecode.equals(o.getRetcode())){
+                    baseView.chapterList(o);
+                }else {
+                    baseView.showError(o.getMsg());
+                }
+            }
+
+            @Override
+            public void onError(String msg) {
+                baseView.showError(msg);
+            }
+        });
+    }
+
     /**
      * 加载正文
      *
@@ -152,6 +184,7 @@ public class ReadActivityPresenter extends BasePresenter<ReadActivityView> {
                             @Override
                             public void accept(BaseModel<ChapterContentBean> bean) throws Exception {
                                 String content = DesUtil.decode(bean.getData().getContent());
+//                                String content = bean.getData().getContent();
                                 BookSaveUtils.getInstance().saveChapterInfo(bookId, title, content);
                                 baseView.finishChapters();
                                 title = titles.poll();

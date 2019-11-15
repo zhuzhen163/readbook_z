@@ -174,11 +174,11 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
         while (iterator.hasNext()){
             BookBean next = iterator.next();
             if (next.isDelete()){
-                BookRecordHelper.getsInstance().removeBook(next.getId());
+                BookRecordHelper.getsInstance().removeBook(next.getBookId());
 
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                     if (!next.isImportLocal()){
-                        deleteList.add(Integer.parseInt(next.getId()));
+                        deleteList.add(Integer.parseInt(next.getBookId()));
                     }
                 }
                 iterator.remove();
@@ -186,7 +186,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
         }
 
         if (deleteList.size()>0){
-            mPresenter.readHistoryDelete(ConfigUtils.getReaderId(),deleteList);
+            mPresenter.readHistoryDelete(deleteList);
         }else {
             if (dataList.size() == 0){
                 mRecyclerView.setVisibility(View.GONE);
@@ -214,6 +214,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
         mRecyclerView.setLoadMoreEnabled(true);
 
         TCAgent.onEvent(mContext, "阅读历史");
+        MobclickAgent.onEvent(mContext, "read_history_vc", "阅读历史");
 
     }
 
@@ -243,7 +244,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                     CollBookBean bookById = CollBookHelper.getsInstance().findBookById(bookRecordBean.getBookId());
                     BookBean bookBean = new BookBean();
                     if (bookById != null){
-                        bookBean.setId(bookById.getBookId());
+                        bookBean.setBookId(bookById.getBookId());
                         bookBean.setLogo(bookById.getLogo());
                         bookBean.setName(bookById.getName());
                         bookBean.setUpdateTime(bookById.getLastRead());
@@ -251,7 +252,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setClassifyId(bookById.getClassifyId());
                         bookBean.setImportLocal(bookById.getImportLocal());
                     }else {
-                        bookBean.setId(bookRecordBean.getBookId());
+                        bookBean.setBookId(bookRecordBean.getBookId());
                         bookBean.setLogo(bookRecordBean.getLogo());
                         bookBean.setName(bookRecordBean.getName());
                         bookBean.setUpdateTime(bookRecordBean.getLastRead());
@@ -327,7 +328,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                     CollBookBean bookById = CollBookHelper.getsInstance().findBookById(bookRecordBean.getBookId());
                     BookBean bookBean = new BookBean();
                     if (bookById != null){
-                        bookBean.setId(bookById.getBookId());
+                        bookBean.setBookId(bookById.getBookId());
                         bookBean.setLogo(bookById.getLogo());
                         bookBean.setName(bookById.getName());
                         if (bookById.getLastRead() == null){
@@ -341,7 +342,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                         bookBean.setImportLocal(bookById.getImportLocal());
                         bookBean.setAuthorName(bookById.getAuthor());
                     }else {
-                        bookBean.setId(bookRecordBean.getBookId());
+                        bookBean.setBookId(bookRecordBean.getBookId());
                         bookBean.setLogo(bookRecordBean.getLogo());
                         bookBean.setName(bookRecordBean.getName());
                         bookBean.setUpdateTime(bookRecordBean.getLastRead());
@@ -361,7 +362,7 @@ public class ReadHistoryActivity extends BaseActivity <ReadHistoryActivityPresen
                     beans.add(bookBean);
                 }
                 for (BookRecordBean recordBean : bookRecordBeans) {
-                    if (bookBean.getId().equals(recordBean.getBookId())) {
+                    if (bookBean.getBookId().equals(recordBean.getBookId())) {
                         //删除出用户收藏并且本地缓存的书籍
                         beans.remove(bookBean);
                     }

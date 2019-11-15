@@ -10,11 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <WebView
-            android:id="@+id/webview_detail"
+        <FrameLayout
+            android:id="@+id/webView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" >
+        </FrameLayout>
 
         <ProgressBar
             android:id="@+id/pb_progress"
@@ -28,4 +28,6 @@
             android:visibility="gone" />
 
     </RelativeLayout>
+
+
 </RelativeLayout>

@@ -8,6 +8,7 @@ import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.NetWorkUtils;
 import com.huajie.readbook.utils.StringUtils;
+import com.umeng.socialize.media.Base;
 
 import org.json.JSONException;
 
@@ -67,7 +68,13 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
     @Override
     protected void onStart() {
         if (view != null) {
-            view.showLoading();
+            if (ConfigUtils.getnoLoading() == 0){
+                if (ConfigUtils.getnohotLoading() == 0){
+                    view.showLoading();
+                }
+            }else {
+                ConfigUtils.savenoLoading(0);
+            }
         }
     }
 
@@ -118,14 +125,6 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
             onException(PARSE_ERROR, "");
             e.printStackTrace();
 
-
-            /**
-             * 此处很重要
-             * 为何这样写：因为开发中有这样的需求   当服务器返回假如0是正常 1是不正常  当返回0时：我们gson 或 fastJson解析数据
-             * 返回1时：我们不想解析（可能返回值出现以前是对象 但是现在数据为空变成了数组等等，于是在不改后台代码的情况下  我们前端需要处理）
-             * 但是用了插件之后没有很有效的方法控制解析 所以处理方式为  当服务器返回不等于0时候  其他状态都抛出异常 然后提示
-             * 代码上一级在 MyGsonResponseBodyConverter 中处理  前往查看逻辑
-             */
         } else if (e instanceof ApiException) {
             ApiException exception = (ApiException) e;
             String code = exception.getErrorCode();
@@ -140,9 +139,14 @@ public abstract class BaseObserver<T> extends DisposableObserver<T> {
                 default:
 //                    onException(OTHER_MESSAGE, exception.getMessage());
 //                    view.onErrorCode(new BaseModel(exception.getMessage(), code));
-                    view.showError(exception.getMessage());
+                    String regex = ".*[a-zA-Z].*";
+                    boolean result = exception.getMessage().matches(regex);
+                    if (!result){
+                        view.showError(exception.getMessage());
+                    }
                     if (StringUtils.isNotBlank(exception.getMessage())){
-                        if (exception.getMessage().contains("重新登录")){
+                        if (exception.getMessage().contains("异地登录")){
+                            BaseContent.refresh = 1;
                             ConfigUtils.saveToken("");
                             ConfigUtils.saveHeadImg("");
                         }

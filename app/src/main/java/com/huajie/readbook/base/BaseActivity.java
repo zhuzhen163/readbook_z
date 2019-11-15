@@ -3,6 +3,8 @@ package com.huajie.readbook.base;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -47,7 +49,6 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     protected final String TAG = this.getClass().getSimpleName();
     public Context mContext;
     protected P mPresenter;
-    public WebView baseWebView;
     private Unbinder unbinder;
     private LinearLayout content,ll_network;
     private RelativeLayout rl_titleBar;
@@ -302,11 +303,6 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
         if (mPresenter != null) {
             mPresenter.detachView();
         }
-        if (baseWebView != null) {
-            baseWebView.removeAllViews();
-            baseWebView.destroy();
-            baseWebView = null;
-        }
         if (loadingDialog != null) {
             loadingDialog.dismiss();
             loadingDialog = null;
@@ -319,69 +315,18 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     }
 
     /**
-     * 初始化WebView
-     *
-     * @param webView
-     * @param webViewClient
-     * @param webChromeClient
+     * 设置 app 字体不随系统字体设置改变
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void initWebViewSetting(WebView webView, WebViewClient webViewClient, WebChromeClient webChromeClient) {
-        this.baseWebView = webView;
-        disableAccessibility();
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setDomStorageEnabled(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-        webView.getSettings().setAllowFileAccess(true);
-        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        webView.getSettings().setLoadsImagesAutomatically(true);//支持自动加载图片
-        String user_agent = AppUtils.getUserAgent();
-        webView.getSettings().setUserAgentString(user_agent);
-        int skdInt = Build.VERSION.SDK_INT;
-        if (skdInt <= 18) {
-            webView.getSettings().setSavePassword(false);
-        }
-        if (skdInt >= 19) {
-            webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        }
-        if (skdInt >= Build.VERSION_CODES.LOLLIPOP) {
-            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-        }
-        if (skdInt >= 11) {
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-        webView.setWebViewClient(webViewClient);
-        webView.setWebChromeClient(webChromeClient);
-    }
-
-    /**
-     * 关闭辅助功能，针对4.2.1和4.2.2 崩溃问题 java.lang.NullPointerException at
-     * android.webkit.AccessibilityInjector$TextToSpeechWrapper$1.onInit(
-     * AccessibilityInjector.java: 753) ... ... at
-     * android.webkit.CallbackProxy.handleMessage(CallbackProxy.java:321)
-     */
-    private void disableAccessibility() {
-        /*
-         * 4.2
-         * (Build.VERSION_CODES.JELLY_BEAN_MR1)
-         */
-        if (Build.VERSION.SDK_INT == 17) {
-            try {
-                AccessibilityManager am = (AccessibilityManager) mContext
-                        .getSystemService(Context.ACCESSIBILITY_SERVICE);
-                if (!am.isEnabled()) {
-                    return;
-                }
-                Method set = am.getClass().getDeclaredMethod("setState", int.class);
-                set.setAccessible(true);
-                set.invoke(am, 0);
-            } catch (Exception e) {
+    @Override
+    public Resources getResources() {
+        Resources res = super.getResources();
+        if (res != null) {
+            Configuration config = res.getConfiguration();
+            if (config != null && config.fontScale != 1.0f) {
+                config.fontScale = 1.0f;
+                res.updateConfiguration(config, res.getDisplayMetrics());
             }
         }
+        return res;
     }
 }

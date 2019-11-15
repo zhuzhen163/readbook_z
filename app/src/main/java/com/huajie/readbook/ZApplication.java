@@ -3,17 +3,26 @@ package com.huajie.readbook;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
+import android.app.Notification;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.fm.openinstall.OpenInstall;
+import com.fm.openinstall.listener.AppInstallAdapter;
+import com.fm.openinstall.model.AppData;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.utils.AppUtils;
+import com.huajie.readbook.utils.LogUtil;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.tencent.smtt.sdk.QbSdk;
 import com.tendcloud.tenddata.TCAgent;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.socialize.Config;
 import com.umeng.socialize.PlatformConfig;
@@ -22,6 +31,8 @@ import com.umeng.socialize.UMShareAPI;
 import java.util.LinkedList;
 import java.util.List;
 
+import cn.jpush.android.api.BasicPushNotificationBuilder;
+import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 
 /**
@@ -56,7 +67,7 @@ import cn.jpush.android.api.JPushInterface;
  *                   不见满街漂亮妹，哪个归得程序员？
  */
 
-public class ZApplication extends Application {
+public class ZApplication extends MultiDexApplication {
 
     //管理Activity
     private static ZApplication mBaseApplication;
@@ -66,7 +77,7 @@ public class ZApplication extends Application {
     private static Handler mMainThreadHandler;// 获取到主线程的Handler
 
     //字体设置
-    public static Typeface tf;
+    public static Typeface tf,tf_bold;
 
     public static int flag=-1;
 
@@ -91,28 +102,59 @@ public class ZApplication extends Application {
         mBaseApplication = this;
 
         tf = Typeface.createFromAsset(getAssets(), "fonts/FandolSong-Bold.otf");
+        tf_bold = Typeface.createFromAsset(getAssets(), "fonts/DIN-Bold.otf");
 
         //TalkingData
 //      TCAgent.init(mBaseApplication,"095B6D665E65480C8DA08A9BF3AF4228",getChannelId()); //线上！！！！！！！！！！！！！
         TCAgent.init(mBaseApplication,"BD9B317375BB4B8E8CB7E94443D0A5AA",getChannelId()); //测试！！！！！！！！！！！！
         TCAgent.setReportUncaughtExceptions(false);
 
+        //广告
+        TTAdManagerHolder.init(this);
         //推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(mBaseApplication);
 
         UMShareAPI.get(mBaseApplication);//初始化sdk
-        //开启debug模式，方便定位错误，具体错误检查方式可以查看http://dev.umeng.com/social/android/quick-integration的报错必看，正式发布，请关闭该模式
-        Config.DEBUG = true;
-//        UMConfigure.init(this, UMConfigure.DEVICE_TYPE_PHONE, null);
+//        UMConfigure.init(this,"5d7f6b413fc19507db000eda",getChannelId(), UMConfigure.DEVICE_TYPE_PHONE,null);
         UMConfigure.init(this,"5d19be48570df36940000259",getChannelId(), UMConfigure.DEVICE_TYPE_PHONE,null);
+        // 选用MANUAL页面采集模式
+        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.LEGACY_MANUAL);
         //bugly
         initAppConfigs();
 
         //openinstall
         if (isMainProcess()) {
+            OpenInstall.setDebug(false);
             OpenInstall.init(mBaseApplication);
+            OpenInstall.getInstall(new AppInstallAdapter() {
+                @Override
+                public void onInstall(AppData appData) {
+                    //获取渠道数据
+                    String channelCode = appData.getChannel();
+                    //获取自定义数据
+                    String bindData = appData.getData();
+                    LogUtil.d("OpenInstall", "getInstall : installData = " + appData.toString());
+                }
+            });
         }
+
+        //x5
+        QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
+
+            @Override
+            public void onViewInitFinished(boolean arg0) {
+                // TODO Auto-generated method stub
+                //x5內核初始化完成的回调，为true表示x5内核加载成功，否则表示x5内核加载失败，会自动切换到系统内核。
+            }
+
+            @Override
+            public void onCoreInitFinished() {
+                // TODO Auto-generated method stub
+            }
+        };
+        //x5内核初始化接口
+        QbSdk.initX5Environment(getApplicationContext(),  cb);
 
     }
 
@@ -214,5 +256,16 @@ public class ZApplication extends Application {
                 activity.finish();
             }
         }
+    }
+
+    @Override
+    public Resources getResources() {//还原字体大小
+        Resources res = super.getResources();
+        Configuration configuration = res.getConfiguration();
+        if (configuration.fontScale != 1.0f) {
+            configuration.fontScale = 1.0f;
+            res.updateConfiguration(configuration, res.getDisplayMetrics());
+        }
+        return res;
     }
 }

@@ -1,6 +1,9 @@
 package com.huajie.readbook.bean;
 
+import com.bytedance.sdk.openadsdk.TTFeedAd;
 import com.huajie.readbook.db.entity.CollBookBean;
+
+import java.util.List;
 
 public class BookshelfBean {
     private String id;//书架id

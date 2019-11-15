@@ -1,14 +1,8 @@
 package com.huajie.readbook.fragment;
 
-import android.graphics.Color;
 import android.os.Handler;
-import android.renderscript.Byte4;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -17,24 +11,23 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.huajie.readbook.R;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.BaseFragment;
 import com.huajie.readbook.base.mvp.BaseModel;
-import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.bean.HomeModel;
-import com.huajie.readbook.db.entity.BookChaptersBean;
+import com.huajie.readbook.bean.NoticeModel;
+import com.huajie.readbook.bean.RefreshModel;
 import com.huajie.readbook.presenter.MineFragmentPresenter;
+import com.huajie.readbook.utils.AppUtils;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
-import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.MinFragmentView;
-import com.huajie.readbook.widget.CircleImageView;
+import com.huajie.readbook.widget.ActivityRulesDialog;
 import com.tendcloud.tenddata.TCAgent;
 import com.umeng.analytics.MobclickAgent;
 
 import butterknife.BindView;
-import retrofit2.http.Field;
-import retrofit2.http.Query;
 
 /**
  *描述：我的
@@ -97,6 +90,14 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
     TextView tv_noticeNum;
     @BindView(R.id.ll_total)
     LinearLayout ll_total;
+    @BindView(R.id.ll_gold)
+    LinearLayout ll_gold;
+    @BindView(R.id.ll_money1)
+    LinearLayout ll_money1;
+    @BindView(R.id.ll_readTime)
+    LinearLayout ll_readTime;
+
+    private ActivityRulesDialog rulesDialog;
 
     @Override
     protected MineFragmentPresenter createPresenter() {
@@ -111,7 +112,7 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
     @Override
     public void onResume() {
         super.onResume();
-        initData();
+        initDatas();
     }
 
     @Override
@@ -122,16 +123,23 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
                 break;
             case R.id.tv_user:
                 SwitchActivityManager.startLoginActivity(mContext);
+                break;
             case R.id.ll_friend:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/friend","");
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startWebViewActivity(mContext, BaseContent.mUrl+"friend","我的好友");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
                 break;
             case R.id.ll_message:
-                SwitchActivityManager.startMessageNoticeActivity(mContext);
-                break;
-            case R.id.ll_money:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/wallet","");
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startMessageNoticeActivity(mContext);
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
                 break;
             case R.id.ll_readHistory:
+                SwitchActivityManager.startReadHistoryActivity(mContext);
                 break;
             case R.id.ll_about:
                 SwitchActivityManager.startAboutActivity(mContext);
@@ -140,26 +148,61 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                     SwitchActivityManager.startFeedBackActivity(mContext);
                 }else {
-                    SwitchActivityManager.startLoginActivity(mContext);
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
                 }
                 break;
             case R.id.ll_setting:
                 SwitchActivityManager.startSettingActivity(mContext);
                 break;
-            case R.id.rl_new_withdraw:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/wallet","");
-                break;
             case R.id.rl_input:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/enterredcode","");
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    BaseContent.refresh = 1;
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"enterredcode","输入邀请码");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
                 break;
             case R.id.rl_inviteFriend:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/share","");
-                break;
             case R.id.iv_activity:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/share","");
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"share","邀请好友");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
                 break;
+            case R.id.ll_grade:
+                if (rulesDialog == null){
+                    rulesDialog = new ActivityRulesDialog(mContext);
+                    rulesDialog.show();
+                }else {
+                    rulesDialog.show();
+                }
+                break;
+            case R.id.rl_new_withdraw:
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"withdrawal?from=gold","金币提现");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
+                break;
+            case R.id.ll_money:
             case R.id.ll_total:
-                SwitchActivityManager.startWebViewActivity(mContext,"http://192.168.1.176:8080/#/wallet","");
+            case R.id.ll_gold:
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"wallet?from=gold","我的钱包");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
+                break;
+            case R.id.ll_money1:
+                if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"wallet?from=cash","我的钱包");
+                }else {
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
+                }
+                break;
+            case R.id.tv_inviteCode:
+                SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"codeintroduce","红包码介绍");
                 break;
         }
     }
@@ -169,7 +212,10 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
         sw_refresh.setOnRefreshListener(() -> {
             new Handler().postDelayed(new Runnable() {
                 public void run() {
-                    ToastUtil.showToast("刷新");
+                    if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                        mPresenter.getNoticeNum();
+                        mPresenter.home();
+                    }
                     sw_refresh.setRefreshing(false);
                 }
             }, 2000);
@@ -187,6 +233,11 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
         rl_inviteFriend.setOnClickListener(this);
         iv_activity.setOnClickListener(this);
         ll_total.setOnClickListener(this);
+        ll_grade.setOnClickListener(this);
+        ll_gold.setOnClickListener(this);
+        ll_money1.setOnClickListener(this);
+        rl_new_withdraw.setOnClickListener(this);
+        tv_inviteCode.setOnClickListener(this);
     }
 
     @Override
@@ -196,27 +247,34 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
 
     @Override
     protected void initData() {
+        mPresenter.refreshToken();
+    }
+
+    private void initDatas() {
         TCAgent.onEvent(mContext, "我的界面");
         MobclickAgent.onEvent(mContext, "mine_vc", "我的界面");
-        tv_inviteCode.setVisibility(View.GONE);
-        ll_grade.setVisibility(View.GONE);
-        tv_readTime.setVisibility(View.GONE);
         if (StringUtils.isNotBlank(ConfigUtils.getToken())){
             if (StringUtils.isNotBlank(ConfigUtils.getHeadImg())){
                 Glide.with(mContext).load(ConfigUtils.getHeadImg()).into(iv_userImg);
             }else {
-                if ("0".equals(ConfigUtils.getGender())){
+                if ("3".equals(ConfigUtils.getGender())){
                     Glide.with(mContext).load(R.drawable.icon_login_men).into(iv_userImg);
                 }else {
                     Glide.with(mContext).load(R.drawable.icon_login_women).into(iv_userImg);
                 }
             }
 
-            tv_user.setText(ConfigUtils.getNickName());
-            ll_grade.setVisibility(View.VISIBLE);
             iv_userImg.setClickable(false);
             tv_user.setClickable(false);
+
+            mPresenter.getNoticeNum();
+            mPresenter.home();
         }else {
+            rl_input.setVisibility(View.VISIBLE);
+            rl_new_withdraw.setVisibility(View.VISIBLE);
+            tv_inviteCode.setVisibility(View.GONE);
+            ll_grade.setVisibility(View.GONE);
+            ll_readTime.setVisibility(View.GONE);
             iv_userImg.setClickable(true);
             tv_user.setClickable(true);
             Glide.with(mContext).load(R.drawable.icon_morentouxiang).into(iv_userImg);
@@ -224,10 +282,15 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
             tv_today_cash.setVisibility(View.GONE);
             tv_today_goldCoin.setVisibility(View.GONE);
             tv_today_total.setVisibility(View.GONE);
+            tv_total.setText("- -");
+            tv_today_total.setVisibility(View.GONE);
+            tv_goldCoin.setText("- -");
+            tv_today_goldCoin.setVisibility(View.GONE);
+            tv_cash.setText("- -");
+            tv_today_cash.setVisibility(View.GONE);
+            tv_noticeNum.setVisibility(View.GONE);
         }
 
-        mPresenter.getNoticeNum();
-        mPresenter.home();
     }
 
     @Override
@@ -243,8 +306,8 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
     }
 
     @Override
-    public void getNoticeNum(BaseModel<String> noticeNum) {
-        String data = noticeNum.getData();
+    public void getNoticeNum(BaseModel<NoticeModel> noticeNum) {
+        String data = noticeNum.getData().getNum();
         if ("0".equals(data)){
             tv_noticeNum.setVisibility(View.GONE);
         }else {
@@ -256,46 +319,86 @@ public class NewMineFragment extends BaseFragment <MineFragmentPresenter>impleme
     @Override
     public void home(BaseModel<HomeModel> homeModel) {
         HomeModel data = homeModel.getData();
-        long todayTime = data.getTodayTime()/1000/60;
-        String readTime = "今日阅读"+"<font color=\"#323232\"><big>"+String.valueOf(todayTime)+"</big></font>"+"分钟";
-        tv_readTime.setText(Html.fromHtml(readTime));
-        tv_readTime.setVisibility(View.VISIBLE);
+        if (data.getPhone() != null){
+            ConfigUtils.savePhoneNum(data.getPhone());
+        }
+        tv_user.setText(data.getNickname());
+        ConfigUtils.saveNickName(data.getNickname());
+        ConfigUtils.saveChatId(data.getWeChatId());
+        tv_readTime.setText(data.getTodayTime()+"");
+        ll_readTime.setVisibility(View.VISIBLE);
 
-        Float todayCash = data.getTodayCash();
+        int level = data.getLevel();
         ll_grade.setVisibility(View.VISIBLE);
-        if (todayCash==0){
+        if (level==0){
             ll_grade.setVisibility(View.GONE);
-        }else if (todayCash>0 && todayCash<=10){
-            tv_grade.setText("铜牌收入");
-            iv_grade.setBackgroundResource(R.drawable.icon_tong);
-        }else if (todayCash>10 && todayCash<=30){
-            tv_grade.setText("银牌收入");
-            iv_grade.setBackgroundResource(R.drawable.icon_yin);
-        }else if (todayCash>30 && todayCash<=50){
-            tv_grade.setText("金牌收入");
-            iv_grade.setBackgroundResource(R.drawable.icon_jin);
-        }else if (todayCash>50 && todayCash<=100){
-            tv_grade.setText("铂金收入");
-            iv_grade.setBackgroundResource(R.drawable.icon_bo);
-        }else if (todayCash>100 && todayCash<=300){
-            tv_grade.setText("钻石收入");
-            iv_grade.setBackgroundResource(R.drawable.icon_zuanshi);
+        }else if (level==1){
+            tv_grade.setText(data.getLevelName());
+            iv_grade.setImageDrawable(getResources().getDrawable(R.drawable.icon_tong));
+        }else if (level==2){
+            tv_grade.setText(data.getLevelName());
+            iv_grade.setImageDrawable(getResources().getDrawable(R.drawable.icon_yin));
+        }else if (level==3){
+            tv_grade.setText(data.getLevelName());
+            iv_grade.setImageDrawable(getResources().getDrawable(R.drawable.icon_jin));
+        }else if (level==4){
+            tv_grade.setText(data.getLevelName());
+            iv_grade.setImageDrawable(getResources().getDrawable(R.drawable.icon_bo));
+        }else if (level==5){
+            tv_grade.setText(data.getLevelName());
+            iv_grade.setImageDrawable(getResources().getDrawable(R.drawable.icon_zuanshi));
         }
 
-        tv_total.setText(String.valueOf(data.getTotalCash()));
-        tv_today_total.setText("今日+"+String.valueOf(data.getTodayCash()));
+        if (StringUtils.isNotBlank(ConfigUtils.getHeadImg())){
+            Glide.with(mContext).load(ConfigUtils.getHeadImg()).into(iv_userImg);
+        }
 
-        tv_goldCoin.setText(String.valueOf(data.getTotalgold()));
-        tv_today_goldCoin.setText("今日+"+String.valueOf(data.getTodaygold()));
+        double today1 = data.getTotalCash()+data.getTotalgold()/10000;
+        tv_total.setText(AppUtils.totalMoney(today1));
+
+        double today = data.getTodaygold()/10000+data.getTodayCash();
+        tv_today_total.setText("今日+"+AppUtils.totalMoney(today));
+
+        tv_goldCoin.setText(String.valueOf((int) data.getTotalgold()));
+        tv_today_goldCoin.setText("今日+"+String.valueOf((int) data.getTodaygold()));
 
         tv_cash.setText(String.valueOf(data.getTotalCash()));
         tv_today_cash.setText("今日+"+String.valueOf(data.getTodayCash()));
 
         tv_inviteCode.setText("红包码："+String.valueOf(data.getRedCode()));
+        ConfigUtils.saveRedCode(data.getRedCode());
         tv_inviteCode.setVisibility(View.VISIBLE);
         tv_today_cash.setVisibility(View.VISIBLE);
         tv_today_goldCoin.setVisibility(View.VISIBLE);
         tv_today_total.setVisibility(View.VISIBLE);
+
+        if (data.getIsNewUser() == 0){
+            if (data.getRedCodeState() == 0){
+                rl_input.setVisibility(View.VISIBLE);
+            }else {
+                rl_input.setVisibility(View.GONE);
+            }
+        }else {
+            rl_input.setVisibility(View.GONE);
+        }
+        if (data.getIsNewUser() == 0 && data.getOneDollar() == 0){
+            rl_new_withdraw.setVisibility(View.VISIBLE);
+        }else {
+            rl_new_withdraw.setVisibility(View.GONE);
+        }
+
     }
 
+    @Override
+    public void refreshToken(BaseModel<RefreshModel> beanBaseModel) {
+        RefreshModel data = beanBaseModel.getData();
+        String token = data.getToken();
+        ConfigUtils.saveToken(token);
+    }
+
+
+    @Override
+    public void showError(String msg) {
+        super.showError(msg);
+    }
 }

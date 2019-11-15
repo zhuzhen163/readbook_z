@@ -18,7 +18,6 @@ import com.huajie.readbook.db.entity.BookRecordBean;
 import com.huajie.readbook.db.helper.BookRecordHelper;
 import com.huajie.readbook.utils.SwitchActivityManager;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
 /**
@@ -58,7 +57,7 @@ public class ReadHistoryAdapter extends ListBaseAdapter<BookBean> {
         if (historyModel.isImportLocal()){
             Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg);
         }else {
-            Glide.with(mContext).load(ImageUrl+historyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+            Glide.with(mContext).load(historyModel.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         }
         if (historyModel.getName() != null){
             String name = historyModel.getName();
@@ -70,7 +69,7 @@ public class ReadHistoryAdapter extends ListBaseAdapter<BookBean> {
             }
         }
         //从数据库取阅读数据
-        mBookRecord = BookRecordHelper.getsInstance().findBookRecordById(historyModel.getId());
+        mBookRecord = BookRecordHelper.getsInstance().findBookRecordById(historyModel.getBookId());
         if (mBookRecord != null){
             String chapterPercent = mBookRecord.getChapterPercent();
             if (!chapterPercent.equals("0.00")){

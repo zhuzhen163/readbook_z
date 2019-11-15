@@ -1,50 +1,73 @@
 package com.huajie.readbook.bean;
 
+import java.util.List;
+
 public class MessageNoticeModel {
 
-    private int msgType;
-    private String notice;
-    private String createTime;
-    private String nid;
-    private int isReade;
+    List<MessageNotice> list;
 
-    public int getMsgType() {
-        return msgType;
+    public List<MessageNotice> getList() {
+        return list;
     }
 
-    public void setMsgType(int msgType) {
-        this.msgType = msgType;
+    public void setList(List<MessageNotice> list) {
+        this.list = list;
     }
 
-    public String getNotice() {
-        return notice;
-    }
+    public class MessageNotice{
+        private String msgType;
+        private String notice;
+        private String createTime;
+        private String nid;
+        private int isReade;
+        private String url;
 
-    public void setNotice(String notice) {
-        this.notice = notice;
-    }
+        public String getUrl() {
+            return url;
+        }
 
-    public String getCreateTime() {
-        return createTime;
-    }
+        public void setUrl(String url) {
+            this.url = url;
+        }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
-    }
+        public String getMsgType() {
+            return msgType;
+        }
 
-    public String getNid() {
-        return nid;
-    }
+        public void setMsgType(String msgType) {
+            this.msgType = msgType;
+        }
 
-    public void setNid(String nid) {
-        this.nid = nid;
-    }
+        public String getNotice() {
+            return notice;
+        }
 
-    public int getIsReade() {
-        return isReade;
-    }
+        public void setNotice(String notice) {
+            this.notice = notice;
+        }
 
-    public void setIsReade(int isReade) {
-        this.isReade = isReade;
+        public String getCreateTime() {
+            return createTime;
+        }
+
+        public void setCreateTime(String createTime) {
+            this.createTime = createTime;
+        }
+
+        public String getNid() {
+            return nid;
+        }
+
+        public void setNid(String nid) {
+            this.nid = nid;
+        }
+
+        public int getIsReade() {
+            return isReade;
+        }
+
+        public void setIsReade(int isReade) {
+            this.isReade = isReade;
+        }
     }
 }

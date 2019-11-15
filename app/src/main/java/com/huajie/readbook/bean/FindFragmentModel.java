@@ -6,13 +6,13 @@ import java.util.List;
 
 public class FindFragmentModel {
 
-    List<BookBean> bookList;
+    List<BookBean> list;
 
-    public List<BookBean> getBookList() {
-        return bookList;
+    public List<BookBean> getList() {
+        return list;
     }
 
-    public void setBookList(List<BookBean> bookList) {
-        this.bookList = bookList;
+    public void setList(List<BookBean> list) {
+        this.list = list;
     }
 }

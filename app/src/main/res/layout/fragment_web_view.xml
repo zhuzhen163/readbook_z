@@ -22,16 +22,25 @@
             />
 
     </RelativeLayout>
+    <View
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_f1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/sw_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <WebView
-            android:id="@+id/webview_detail"
+        <FrameLayout
+            android:id="@+id/webView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" >
+        </FrameLayout>
 
         <ProgressBar
             android:id="@+id/pb_progress"
@@ -45,4 +54,8 @@
             android:visibility="gone" />
 
     </RelativeLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <include layout="@layout/net_wok_connect"
+        android:visibility="gone"/>
 </LinearLayout>

@@ -1,13 +1,11 @@
 package com.huajie.readbook.presenter;
 
 
-import com.huajie.readbook.activity.LoginActivity;
 import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.base.mvp.BaseObserver;
 import com.huajie.readbook.base.mvp.BasePresenter;
 import com.huajie.readbook.view.LoginActivityView;
-import com.huajie.readbook.view.MainActivityView;
 
 public class LoginActivityPresenter extends BasePresenter<LoginActivityView> {
     public LoginActivityPresenter(LoginActivityView view) {
@@ -32,8 +30,8 @@ public class LoginActivityPresenter extends BasePresenter<LoginActivityView> {
         });
     }
 
-    public void login(String phone,String authCode,String loginType,String accessToken,String openId,String sex) {
-        addDisposable(apiServer.login(phone,authCode,loginType,accessToken,openId,sex), new BaseObserver(baseView) {
+    public void login(String phone,String authCode,String loginType,String accessToken,String openId,String sex,String unionid) {
+        addDisposable(apiServer.login(phone,authCode,loginType,accessToken,openId,sex,unionid), new BaseObserver(baseView) {
             @Override
             public void onSuccess(BaseModel o) {
                 if ((BaseContent.basecode.equals(o.getRetcode()))){

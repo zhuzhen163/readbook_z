@@ -1,7 +1,10 @@
 package com.huajie.readbook.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -10,6 +13,7 @@ import android.widget.TextView;
 
 import com.huajie.readbook.R;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.AuthCodeBean;
 import com.huajie.readbook.bean.LoginBean;
@@ -51,15 +55,15 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
     TextView tv_login;
     @BindView(R.id.iv_WeiXin_Login)
     ImageView iv_WeiXin_Login;
-    @BindView(R.id.iv_exitLogin)
-    ImageView iv_exitLogin;
     @BindView(R.id.tv_useragree)
     TextView tv_useragree;
     @BindView(R.id.tv_privacy)
     TextView tv_privacy;
+    @BindView(R.id.iv_cancel)
+    ImageView iv_cancel;
 
     private CountDownButtonHelper helper;
-    private String phoneNum;
+    private String phoneNum,readLogin ="";
     private String useragree = base+"useragree.html";
     private String privacy = base+"privacy.html";
 
@@ -80,7 +84,7 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
                 phoneNum = et_phoneNum.getText().toString();
                 if (!TextUtils.isEmpty(smsCode)){
                     ConfigUtils.saveLoginType(0);
-                    mPresenter.login(phoneNum,smsCode,"0","","", ConfigUtils.getGender());
+                    mPresenter.login(phoneNum,smsCode,"0","","", ConfigUtils.getGender(),"");
                 }else {
                     ToastUtil.showToast("验证码不能为空");
                 }
@@ -89,14 +93,14 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
                 iv_WeiXin_Login.setEnabled(false);
                 authorization(SHARE_MEDIA.WEIXIN);
                 break;
-            case R.id.iv_exitLogin:
-                SwitchActivityManager.exitActivity(LoginActivity.this);
-                break;
             case R.id.tv_useragree:
                 SwitchActivityManager.startWebViewActivity(mContext,useragree,"用户协议");
                 break;
             case R.id.tv_privacy:
                 SwitchActivityManager.startWebViewActivity(mContext,privacy,"隐私政策");
+                break;
+            case R.id.iv_cancel:
+                et_phoneNum.setText("");
                 break;
         }
     }
@@ -105,7 +109,7 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
         phoneNum = et_phoneNum.getText().toString();
         if (!TextUtils.isEmpty(phoneNum)){
             if (AppUtils.isMobileNO(phoneNum)){
-                helper = new CountDownButtonHelper(tv_getCode,"点击获取验证码",59,1);
+                helper = new CountDownButtonHelper(tv_getCode,"获取验证码",59,1);
                 helper.setOnFinishListener(() -> {
                 });
                 helper.start();
@@ -128,24 +132,68 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
 
     @Override
     protected void initListener() {
+        iv_cancel.setOnClickListener(this);
         tv_privacy.setOnClickListener(this);
         tv_useragree.setOnClickListener(this);
         tv_getCode.setOnClickListener(this);
         tv_login.setOnClickListener(this);
         iv_WeiXin_Login.setOnClickListener(this);
-        iv_exitLogin.setOnClickListener(this);
-        reConnected(new View.OnClickListener() {
+        reConnected(v -> getCode());
+        et_phoneNum.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String trim = et_phoneNum.getText().toString();
+                if (StringUtils.isNotBlank(trim) && trim.length() == 11){
+                    tv_getCode.setTextColor(Color.parseColor("#5297f7"));
+                }else {
+                    tv_getCode.setTextColor(Color.parseColor("#989898"));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_smsCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String s1 = et_smsCode.getText().toString();
+                if (StringUtils.isNotBlank(s1)){
+                    tv_login.setEnabled(true);
+                }else {
+                    tv_login.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        setBaseBackListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getCode();
+                SwitchActivityManager.exitActivity(LoginActivity.this);
             }
         });
     }
 
     @Override
     protected void initView() {
-        setTitleState(View.GONE);
-        String phoneNum = ConfigUtils.getPhoneNum();
+        setTitleState(View.VISIBLE);
+        setTitleName("登录");
+        String phoneNum = ConfigUtils.getPhone();
         if (StringUtils.isNotBlank(phoneNum)){
             et_phoneNum.setText(phoneNum);
         }
@@ -160,7 +208,7 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
 
     @Override
     protected void initData() {
-
+        readLogin = getIntent().getStringExtra("readLogin");
     }
 
 
@@ -177,23 +225,32 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
     @Override
     public void loginSuccess(BaseModel<LoginBean> loginBean) {
         iv_WeiXin_Login.setEnabled(true);
+        ConfigUtils.savePhone(et_phoneNum.getText().toString());
         LoginBean data = loginBean.getData();
-        String nickName = data.getNickName();
         String token = data.getToken();
         ConfigUtils.saveReaderId(data.getReaderId());
-        ConfigUtils.saveNickName(nickName);
         ConfigUtils.saveToken(token);
+        ConfigUtils.saveAward(data.getAward());
+        ConfigUtils.saveIsNewUser(data.getIsNewUser());
+        ConfigUtils.saveHotError(loginBean.getMsg());
+        ConfigUtils.savehot(false);
         if (data.getHeadImg() != null){
             ConfigUtils.saveHeadImg(data.getHeadImg());
         }
-        ConfigUtils.savePhoneNum(phoneNum);
-        SwitchActivityManager.startMainActivity(mContext);
+        BaseContent.refresh = 1;
+        if (readLogin != null && readLogin.equals("readLogin")){
+            ConfigUtils.saveReadToken(true);
+            setResult(1);
+            SwitchActivityManager.exitActivity(LoginActivity.this);
+        }else {
+            SwitchActivityManager.startMainActivity(mContext);
+        }
     }
 
     @Override
     public void showError(String msg) {
         super.showError(msg);
-        ToastUtil.showToast(msg);
+        ToastUtil.showToast("服务异常");
         iv_WeiXin_Login.setEnabled(true);
         if (helper != null){
             helper.cancle(tv_getCode);
@@ -211,12 +268,12 @@ public class LoginActivity extends BaseActivity <LoginActivityPresenter> impleme
             @Override
             public void onComplete(SHARE_MEDIA share_media, int i, Map<String, String> map) {
                 Log.d(TAG, "onComplete " + "授权完成");
-
                 String openid = map.get("openid");
+                String unionid = map.get("unionid");
                 String access_token = map.get("access_token");
                 ConfigUtils.saveLoginType(1);
                 try {
-                    mPresenter.login("","","1", DesUtil.encode(access_token),  DesUtil.encode(openid),ConfigUtils.getGender());
+                    mPresenter.login("","","1", DesUtil.encode(access_token),  DesUtil.encode(openid),ConfigUtils.getGender(),DesUtil.encode(unionid));
                 }catch (Exception e){
                     e.printStackTrace();
                 }

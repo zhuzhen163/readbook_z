@@ -8,7 +8,7 @@ public class ClassifySecondModel {
 
     private String name;
     private String notes;
-    private List<BookBean> datas;
+    private List<BookBean> list;
 
 
     public String getNotes() {
@@ -19,12 +19,12 @@ public class ClassifySecondModel {
         this.notes = notes;
     }
 
-    public List<BookBean> getDatas() {
-        return datas;
+    public List<BookBean> getList() {
+        return list;
     }
 
-    public void setDatas(List<BookBean> datas) {
-        this.datas = datas;
+    public void setList(List<BookBean> list) {
+        this.list = list;
     }
 
     public String getName() {

@@ -64,7 +64,7 @@ public abstract class PageLoader {
     public static final int STATUS_PARSE = 5;    //正在解析 (一般用于本地数据加载)
     public static final int STATUS_PARSE_ERROR = 6; //本地文件解析错误(暂未被使用)
 
-    static final int DEFAULT_MARGIN_HEIGHT = 38;
+    static final int DEFAULT_MARGIN_HEIGHT = 48;
     static final int DEFAULT_MARGIN_WIDTH = 12;
 
     //默认的显示参数配置
@@ -821,7 +821,7 @@ public abstract class PageLoader {
 
     void drawBackground(Bitmap bitmap, boolean isUpdate) {
         Canvas canvas = new Canvas(bitmap);
-        int tipMarginHeight = ScreenUtils.dpToPx(8);
+        int tipMarginHeight = ScreenUtils.dpToPx(16);
         if (!isUpdate) {
             /****绘制背景****/
             canvas.drawColor(mPageBg);

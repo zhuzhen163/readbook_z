@@ -35,7 +35,6 @@ public class HomeModel {
     private Integer redCodeState;
 
 
-
     /**
      * 总现金
      */
@@ -49,12 +48,12 @@ public class HomeModel {
     /**
      * 总金币
      */
-    private int totalgold;
+    private double totalgold;
 
     /**
      * 今日金币
      */
-    private int todaygold;
+    private double todaygold;
 
     /**
      * 今日阅读总时间
@@ -65,6 +64,56 @@ public class HomeModel {
      * 是否是新用户（0：是，1：不是）
      */
     private int isNewUser;
+
+    private String phone;
+
+    private int isFirst;
+
+    private int level;
+
+    private String levelName;
+
+    private int oneDollar;
+
+    public int getOneDollar() {
+        return oneDollar;
+    }
+
+    public void setOneDollar(int oneDollar) {
+        this.oneDollar = oneDollar;
+    }
+
+    public String getLevelName() {
+        return levelName;
+    }
+
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getIsFirst() {
+        return isFirst;
+    }
+
+    public void setIsFirst(int isFirst) {
+        this.isFirst = isFirst;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
     public Integer getRid() {
         return rid;
@@ -138,19 +187,19 @@ public class HomeModel {
         this.todayCash = todayCash;
     }
 
-    public int getTotalgold() {
+    public double getTotalgold() {
         return totalgold;
     }
 
-    public void setTotalgold(int totalgold) {
+    public void setTotalgold(double totalgold) {
         this.totalgold = totalgold;
     }
 
-    public int getTodaygold() {
+    public double getTodaygold() {
         return todaygold;
     }
 
-    public void setTodaygold(int todaygold) {
+    public void setTodaygold(double todaygold) {
         this.todaygold = todaygold;
     }
 

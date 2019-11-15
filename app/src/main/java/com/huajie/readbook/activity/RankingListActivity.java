@@ -52,6 +52,7 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
     private LRecyclerViewAdapter mLRecyclerViewAdapter = null;
     private RankingListActivityAdapter adapter;
     private boolean onLoadMore = false;
+    private int secondClassify;
 
     @Override
     protected RankingListActivityPresenter createPresenter() {
@@ -75,20 +76,20 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
             @Override
             public void onItemClick(View view, int position) {
                 BookBean bookBean = adapter.getDataList().get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
         reConnected(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.bookList(tabType,id,false,pageNo,pageSize);
+                mPresenter.bookList(tabType,id,1,secondClassify,pageNo,pageSize);
             }
         });
         lv_list.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 onLoadMore = true;
-                mPresenter.bookList(tabType,id,false,pageNo,pageSize);
+                mPresenter.bookList(tabType,id,1,secondClassify,pageNo,pageSize);
             }
         });
     }
@@ -150,12 +151,12 @@ public class RankingListActivity extends BaseActivity <RankingListActivityPresen
 
     @Override
     protected void initData() {
-        mPresenter.bookList(tabType,id,false,pageNo,pageSize);
+        mPresenter.bookList(tabType,id,1,secondClassify,pageNo,pageSize);
     }
 
     @Override
     public void getListSuccess(BaseModel<BookList> o) {
-        List<BooksModel> books = o.getData().getBooks();
+        List<BooksModel> books = o.getData().getList();
         List<BookBean> datas = books.get(0).getDatas();
         if (onLoadMore){
             onLoadMore = false;

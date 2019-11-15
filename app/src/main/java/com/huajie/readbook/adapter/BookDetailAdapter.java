@@ -14,7 +14,6 @@ import com.huajie.readbook.db.entity.BookBean;
 
 import java.util.List;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  * 描述：
@@ -61,7 +60,7 @@ public class BookDetailAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         BookBean bookBean = list.get(position);
-        Glide.with(context).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
+        Glide.with(context).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(holder.iv_bookImg);
         holder.tv_bookContent.setText(bookBean.getName());
         return convertView;
     }

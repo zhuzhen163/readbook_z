@@ -65,7 +65,8 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     private List<ClassifysModel> data = new ArrayList<>();
     private LRecyclerViewAdapter mLRecyclerViewAdapter = null;
     private ClassifyActivityAdapter activityAdapter;
-    private int gender = 2;
+    private int gender = 3,classifyId = -1;
+    private String name;
 
     @Override
     protected ClassifyActivityPresenter createPresenter() {
@@ -76,22 +77,16 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.rl_1_bg:
-                if (data.size()>1){
-                    chooseGender(0);
-                    activityAdapter.setDataList(data.get(0).getClassifys());
-                }
+                chooseGender(0);
+                mPresenter.getClassify(gender,0);
                 break;
             case R.id.rl_2_bg:
-                if (data.size()>=2){
-                    chooseGender(1);
-                    activityAdapter.setDataList(data.get(1).getClassifys());
-                }
+                chooseGender(1);
+                mPresenter.getClassify(gender,0);
                 break;
             case R.id.rl_3_bg:
-                if (data.size()>=3){
-                    chooseGender(2);
-                    activityAdapter.setDataList(data.get(2).getClassifys());
-                }
+                chooseGender(2);
+                mPresenter.getClassify(gender,0);
                 break;
         }
     }
@@ -117,7 +112,7 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
             view_2.setVisibility(View.VISIBLE);
             tv_2.setTextColor(getResources().getColor(R.color.colorTheme));
         }else if (2 == genders){
-            gender = 4;
+            gender = 7;
             rl_3_bg.setBackgroundColor(getResources().getColor(R.color.white));
             view_3.setVisibility(View.VISIBLE);
             tv_3.setTextColor(getResources().getColor(R.color.colorTheme));
@@ -138,17 +133,17 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
         mLRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                ClassifyModel classifyModel = activityAdapter.getDataList().get(position);
-                String name = classifyModel.getName();
-                String id = classifyModel.getId();
-                List<ClassifyModel> classifys = classifyModel.getClassifys();
-                SwitchActivityManager.startClassifySecondActivity(mContext,name,id,classifys,gender);
+                ClassifysModel classifysModel = activityAdapter.getDataList().get(position);
+                name = classifysModel.getName();
+                classifyId = classifysModel.getClassifyId();
+                mPresenter.getClassify(gender,classifysModel.getClassifyId());
+
             }
         });
         reConnected(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.getClassify();
+                mPresenter.getClassify(gender,0);
             }
         });
     }
@@ -181,7 +176,7 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
 
     @Override
     protected void initData() {
-        mPresenter.getClassify();
+        mPresenter.getClassify(gender,0);
     }
 
     @Override
@@ -193,19 +188,17 @@ public class ClassifyActivity extends BaseActivity<ClassifyActivityPresenter> im
 
     @Override
     public void classifySuccess(BaseModel<ClassifysListModel> o) {
-        data = o.getData().getCategorylist();
+        data = o.getData().getList();
 
-        ClassifysModel classifysModel = data.get(0);
-        tv_1.setText(classifysModel.getName());
-        activityAdapter.setDataList(classifysModel.getClassifys());
-
-        if (data.size()<2) return;
-        tv_2.setText(data.get(1).getName());
-
-        if (data.size()<3)return;
-        tv_3.setText(data.get(2).getName());
+        activityAdapter.setDataList(data);
 
         mRecyclerView.refreshComplete(10);
+    }
+
+    @Override
+    public void twoClassifySuccess(BaseModel<ClassifysListModel> o) {
+        List<ClassifysModel> dataList = o.getData().getList();
+        SwitchActivityManager.startClassifySecondActivity(mContext,name,classifyId+"",dataList,gender);
     }
 
     @Override

@@ -206,7 +206,7 @@ public class BookCatalogActivity extends BaseActivity <BookCatalogActivityPresen
 
     @Override
     public void chapterList(BaseModel<BookChaptersBean> chapterList) {
-        menu = chapterList.getData().getMenu();
+        menu = chapterList.getData().getContent();
 
         adapter.setDataList(menu);
 

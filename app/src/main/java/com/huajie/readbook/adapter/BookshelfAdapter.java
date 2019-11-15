@@ -4,13 +4,19 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.StaticLayout;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
+import com.bytedance.sdk.openadsdk.TTImage;
+import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.huajie.readbook.R;
 import com.huajie.readbook.bean.BookshelfBean;
 import com.huajie.readbook.db.entity.BookRecordBean;
@@ -21,9 +27,10 @@ import com.huajie.readbook.utils.StringUtils;
 import com.huajie.readbook.utils.ToastUtil;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  *描述：书架适配器
@@ -32,11 +39,13 @@ import static com.huajie.readbook.base.BaseContent.ImageUrl;
 public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
 
     BookshelfFragment activity;
-    private RelativeLayout rl_item_book,rl_add_book,rl_item_book_grid;
-    private ImageView iv_add_grid,iv_bookImg,iv_bookImg_grid;
-    private TextView tv_bookName,tv_bookName_grid,tv_time_list,tv_percent,tv_percent_list,tv_progress_list,tv_progress_grid;
+    private RelativeLayout rl_item_book,rl_add_book,rl_item_book_grid,rl_ad;
+    private ImageView iv_add_grid,iv_bookImg,iv_bookImg_grid,iv_bookImg_ad;
+    private TextView tv_bookName,tv_bookName_grid,tv_time_list,tv_percent,tv_percent_list,tv_progress_list,tv_progress_grid,tv_bookName_ad,tv_message_ad;
     private CheckBox checkbox_list,checkbox_grid;
+    LinearLayout card_view;
     public boolean isDelete = false;
+    private List<TTFeedAd> mData;
 
     //存储阅读记录类
     private BookRecordBean mBookRecord;
@@ -82,8 +91,15 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
         }
     }
 
+    public void setAd(List<TTFeedAd> mData){
+        this.mData = mData;
+    }
+    TTFeedAd ttFeedAd = null;
+
     @Override
     public void onBindItemHolder(SuperViewHolder holder, final int position) {
+
+
         BookshelfBean item = null;
         if (activity.layout == 0){//列表模式
             rl_item_book = holder.getView(R.id.rl_item_book);
@@ -94,16 +110,50 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
             iv_bookImg = holder.getView(R.id.iv_bookImg);
             tv_progress_list = holder.getView(R.id.tv_progress_list);
             tv_percent_list = holder.getView(R.id.tv_percent_list);
+            rl_ad = holder.getView(R.id.rl_ad);
+            iv_bookImg_ad = holder.getView(R.id.iv_bookImg_ad);
+            tv_bookName_ad = holder.getView(R.id.tv_bookName_ad);
+            tv_message_ad = holder.getView(R.id.tv_message_ad);
+            card_view = holder.getView(R.id.card_view);
 
             //展示正常数据
             if (position < mDataList.size()) {
+                try {
+                    if (mData != null){
+                        if (position == 0||position == 2){
+                            rl_ad.setVisibility(View.VISIBLE);
+                            if (position == 0){
+                                ttFeedAd = mData.get(0);
+                            }else {
+                                if (mData.size()>1){
+                                    ttFeedAd = mData.get(1);
+                                }
+                            }
+                            if (ttFeedAd != null){
+                                if (ttFeedAd.getImageList() != null && !ttFeedAd.getImageList().isEmpty()) {
+                                    TTImage image = ttFeedAd.getImageList().get(0);
+                                    if (image != null && image.isValid()) {
+                                        Glide.with(activity).load(image.getImageUrl()).into(iv_bookImg_ad);
+                                    }
+                                    tv_bookName_ad.setText(ttFeedAd.getTitle());
+                                    tv_message_ad.setText(ttFeedAd.getDescription());
+                                }
+                            }
+                        }else {
+                            rl_ad.setVisibility(View.GONE);
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 item = mDataList.get(position);
                 tv_bookName.setText(item.getName());
                 if (item.isImportLocal()){
                     Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg);
                 }else {
                     if (StringUtils.isNotBlank(item.getLogo())){
-                        Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+                        Glide.with(activity).load(item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
                     }else {
                         Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg);
                     }
@@ -166,6 +216,7 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                 }
 
             }else {//展示添加数据
+                rl_ad.setVisibility(View.GONE);
                 rl_item_book.setVisibility(View.GONE);
                 if (isDelete){//如果删除添加数据需要隐藏
                     rl_add_book.setVisibility(View.INVISIBLE);
@@ -191,6 +242,45 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                 }
             });
 
+            rl_item_book.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onClickItemListener != null && !isDelete){
+                        onClickItemListener.onItem(position);
+                    }
+                }
+            });
+
+            try {
+                if (position == 0 ||position == 2 && ttFeedAd != null){
+                    ttFeedAd.registerViewForInteraction((ViewGroup) card_view, holder.getView(R.id.rl_ad), new TTNativeAd.AdInteractionListener() {
+                        @Override
+                        public void onAdClicked(View view, TTNativeAd ad) {
+                            if (ad != null) {
+//                            ToastUtil.showToast( "广告" + ad.getTitle() + "被点击");
+                            }
+                        }
+
+                        @Override
+                        public void onAdCreativeClick(View view, TTNativeAd ad) {
+                            if (ad != null) {
+//                                ToastUtil.showToast("广告" + ad.getTitle() + "被创意按钮被点击");
+                            }
+                        }
+
+                        @Override
+                        public void onAdShow(TTNativeAd ad) {
+                            if (ad != null) {
+//                                ToastUtil.showToast("广告" + ad.getTitle() + "展示");
+                            }
+                        }
+
+                    });
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             checkbox_list.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -205,6 +295,20 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                         }
                     }
                     activity.setDeleteNum(deleteNum());
+                }
+            });
+
+            rl_item_book.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (onremoveListener!=null){
+                        onremoveListener.onDelete(position);
+                        BookshelfBean bookshelfBean = mDataList.get(position);
+                        bookshelfBean.setDelete(true);
+                        checkbox_list.setChecked(true);
+                        activity.setDeleteNum(1);
+                    }
+                    return true;
                 }
             });
 
@@ -223,7 +327,7 @@ public class BookshelfAdapter extends ListBaseAdapter<BookshelfBean> {
                     Glide.with(activity).load(R.drawable.icon_local).into(iv_bookImg_grid);
                 }else {
                     if (StringUtils.isNotBlank(item.getLogo())){
-                        Glide.with(activity).load(ImageUrl+item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_grid);
+                        Glide.with(activity).load(item.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_grid);
                     }else {
                         Glide.with(activity).load(R.drawable.icon_pic_def).into(iv_bookImg_grid);
                     }

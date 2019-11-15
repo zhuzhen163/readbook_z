@@ -31,4 +31,22 @@ public class MessageNoticeActivityPresenter extends BasePresenter<MessageNoticeA
         });
     }
 
+    public void getNoticesType() {
+        addDisposable(apiServer.getNoticeType(), new BaseObserver(baseView) {
+            @Override
+            public void onSuccess(BaseModel o) {
+                if (BaseContent.basecode.equals(o.getRetcode())){
+                    baseView.getNoticesType(o);
+                }else {
+                    baseView.showError(o.getMsg());
+                }
+            }
+
+            @Override
+            public void onError(String msg) {
+                baseView.showError(msg);
+            }
+        });
+    }
+
 }

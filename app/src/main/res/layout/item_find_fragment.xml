@@ -3,8 +3,71 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/f8f8f8"
+    android:id="@+id/ll_item"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/ll_readHistory_ad"
+        android:background="@color/white"
+        android:layout_marginBottom="@dimen/dimen10dp"
+        android:orientation="vertical"
+        android:paddingRight="@dimen/dimen15dp"
+        android:paddingLeft="@dimen/dimen15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title_ad"
+            android:text=""
+            android:lineSpacingExtra="@dimen/dimen2dp"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/dimen16dp"
+            android:textColor="@color/text_33"/>
+
+        <ImageView
+            android:layout_marginTop="@dimen/dimen10dp"
+            android:id="@+id/civ_pic_ad"
+            android:scaleType="fitXY"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen170dp"
+            />
+        <TextView
+            android:id="@+id/tv_des_ad"
+            android:text=""
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#a5a5a5"
+            android:lineSpacingExtra="@dimen/dimen3dp"
+            android:textSize="@dimen/dimen14dp"
+            android:maxLines="4"
+            android:ellipsize="end"/>
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/dimen10dp"
+            android:layout_marginTop="@dimen/dimen15dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_ad"
+                android:layout_weight="1"
+                android:textColor="@color/text_33"
+                android:textSize="@dimen/dimen14dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""/>
+            <ImageView
+                android:layout_width="@dimen/dimen6dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:src="@drawable/icon_mine_join"/>
+        </LinearLayout>
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/ll_readHistory"
         android:background="@color/white"

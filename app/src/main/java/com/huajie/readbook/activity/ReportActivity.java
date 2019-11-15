@@ -15,11 +15,16 @@ import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.PublicBean;
 import com.huajie.readbook.presenter.ReportActivityPresenter;
+import com.huajie.readbook.utils.AppUtils;
+import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.SwitchActivityManager;
 import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReportActivityView;
 import com.tendcloud.tenddata.TCAgent;
 import com.umeng.analytics.MobclickAgent;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import butterknife.BindView;
 
@@ -52,7 +57,8 @@ public class ReportActivity extends BaseActivity<ReportActivityPresenter> implem
         switch (view.getId()){
             case R.id.tv_submit:
                 String input = et_input.getText().toString();
-                mPresenter.addReport(list[selectorPosition],input);
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+                mPresenter.addReport(ConfigUtils.getReaderId(),list[selectorPosition],input,df.format(new Date()));
                 break;
         }
     }

@@ -9,10 +9,19 @@ import java.util.List;
  * 作者：Created by zhuzhen
  */
 public class BooksModel {
+    private int regionId;
     int id;
     String name;
     String notes;
     List<BookBean> datas;
+
+    public int getRegionId() {
+        return regionId;
+    }
+
+    public void setRegionId(int regionId) {
+        this.regionId = regionId;
+    }
 
     public int getId() {
         return id;

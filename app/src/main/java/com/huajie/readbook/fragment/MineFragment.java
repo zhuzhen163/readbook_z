@@ -52,7 +52,7 @@ public class MineFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         tv_userId.setVisibility(View.GONE);
-        if ("0".equals(ConfigUtils.getGender())){
+        if ("3".equals(ConfigUtils.getGender())){
             if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                 if (StringUtils.isNotBlank(ConfigUtils.getHeadImg())){
                     Glide.with(mContext).load(ConfigUtils.getHeadImg()).into(iv_userImg);
@@ -96,10 +96,10 @@ public class MineFragment extends BaseFragment {
     protected void otherViewClick(View view) {
         switch (view.getId()){
             case R.id.iv_userImg:
-                SwitchActivityManager.startLoginActivity(mContext);
+                SwitchActivityManager.startLoginTransferActivity(mContext);
                 break;
             case R.id.tv_user:
-                SwitchActivityManager.startLoginActivity(mContext);
+                SwitchActivityManager.startLoginTransferActivity(mContext);
                 break;
             case R.id.ll_readHistory:
                 SwitchActivityManager.startReadHistoryActivity(mContext);
@@ -108,7 +108,7 @@ public class MineFragment extends BaseFragment {
                 if (StringUtils.isNotBlank(ConfigUtils.getToken())){
                     SwitchActivityManager.startFeedBackActivity(mContext);
                 }else {
-                    SwitchActivityManager.startLoginActivity(mContext);
+                    SwitchActivityManager.startLoginTransferActivity(mContext);
                 }
                 break;
             case R.id.ll_about:

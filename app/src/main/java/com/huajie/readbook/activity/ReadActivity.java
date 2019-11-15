@@ -3,7 +3,6 @@ package com.huajie.readbook.activity;
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -11,10 +10,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.ContentObserver;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -22,7 +22,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -36,6 +36,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,6 +47,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.bumptech.glide.Glide;
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdConstant;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTAppDownloadListener;
+import com.bytedance.sdk.openadsdk.TTImage;
+import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.huajie.readbook.R;
 import com.huajie.readbook.ZApplication;
 import com.huajie.readbook.adapter.BookMarkAdapter;
@@ -52,7 +61,9 @@ import com.huajie.readbook.adapter.CategoryAdapter;
 import com.huajie.readbook.base.BaseActivity;
 import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
+import com.huajie.readbook.bean.GoldBean;
 import com.huajie.readbook.bean.PublicBean;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.db.entity.BookChapterBean;
 import com.huajie.readbook.db.entity.BookChaptersBean;
 import com.huajie.readbook.db.entity.BookMarkBean;
@@ -61,9 +72,11 @@ import com.huajie.readbook.db.helper.BookChapterHelper;
 import com.huajie.readbook.db.helper.BookMarkHelpter;
 import com.huajie.readbook.db.helper.CollBookHelper;
 import com.huajie.readbook.presenter.ReadActivityPresenter;
+import com.huajie.readbook.utils.AppUtils;
 import com.huajie.readbook.utils.BrightnessUtils;
 import com.huajie.readbook.utils.ConfigUtils;
 import com.huajie.readbook.utils.Constant;
+import com.huajie.readbook.utils.GlideRectRound;
 import com.huajie.readbook.utils.ImageveiwUitls;
 import com.huajie.readbook.utils.RxUtils;
 import com.huajie.readbook.utils.ScreenUtils;
@@ -75,6 +88,7 @@ import com.huajie.readbook.utils.ToastUtil;
 import com.huajie.readbook.view.ReadActivityView;
 import com.huajie.readbook.widget.AddBookShelfDialog;
 import com.huajie.readbook.widget.CircleProgressBar;
+import com.huajie.readbook.widget.GoldRulerDialog;
 import com.huajie.readbook.widget.ReadLightDialog;
 import com.huajie.readbook.widget.ReadPopWindow;
 import com.huajie.readbook.widget.ReadSettingDialog;
@@ -99,7 +113,6 @@ import io.reactivex.disposables.Disposable;
 import static android.support.v4.view.ViewCompat.LAYER_TYPE_SOFTWARE;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 @SuppressLint("WrongConstant")
 public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements ReadActivityView , AddBookShelfDialog.DoWhatCallBack,ReadPopWindow.PopWindowInterface,ShareBookDialog.ShareBookInterface {
@@ -163,6 +176,10 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     CircleProgressBar progressBar;
     @BindView(R.id.tv_addGold)
     TextView tv_addGold;
+    @BindView(R.id.iv_bottom_ad)
+    FrameLayout iv_bottom_ad;
+    @BindView(R.id.iv_time)
+    ImageView iv_time;
 
     ImageveiwUitls iv_cover_img;
     TextView tv_cover_name;
@@ -186,6 +203,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     private boolean isRegistered = false;
 
     /*****************view******************/
+    private GoldRulerDialog goldRulerDialog;//金币规则
     private AddBookShelfDialog addBookShelfDialog;//添加书架
     private ReadSettingDialog mSettingDialog;//设置
     private ReadLightDialog readLightDialog;//亮度
@@ -209,6 +227,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     private boolean firstRead = false;//第一次阅读书架书籍
     private boolean mReceiverTag = false;//解决销毁广播报错
     private boolean importLocal = false; //是否本地导入
+    private boolean time = false;
     private String mBookId;
     private String shareUrl;
     private String pagePosContent;//当前页第一行文字
@@ -245,9 +264,30 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            ConnectivityManager connectManager=(ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo=connectManager.getActiveNetworkInfo();
+            if(networkInfo!=null && networkInfo.isAvailable()) {
+                if (!AppUtils.tokenNull()){
+                    if (time){
+                        time = false;
+                        progressBar.start();
+                        mHandler.postDelayed(progressChangeTask,1000);
+                    }
+                }
+            }else {
+                time = true;
+                progressBar.stop();
+                mHandler.removeCallbacks(progressChangeTask);
+            }
+
             if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
                 int level = intent.getIntExtra("level", 0);
                 mPageLoader.updateBattery(level);
+                try {
+                    loadBannerAd();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             //监听分钟的变化
             else if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
@@ -396,6 +436,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             @Override
             public void onChapterChange(int pos) {
                 mCategoryAdapter.setChapter(pos);
+
             }
 
             @Override
@@ -442,6 +483,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                         mHandler.postDelayed(progressChangeTask,1000);
                     }
                     mReadSbChapterProgress.post(() -> {
+                        num = 0;
+                        oldPosContent = mPageLoader.getPagePosContent();
                         mReadSbChapterProgress.setProgress(pos);
                     });
                 }catch (Exception e){
@@ -510,6 +553,38 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
         add_gold = AnimatorInflater.loadAnimator(mContext, R.animator.add_gold);
 
+        add_gold.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                if (tv_addGold != null){
+                    tv_addGold.setText("");
+                }
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        mSettingManager = ReadSettingManager.getInstance();
+        mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
+
+        try {
+            setBgColor(mSettingManager.getReadBgTheme());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private Animator add_gold;
@@ -524,7 +599,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                     progressBar.start();
                     oldPosContent = mPageLoader.getPagePosContent();
                 }
-                if (num == 45){
+                if (num >= 45){
                     newPosContent = mPageLoader.getPagePosContent();
                     if (oldPosContent.equals(newPosContent)){
                         progressBar.stop();
@@ -539,6 +614,17 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         }
     };
 
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        //此处可以根据两个Code进行判断，本页面和结果页面跳过来的值
+//        if (requestCode == 1 && resultCode == 3) {
+//            String result = data.getStringExtra("result");
+//        }
+//    }
+
+
+
 
     /**
      * 新手引导
@@ -546,7 +632,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     private void first(){
         if (!ConfigUtils.getFirstRead()){
             rl_first.setVisibility(VISIBLE);
-            if ("0".equals(ConfigUtils.getGender())){
+            if ("3".equals(ConfigUtils.getGender())){
                 tv_first.setText("朕知道了");
             }else {
                 tv_first.setText("本宫知道了");
@@ -643,11 +729,27 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                     isNightMode = true;
                 }
                 mPageLoader.setNightMode(isNightMode);
+                try {
+                    setNightModeAd(isNightMode);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 toggleNightMode();
                 break;
             case R.id.tv_first:
                 rl_first.setVisibility(GONE);
                 ConfigUtils.saveFirstRead(true);
+                break;
+            case R.id.progressBar:
+                if (goldRulerDialog == null){
+                    goldRulerDialog = new GoldRulerDialog(mContext);
+                }
+                goldRulerDialog.show();
+                if (AppUtils.tokenNull()){
+                    goldRulerDialog.setMessage("点击赚钱","登录阅读得金币","登录阅读奖励","登录后，在线阅读可得金币，30秒奖励一次，每次最高可得60金币");
+                }else {
+                    goldRulerDialog.setMessage("知道了","奖励规则","阅读奖励","每天前3小时，正常在线阅读时可获得金币，30秒倒计时一次，每次最高可得60金币");
+                }
                 break;
         }
     }
@@ -673,7 +775,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             double percent = (chapterPos /chaptersCount)*100;
             DecimalFormat df = new DecimalFormat("#0.00");
             ToastUtil.showToast("加入书架成功");
-            mPresenter.bookRackAdd(mCollBook.getBookId(),df.format(percent));
+            if (!mCollBook.getImportLocal()){
+                mPresenter.bookRackAdd(mCollBook.getBookId(),df.format(percent));
+            }
         }
     }
 
@@ -682,6 +786,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         if (mCollBook.getImportLocal()){
             mPageLoader.openBook(mCollBook);
         }else {
+            mPresenter.save(mBookId, AppUtils.channel());
             //如果是网络文件
             //如果是已经收藏的，那么就从数据库中获取目录
             if (isCollected) {
@@ -695,17 +800,20 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                                 mPageLoader.openBook(mCollBook);
                                 //如果是被标记更新的,重新从网络中获取目录
                                 if (mCollBook.isUpdate()) {
-                                    mPresenter.loadChapters(mBookId);
+//                                    mPresenter.loadChapters(mBookId);
+                                    mPresenter.bookDetails(mBookId,"1",10000000);
                                 }
                             }else {
                                 firstRead = true;
-                                mPresenter.loadChapters(mBookId);
+//                                mPresenter.loadChapters(mBookId);
+                                mPresenter.bookDetails(mBookId,"1",10000000);
                             }
                         });
                 mPresenter.addDisposadle(disposable);
             } else {
                 //加载书籍目录
-                mPresenter.loadChapters(mBookId);
+//                mPresenter.loadChapters(mBookId);
+                mPresenter.bookDetails(mBookId,"1",10000000);
             }
         }
 
@@ -715,7 +823,14 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
                 if (progress == 30){
                     add_gold.setTarget(tv_addGold);
                     add_gold.start();
-                    ToastUtil.showToast("请求接口");
+                    ConfigUtils.savenoLoading(1);
+                    String regex = ".*[a-zA-Z].*";
+                    boolean result = mBookId.matches(regex);
+                    if (result){
+                        mPresenter.refresh("-1");
+                    }else {
+                        mPresenter.refresh(mBookId);
+                    }
                 }
             }
 
@@ -725,7 +840,11 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             }
         });
 
-        mHandler.postDelayed(progressChangeTask,1000);
+
+        if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+            mHandler.postDelayed(progressChangeTask,1000);
+        }
+
     }
 
     /**
@@ -744,6 +863,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
 
     @Override
     protected void initListener() {
+        progressBar.setOnClickListener(this);
         tv_first.setOnClickListener(this);
         mReadTvPreChapter.setOnClickListener(this);
         mReadTvNextChapter.setOnClickListener(this);
@@ -810,6 +930,129 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M){
                 getWindow().setNavigationBarColor(ContextCompat.getColor(ZApplication.getAppContext(), R.color.white));
             }
+        }
+    }
+
+    //设置夜间模式
+    public void setNightModeAd(boolean nightMode) {
+        isNightMode = nightMode;
+        if (isNightMode) {
+            setBgColor(ReadSettingManager.NIGHT_MODE);
+        } else {
+            setBgColor(mSettingManager.getReadBgTheme());
+        }
+    }
+
+    private ReadSettingManager mSettingManager;
+    private int mPageBg;
+    private int mDownColor;
+    private int mTextColor;
+    //绘制背景
+    public void setBgColor(int theme) {
+        if (iv_night != null){
+            iv_night.setVisibility(GONE);
+        }
+        if (isNightMode) {
+            if (iv_def_bg != null){
+                iv_night.setVisibility(VISIBLE);
+                mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_575757);
+                mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_0c0c0c);
+                iv_def_bg.setBackgroundResource(R.drawable.icon_ad_hei);
+                mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_494949);
+            }
+
+            progressBar.setProgressColor(getResources().getColor(R.color.color_494949), Color.parseColor("#17171A"));
+            tv_addGold.setTextColor(getResources().getColor(R.color.color_494949));
+            iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_hei);
+            iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_hei));
+        }else {
+            switch (theme) {
+                case ReadSettingManager.READ_BG_DEFAULT:
+                    if (iv_def_bg != null){
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.black);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_f0f0f0);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_bai);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_9E9C97);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_9E9C97),Color.parseColor("#DBDAD8"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_9E9C97));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_bai);
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_bai));
+                    break;
+                case ReadSettingManager.READ_BG_1:
+                    if (iv_def_bg != null){
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_110b24);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_e4dbc2);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_huang);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_948163);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_948163),Color.parseColor("#DED0B0"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_948163));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_huang);
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_huang));
+                    break;
+                case ReadSettingManager.READ_BG_2:
+                    if (iv_def_bg != null){
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_2f332d);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_f5d68f);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_yangpizi);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_948163);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_948163),Color.parseColor("#EFC983"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_948163));
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_yangpizhi));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_yangpizi);
+                    break;
+                case ReadSettingManager.READ_BG_3:
+                    if (iv_def_bg != null){
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_1F241C);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_cbddc7);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_lv);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_8CA28C);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_8CA28C),Color.parseColor("#C2E2C1"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_8CA28C));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_lv);
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_lv));
+                    break;
+                case ReadSettingManager.READ_BG_4:
+                    if (iv_def_bg != null){
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_6b7880);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_182634);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_lan);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_465460);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_465460),Color.parseColor("#0C1C2C"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_465460));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_lan);
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_lan));
+                    break;
+                case ReadSettingManager.READ_BG_5:
+                    if (iv_def_bg != null){
+                        iv_night.setVisibility(VISIBLE);
+                        mTextColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_575757);
+                        mPageBg = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_0c0c0c);
+                        iv_def_bg.setBackgroundResource(R.drawable.icon_ad_hei);
+                        mDownColor = ContextCompat.getColor(ZApplication.getAppContext(), R.color.color_494949);
+                    }
+
+                    progressBar.setProgressColor(getResources().getColor(R.color.color_494949),Color.parseColor("#17171A"));
+                    tv_addGold.setTextColor(getResources().getColor(R.color.color_494949));
+                    iv_bottom_ad.setBackgroundResource(R.drawable.icon_ad_hei);
+                    iv_time.setImageDrawable(getResources().getDrawable(R.drawable.icon_time_hei));
+                    break;
+            }
+        }
+
+        if (rl_ad_bg != null){
+            rl_ad_bg.setBackgroundColor(mPageBg);
+            tv_native_ad_title.setTextColor(mTextColor);
+            tv_native_ad_desc.setTextColor(mDownColor);
         }
     }
 
@@ -952,7 +1195,42 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         BookChaptersBean bookChaptersBean = bookChapter.getData();
 
         bookChapterList.clear();
-        for (BookChapterBean bean : bookChaptersBean.getMenu()) {
+        for (BookChapterBean bean : bookChaptersBean.getContent()) {
+            BookChapterBean chapterBean = new BookChapterBean();
+            chapterBean.setBookId(mBookId);
+            chapterBean.setContent(bean.getContent());
+            chapterBean.setTitle(bean.getName());
+            chapterBean.setId(bean.getId());
+            chapterBean.setUnreadble(false);
+            bookChapterList.add(chapterBean);
+        }
+
+        mCollBook.setBookChapters(bookChapterList);
+        mCollBook.setChaptersCount(bookChapterList.size());
+        if (bookChapterList.size()>0){
+            tv_catalogNum.setVisibility(VISIBLE);
+            tv_catalogNum.setText("共"+bookChapterList.size()+"章");
+        }
+
+        //如果是更新加载，那么重置PageLoader的Chapter
+        if (mCollBook.isUpdate() && isCollected) {
+            mPageLoader.setChapterList(bookChapterList);
+            //异步下载更新的内容存到数据库
+            BookChapterHelper.getsInstance().saveBookChaptersWithAsync(bookChapterList);
+            if (firstRead){
+                mPageLoader.openBook(mCollBook);
+            }
+        } else {
+            mPageLoader.openBook(mCollBook);
+        }
+    }
+
+    @Override
+    public void chapterList(BaseModel<BookChaptersBean> chapterList) {
+        BookChaptersBean bookChaptersBean = chapterList.getData();
+
+        bookChapterList.clear();
+        for (BookChapterBean bean : bookChaptersBean.getContent()) {
             BookChapterBean chapterBean = new BookChapterBean();
             chapterBean.setBookId(mBookId);
             chapterBean.setContent(bean.getContent());
@@ -1010,8 +1288,8 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     }
 
     @Override
-    public void refresh(BaseModel<String> num) {
-        tv_addGold.setText(num.getData());
+    public void refresh(BaseModel<GoldBean> num) {
+        tv_addGold.setText("+"+num.getData().getAward()+"金币");
         add_gold.setTarget(tv_addGold);
         add_gold.start();
     }
@@ -1127,6 +1405,13 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         super.onResume();
         MobclickAgent.onResume(this);
         mWakeLock.acquire();
+        hideSystemBar();
+        if (ConfigUtils.getReadToken()){
+            ConfigUtils.saveReadToken(false);
+            if (StringUtils.isNotBlank(ConfigUtils.getToken())){
+                mHandler.postDelayed(progressChangeTask,1000);
+            }
+        }
     }
 
     @Override
@@ -1165,6 +1450,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             if (readPopWindow!= null){
                 readPopWindow.dismiss();
             }
+            progressChangeTask = null;
+            mHandler.removeCallbacks(progressChangeTask);
+            add_gold.cancel();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1211,7 +1499,9 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
             double chapterPos = mPageLoader.getChapterPos();
             double percent = (chapterPos /chaptersCount)*100;
             DecimalFormat df = new DecimalFormat("#0.00");
-            mPresenter.updateRackAndHistory(mBookId,df.format(percent));
+            if (!mCollBook.getImportLocal()){
+                mPresenter.updateRackAndHistory(mBookId,df.format(percent));
+            }
         }
 
         SwitchActivityManager.exitActivity(ReadActivity.this);
@@ -1250,7 +1540,7 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         if (StringUtils.isNotBlank(ConfigUtils.getToken())){
             SwitchActivityManager.startReportActivity(mContext);
         }else {
-            SwitchActivityManager.startLoginActivity(mContext);
+            SwitchActivityManager.startLoginTransferActivity(mContext);
         }
 
     }
@@ -1258,35 +1548,35 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
     @Override
     public void shareWeiXin() {
         ShareUtils.shareWeb(this, shareUrl+mBookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
         );
     }
 
     @Override
     public void shareWeiXinCircle() {
         ShareUtils.shareWeb(this,shareUrl+mBookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
         );
     }
 
     @Override
     public void shareQQ() {
         ShareUtils.shareWeb(this, shareUrl+mBookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
         );
     }
 
     @Override
     public void shareQzone() {
         ShareUtils.shareWeb(this, shareUrl+mBookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
         );
     }
 
     @Override
     public void shareSina() {
         ShareUtils.shareWeb(this, shareUrl+mBookId,mCollBook.getName()
-                , mCollBook.getNotes(),ImageUrl+mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
+                , mCollBook.getNotes(),mCollBook.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
         );
     }
 
@@ -1309,13 +1599,13 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         switch (requestCode){
             case 1:
                 mPageLoader.updateLayout();
-            break;
+                break;
         }
     }
 
     @Override
     public void netWorkConnect(boolean connect) {
-        super.netWorkConnect(connect);
+//        super.netWorkConnect(connect);
     }
 
     @Override
@@ -1328,4 +1618,199 @@ public class ReadActivity extends BaseActivity<ReadActivityPresenter> implements
         super.hideLoading();
     }
 
+    private TTAdNative mTTAdNative;
+    private TextView mCreativeButton;
+    private TextView tv_native_ad_title,tv_native_ad_desc;
+    private RelativeLayout rl_ad_bg,rl_ad;
+    private ImageView iv_def_bg,iv_night,iv_cancel;
+
+    private void loadBannerAd() {
+        //step4:创建广告请求参数AdSlot,注意其中的setNativeAdtype方法，具体参数含义参考文档
+        final AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId("933628901")
+                .setSupportDeepLink(true)
+                .setImageAcceptedSize(600, 257)
+                .setNativeAdType(AdSlot.TYPE_BANNER) //请求原生广告时候，请务必调用该方法，设置参数为TYPE_BANNER或TYPE_INTERACTION_AD
+                .setAdCount(1)
+                .build();
+
+        //step5:请求广告，对请求回调的广告作渲染处理
+        mTTAdNative.loadNativeAd(adSlot, new TTAdNative.NativeAdListener() {
+            @Override
+            public void onError(int code, String message) {
+//                ToastUtil.showToast("load error : " + code + ", " + message);
+//                if (iv_def_bg != null && rl_ad != null){
+//                    iv_def_bg.setVisibility(VISIBLE);
+//                    rl_ad.setVisibility(GONE);
+//                }
+            }
+
+            @Override
+            public void onNativeAdLoad(List<TTNativeAd> ads) {
+                if (ads.get(0) == null) {
+                    return;
+                }
+                View bannerView = LayoutInflater.from(mContext).inflate(R.layout.native_ad, iv_bottom_ad, false);
+                if (bannerView == null) {
+                    return;
+                }
+                if (mCreativeButton != null) {
+                    //防止内存泄漏
+                    mCreativeButton = null;
+                }
+                iv_bottom_ad.removeAllViews();
+                iv_bottom_ad.addView(bannerView);
+                //绑定原生广告的数据
+                setAdData(bannerView, ads.get(0));
+            }
+        });
+    }
+
+    private void setAdData(View nativeView, TTNativeAd nativeAd) {
+        tv_native_ad_title =  nativeView.findViewById(R.id.tv_native_ad_title);
+        tv_native_ad_title.setText(nativeAd.getTitle());
+        tv_native_ad_desc = nativeView.findViewById(R.id.tv_native_ad_desc);
+        tv_native_ad_desc.setText(nativeAd.getDescription());
+        mCreativeButton = nativeView.findViewById(R.id.btn_native_creative);
+        iv_night = nativeView.findViewById(R.id.iv_night);
+        rl_ad = nativeView.findViewById(R.id.rl_ad);
+        iv_def_bg = nativeView.findViewById(R.id.iv_def_bg);
+        iv_cancel = nativeView.findViewById(R.id.iv_cancel);
+        if (ZApplication.getAppContext().getChannelId().equals("Vivo")){
+            iv_cancel.setVisibility(VISIBLE);
+        }else {
+            iv_cancel.setVisibility(GONE);
+        }
+        rl_ad.setVisibility(VISIBLE);
+        iv_def_bg.setVisibility(GONE);
+        ImageView imgDislike = nativeView.findViewById(R.id.img_native_dislike);
+        rl_ad_bg = nativeView.findViewById(R.id.rl_ad_bg);
+        if (nativeAd.getImageList() != null && !nativeAd.getImageList().isEmpty()) {
+            TTImage image = nativeAd.getImageList().get(0);
+            if (image != null && image.isValid()) {
+                ImageView im = nativeView.findViewById(R.id.iv_native_image);
+                Glide.with(this).load(image.getImageUrl()).transform(new GlideRectRound(mContext,6)).into(im);
+            }
+        }
+
+        iv_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                iv_bottom_ad.removeAllViews();
+            }
+        });
+
+        try {
+            setNightModeAd(isNightMode);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //可根据广告类型，为交互区域设置不同提示信息
+        switch (nativeAd.getInteractionType()) {
+            case TTAdConstant.INTERACTION_TYPE_DOWNLOAD:
+                //如果初始化ttAdManager.createAdNative(getApplicationContext())没有传入activity 则需要在此传activity，否则影响使用Dislike逻辑
+                mCreativeButton.setText("立即下载");
+                nativeAd.setActivityForDownloadApp(this);
+                mCreativeButton.setVisibility(View.VISIBLE);
+                nativeAd.setDownloadListener(mDownloadListener); // 注册下载监听器
+                break;
+            case TTAdConstant.INTERACTION_TYPE_DIAL:
+                mCreativeButton.setVisibility(View.VISIBLE);
+                mCreativeButton.setText("立即拨打");
+                break;
+            case TTAdConstant.INTERACTION_TYPE_LANDING_PAGE:
+            case TTAdConstant.INTERACTION_TYPE_BROWSER:
+                mCreativeButton.setVisibility(View.VISIBLE);
+                mCreativeButton.setText("查看详情");
+                break;
+            default:
+                mCreativeButton.setVisibility(View.GONE);
+        }
+        //可以被点击的view, 也可以把nativeView放进来意味整个广告区域可被点击
+        List<View> clickViewList = new ArrayList<>();
+        clickViewList.add(nativeView);
+
+        //触发创意广告的view（点击下载或拨打电话）
+        List<View> creativeViewList = new ArrayList<>();
+        //如果需要点击图文区域也能进行下载或者拨打电话动作，请将图文区域的view传入
+        creativeViewList.add(mCreativeButton);
+
+        //重要! 这个涉及到广告计费，必须正确调用。convertView必须使用ViewGroup。
+        nativeAd.registerViewForInteraction((ViewGroup) nativeView, clickViewList, creativeViewList, imgDislike, new TTNativeAd.AdInteractionListener() {
+            @Override
+            public void onAdClicked(View view, TTNativeAd ad) {
+                if (ad != null) {
+//                    ToastUtil.showToast("广告" + ad.getTitle() + "被点击");
+                }
+            }
+
+            @Override
+            public void onAdCreativeClick(View view, TTNativeAd ad) {
+                if (ad != null) {
+//                    ToastUtil.showToast( "广告" + ad.getTitle() + "被创意按钮被点击");
+                }
+            }
+
+            @Override
+            public void onAdShow(TTNativeAd ad) {
+                if (ad != null) {
+//                    ToastUtil.showToast( "广告" + ad.getTitle() + "展示");
+                }
+            }
+        });
+    }
+    private final TTAppDownloadListener mDownloadListener = new TTAppDownloadListener() {
+        @Override
+        public void onIdle() {
+            if (mCreativeButton != null) {
+                mCreativeButton.setText("开始下载");
+            }
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onDownloadActive(long totalBytes, long currBytes, String fileName, String appName) {
+            if (mCreativeButton != null) {
+                if (totalBytes <= 0L) {
+                    mCreativeButton.setText("下载中 : 0");
+                } else {
+                    mCreativeButton.setText("下载中 : " + (currBytes * 100 / totalBytes));
+                }
+            }
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onDownloadPaused(long totalBytes, long currBytes, String fileName, String appName) {
+            if (mCreativeButton != null) {
+                if (totalBytes <= 0L) {
+                    mCreativeButton.setText("下载暂停 : 0");
+                } else {
+                    mCreativeButton.setText("下载暂停 : " + (currBytes * 100 / totalBytes));
+                }
+            }
+        }
+
+        @Override
+        public void onDownloadFailed(long totalBytes, long currBytes, String fileName, String appName) {
+            if (mCreativeButton != null) {
+                mCreativeButton.setText("重新下载");
+            }
+        }
+
+        @Override
+        public void onInstalled(String fileName, String appName) {
+            if (mCreativeButton != null) {
+                mCreativeButton.setText("点击打开");
+            }
+        }
+
+        @Override
+        public void onDownloadFinished(long totalBytes, String fileName, String appName) {
+            if (mCreativeButton != null) {
+                mCreativeButton.setText("点击安装");
+            }
+        }
+    };
 }

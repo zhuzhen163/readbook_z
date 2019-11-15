@@ -38,7 +38,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
  */
 
 public class ApiRetrofit {
-    public final String BASE_SERVER_URL = BaseContent.url;
+    public final String BASE_SERVER_URL = BaseContent.newBase;
     private String TAG = "ApiRetrofit";
     private static ApiRetrofit apiRetrofit;
     private Retrofit retrofit;
@@ -111,80 +111,80 @@ public class ApiRetrofit {
      * 请求访问quest    打印日志
      * response拦截器
      */
-    private Interceptor interceptor = new Interceptor() {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request request = chain.request();
-            //从request中获取原有的HttpUrl实例oldHttpUrl
-            HttpUrl oldHttpUrl = request.url();
-            //获取request的创建者builder
-            Request.Builder builder = request.newBuilder();
-            //从request中获取headers，通过给定的键url_name
-            List<String> headerValues = request.headers("url_name");
-            if (headerValues != null && headerValues.size() > 0) {
-                //如果有这个header，先将配置的header删除，因此header仅用作app和okhttp之间使用
-                builder.removeHeader("url_name");
-                //匹配获得新的BaseUrl
-                String headerValue = headerValues.get(0);
-                HttpUrl newBaseUrl = null;
-                if ("user".equals(headerValue)) {
-                    newBaseUrl = HttpUrl.parse(BASE_SERVER_URL);
-                } else if ("notices".equals(headerValue)) {
-                    newBaseUrl = HttpUrl.parse(BaseContent.notice);
-                }else {
-                    newBaseUrl = HttpUrl.parse(BASE_SERVER_URL);
-                }
-
-//                long startTime = System.currentTimeMillis();
-//                Response response = chain.proceed(chain.request());
-//                long endTime = System.currentTimeMillis();
-//                long duration = endTime - startTime;
-//                MediaType mediaType = response.body().contentType();
-//                String content = response.body().string();
-//                LogUtil.i(TAG, "----------Request Start----------------");
-//                LogUtil.i(TAG, "| " + request.toString() + "===========" + request.headers().toString());
-//                LogUtil.i(TAG, content);
-//                LogUtil.i(TAG, "----------Request End:" + duration + "毫秒----------");
-
-                //重建新的HttpUrl，修改需要修改的url部分
-                HttpUrl newFullUrl = oldHttpUrl
-                        .newBuilder()
-                        .scheme(newBaseUrl.scheme())
-                        .host(newBaseUrl.host())
-                        .port(newBaseUrl.port())
-                        .build();
-
-                //重建这个request，通过builder.url(newFullUrl).build()；
-                //然后返回一个response至此结束修改
-                return chain.proceed(builder.url(newFullUrl).build());
-            } else {
-                return chain.proceed(request);
-            }
-
-        }
-    };
-
 //    private Interceptor interceptor = new Interceptor() {
 //        @Override
 //        public Response intercept(Chain chain) throws IOException {
 //            Request request = chain.request();
-//            long startTime = System.currentTimeMillis();
-//            Response response = chain.proceed(chain.request());
-//            long endTime = System.currentTimeMillis();
-//            long duration = endTime - startTime;
-//            MediaType mediaType = response.body().contentType();
-//            String content = response.body().string();
+//            //从request中获取原有的HttpUrl实例oldHttpUrl
+//            HttpUrl oldHttpUrl = request.url();
+//            //获取request的创建者builder
+//            Request.Builder builder = request.newBuilder();
+//            //从request中获取headers，通过给定的键url_name
+//            List<String> headerValues = request.headers("url_name");
+//            if (headerValues != null && headerValues.size() > 0) {
+//                //如果有这个header，先将配置的header删除，因此header仅用作app和okhttp之间使用
+//                builder.removeHeader("url_ngetViewByChannelame");
+//                //匹配获得新的BaseUrl
+//                String headerValue = headerValues.get(0);
+//                HttpUrl newBaseUrl = null;
+//                if ("user".equals(headerValue)) {
+//                    newBaseUrl = HttpUrl.parse(BASE_SERVER_URL);
+//                } else if ("notices".equals(headerValue)) {
+//                    newBaseUrl = HttpUrl.parse(BASE_SERVER_URL);
+//                }else {
+//                    newBaseUrl = HttpUrl.parse(BASE_SERVER_URL);
+//                }
 //
-//            LogUtil.i(TAG, "----------Request Start----------------");
-//            LogUtil.i(TAG, "| " + request.toString() + "===========" + request.headers().toString());
-//            LogUtil.i(TAG,content);
-//            LogUtil.i(TAG, "----------Request End:" + duration + "毫秒----------");
+////                long startTime = System.currentTimeMillis();
+////                Response response = chain.proceed(chain.request());
+////                long endTime = System.currentTimeMillis();
+////                long duration = endTime - startTime;
+////                MediaType mediaType = response.body().contentType();
+////                String content = response.body().string();
+////                LogUtil.i(TAG, "----------Request Start----------------");
+////                LogUtil.i(TAG, "| " + request.toString() + "===========" + request.headers().toString());
+////                LogUtil.i(TAG, content);
+////                LogUtil.i(TAG, "----------Request End:" + duration + "毫秒----------");
 //
-//            return response.newBuilder()
-//                    .body(ResponseBody.create(mediaType, content))
-//                    .build();
+//                //重建新的HttpUrl，修改需要修改的url部分
+//                HttpUrl newFullUrl = oldHttpUrl
+//                        .newBuilder()
+//                        .scheme(newBaseUrl.scheme())
+//                        .host(newBaseUrl.host())
+//                        .port(newBaseUrl.port())
+//                        .build();
+//
+//                //重建这个request，通过builder.url(newFullUrl).build()；
+//                //然后返回一个response至此结束修改
+//                return chain.proceed(builder.url(newFullUrl).build());
+//            } else {
+//                return chain.proceed(request);
+//            }
+//
 //        }
 //    };
+
+    private Interceptor interceptor = new Interceptor() {
+        @Override
+        public Response intercept(Chain chain) throws IOException {
+            Request request = chain.request();
+            long startTime = System.currentTimeMillis();
+            Response response = chain.proceed(chain.request());
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            MediaType mediaType = response.body().contentType();
+            String content = response.body().string();
+
+            LogUtil.i(TAG, "----------Request Start----------------");
+            LogUtil.i(TAG, "| " + request.toString() + "===========" + request.headers().toString());
+            LogUtil.i(TAG,content);
+            LogUtil.i(TAG, "----------Request End:" + duration + "毫秒----------");
+
+            return response.newBuilder()
+                    .body(ResponseBody.create(mediaType, content))
+                    .build();
+        }
+    };
 
     /**
      * 添加  请求头

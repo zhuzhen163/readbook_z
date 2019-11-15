@@ -6,4 +6,8 @@
             path="Download" />
             <!--path="downloadqzxq" />-->
     </paths>
+    <external-path name="tt_external_root" path="." />
+    <external-path name="tt_external_download" path="Download" />
+    <external-files-path name="tt_external_files_download" path="Download" />
+    <files-path name="tt_internal_file_download" path="Download" />
 </resources>

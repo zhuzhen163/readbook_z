@@ -15,6 +15,9 @@ import com.umeng.socialize.UMShareListener;
 import com.umeng.socialize.bean.SHARE_MEDIA;
 import com.umeng.socialize.media.UMImage;
 import com.umeng.socialize.media.UMWeb;
+import com.umeng.socialize.utils.UmengText;
+
+import java.io.File;
 
 /**
  * 友盟分享
@@ -99,7 +102,10 @@ public class ShareUtils {
             if (StringUtils.isBlank(imageUrl)){
                 return;
             }
-            UMImage umImage = new UMImage(activity,imageUrl);
+
+            File file = FileUtils.getFile(imageUrl);
+            UMImage umImage = new UMImage(activity,file);
+
             new ShareAction(activity)
                     .setPlatform(platform)
                     .withMedia(umImage)
@@ -147,4 +153,5 @@ public class ShareUtils {
         }
 
     }
+
 }

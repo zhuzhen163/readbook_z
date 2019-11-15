@@ -5,7 +5,26 @@ public class LoginBean {
     private String nickName;
     private String readerId;
     private String headImg;
-    private ReaderModel reader;
+//    private ReaderModel reader;
+    private String isNewUser;
+
+    public String getIsNewUser() {
+        return isNewUser;
+    }
+
+    public void setIsNewUser(String isNewUser) {
+        this.isNewUser = isNewUser;
+    }
+
+    private int award;
+
+    public int getAward() {
+        return award;
+    }
+
+    public void setAward(int award) {
+        this.award = award;
+    }
 
     public String getHeadImg() {
         return headImg;
@@ -15,13 +34,13 @@ public class LoginBean {
         this.headImg = headImg;
     }
 
-    public ReaderModel getReader() {
-        return reader;
-    }
-
-    public void setReader(ReaderModel reader) {
-        this.reader = reader;
-    }
+//    public ReaderModel getReader() {
+//        return reader;
+//    }
+//
+//    public void setReader(ReaderModel reader) {
+//        this.reader = reader;
+//    }
 
     public String getReaderId() {
         return readerId;

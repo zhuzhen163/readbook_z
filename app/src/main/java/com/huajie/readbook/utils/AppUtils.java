@@ -44,6 +44,17 @@ import java.util.regex.Pattern;
 
 public class AppUtils {
 
+    /**
+     * token 为空
+     * @return
+     */
+    public static boolean tokenNull(){
+        if (StringUtils.isBlank(ConfigUtils.getToken())){
+            return true;
+        }else {
+            return false;
+        }
+    }
 
     public static int channel(){
         int channel = 0;
@@ -59,6 +70,8 @@ public class AppUtils {
             channel = 180;
         }else if (BuildConfig.FLAVOR.equals("Qutoutiao")){
             channel = 220;
+        }else if (BuildConfig.FLAVOR.equals("Qutoutiao2")){
+            channel = 222;
         }else if (BuildConfig.FLAVOR.equals("QQ")){
             channel = 190;
         }else if (BuildConfig.FLAVOR.equals("Xiaomi")){

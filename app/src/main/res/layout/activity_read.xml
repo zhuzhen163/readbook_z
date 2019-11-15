@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/theme_leather">
+        >
 
 
         <android.support.design.widget.AppBarLayout
@@ -24,7 +24,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/dimen48dp"
                 android:layout_below="@+id/status_bar">
 
 
@@ -56,33 +56,55 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <!--阅读页面-->
-        <com.huajie.readbook.widget.page.PageView
-            android:id="@+id/pv_read_page"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            tools:visibility="gone"/>
+            android:layout_height="match_parent">
+            <!--阅读页面-->
+            <com.huajie.readbook.widget.page.PageView
+                android:layout_weight="1"
+                android:id="@+id/pv_read_page"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                tools:visibility="gone"/>
+            <FrameLayout
+                android:background="@drawable/icon_ad_bai"
+                android:id="@+id/iv_bottom_ad"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dimen60dp" />
+        </LinearLayout>
 
-        <com.huajie.readbook.widget.CircleProgressBar
-            android:id="@+id/progressBar"
+        <RelativeLayout
+            android:id="@+id/rl_pro"
             android:layout_marginRight="@dimen/dimen20dp"
-            android:layout_marginTop="@dimen/dimen15dp"
+            android:layout_marginTop="@dimen/dimen13dp"
             android:layout_alignParentRight="true"
-            android:layout_width="@dimen/dimen20dp"
-            android:layout_height="@dimen/dimen20dp"
-            app:stroke_width="10"
-            app:text_color="@color/colorTheme"
-            app:progress_style="STROKE"
-            app:normal_color="#00000000"
-            app:progress_color="#50000000"
-            app:progress="0"/>
+            android:layout_width="@dimen/dimen25dp"
+            android:layout_height="@dimen/dimen25dp">
+            <ImageView
+                android:id="@+id/iv_time"
+                android:layout_centerInParent="true"
+                android:layout_width="@dimen/dimen10dp"
+                android:layout_height="@dimen/dimen10dp"
+                android:src="@drawable/icon_time_bai"
+                />
+            <com.huajie.readbook.widget.CircleProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="@dimen/dimen25dp"
+                android:layout_height="@dimen/dimen25dp"
+                app:stroke_width="8"
+                app:progress_style="STROKE"
+                app:normal_color="#9E9C97"
+                app:progress_color="#f0f0f0"
+                app:progress="0"/>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tv_addGold"
             android:layout_marginRight="@dimen/dimen5dp"
             android:layout_marginTop="@dimen/dimen15dp"
-            android:layout_toLeftOf="@id/progressBar"
+            android:layout_toLeftOf="@id/rl_pro"
             android:textColor="@color/colorTheme"
             android:layout_width="wrap_content"
             android:textSize="@dimen/dimen10dp"

@@ -11,7 +11,6 @@ import com.huajie.readbook.R;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.utils.StringUtils;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 
 /**
@@ -46,17 +45,17 @@ public class FeaturedFragmentAdapter extends ListBaseAdapter<BookBean> {
         BookBean bookBean = mDataList.get(position);
 
         if (StringUtils.isNotBlank(bookBean.getLogo())){
-            Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+            Glide.with(mContext).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
         }else {
             Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg);
         }
         tv_bookName.setText(bookBean.getName());
         tv_book_content.setText(bookBean.getNotes());
         tv_authorName.setText(bookBean.getAuthorName());
-        tv_tag.setText(bookBean.getClassifyName());
+        tv_tag.setText(bookBean.getFirstClassifyName());
 
         String score = bookBean.getScore();
-        if (!"0.0".equals(score)){
+        if (score != null){
             ll_score.setVisibility(View.VISIBLE);
             tv_score.setText(bookBean.getScore());
         }else {

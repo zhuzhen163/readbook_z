@@ -29,6 +29,7 @@ import com.huajie.readbook.base.mvp.BaseModel;
 import com.huajie.readbook.bean.BookList;
 import com.huajie.readbook.bean.ClassifyModel;
 import com.huajie.readbook.bean.ClassifySecondModel;
+import com.huajie.readbook.bean.ClassifysModel;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.presenter.ClassifySecondActivityPresenter;
 import com.huajie.readbook.utils.AppUtils;
@@ -94,7 +95,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
     LinearLayout ll_toBookNull;
 
 
-    private ArrayList<ClassifyModel> list;
+    private ArrayList<ClassifysModel> list;
     private ClassifyGridViewAdapter gridViewAdapter;
 
 //    private List<BookBean> bookBeanList = new ArrayList<>();
@@ -104,8 +105,8 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
     private LayoutInflater mInflater;
     private String[] mVals = new String[]{"50万以下", "50-100万", "100-200万", "200-300万","300万以上"};
 
-    private int pageNo = 1,progress = -1,sort = 0,gender;
-    private String classifyId,classifyId1,classifyId2,classifyId3,classifyId4,tagName = "";
+    private int pageNo = 1;
+    private String classifyId = "",classifyId2,classifyId3,classifyId4,firstClassify,progress = "",sort = "heat";
     private boolean onLoadMore = false;
     private int startWord = 0,endWord = 100000000;
 
@@ -125,39 +126,35 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
                 break;
             case R.id.tv_all:
                 chooseClassify(0);
-                tagName = "";
                 pageNo = 1;
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_classify1:
                 chooseClassify(1);
                 pageNo = 1;
-                tagName = tv_classify1.getText().toString();
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_classify2:
                 chooseClassify(2);
                 pageNo = 1;
-                tagName = tv_classify2.getText().toString();
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_classify3:
                 chooseClassify(3);
                 pageNo = 1;
-                tagName = tv_classify3.getText().toString();
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_redu:
                 adapter.setHeatOrScore(1);
                 pageNo = 1;
                 chooseRedu(0);
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_pingfen:
                 adapter.setHeatOrScore(2);
                 pageNo = 1;
                 chooseRedu(1);
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
             case R.id.tv_screen:
                 mReadDlSlide.openDrawer(Gravity.RIGHT);
@@ -175,7 +172,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             case R.id.tv_ok:
                 pageNo = 1;
                 mReadDlSlide.closeDrawer(Gravity.RIGHT);
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
                 break;
         }
     }
@@ -201,17 +198,17 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
      * @param state 1表示连载
      */
     private void updateState(int state){
-        progress = -1;
+        progress = "";
         tv_wanjie.setTextColor(getResources().getColor(R.color.a2a9b2));
         tv_wanjie.setBackground(getResources().getDrawable(R.drawable.background_corners_search));
         tv_lianzai.setTextColor(getResources().getColor(R.color.a2a9b2));
         tv_lianzai.setBackground(getResources().getDrawable(R.drawable.background_corners_search));
         if (1 == state){
-            progress = 1;
+            progress = "1";
             tv_lianzai.setTextColor(getResources().getColor(R.color.white));
             tv_lianzai.setBackground(getResources().getDrawable(R.drawable.background_corners_search_null));
         }else if (0 == state){
-            progress = 0;
+            progress = "0";
             tv_wanjie.setTextColor(getResources().getColor(R.color.white));
             tv_wanjie.setBackground(getResources().getDrawable(R.drawable.background_corners_search_null));
         }
@@ -245,7 +242,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
                 if (position>adapter.getDataList().size())
                     return;
                 BookBean bookBean = adapter.getDataList().get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
 
@@ -253,12 +250,11 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 chooseClassify(-1);
-                ClassifyModel model = list.get(position+3);
+                ClassifysModel model = list.get(position+3);
                 model.setCheck(true);
                 gridViewAdapter.notifyDataSetChanged();
-                classifyId = model.getId();
-                tagName = model.getName();
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                classifyId = model.getClassifyId()+"";
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
             }
         });
 
@@ -266,13 +262,13 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             @Override
             public void onLoadMore() {
                 onLoadMore = true;
-                mPresenter.classifyQuery(gender,classifyId,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
             }
         });
         reConnected(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.classifyQuery(gender,classifyId1,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+                mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
             }
         });
     }
@@ -326,11 +322,9 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
     @Override
     protected void initView() {
         Intent intent = getIntent();
-        list = (ArrayList<ClassifyModel>) intent.getSerializableExtra("list");//获取list方式
+        list = (ArrayList<ClassifysModel>) intent.getSerializableExtra("list");//获取list方式
         String name = intent.getStringExtra("name");
-        classifyId1 = intent.getStringExtra("id");
-        gender = intent.getIntExtra("gender",2);
-        classifyId = classifyId1;
+        firstClassify = intent.getStringExtra("id");
         setTitleName(name);
         setTitleState(View.VISIBLE);
 
@@ -374,31 +368,31 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             if (list.size() == 1){
                 tv_classify1.setVisibility(View.VISIBLE);
                 tv_classify1.setText(list.get(0).getName());
-                classifyId2 = list.get(0).getId();
+                classifyId2 = list.get(0).getClassifyId()+"";
                 rl_classify.setVisibility(View.GONE);
             }else if (list.size() == 2){
                 tv_classify1.setVisibility(View.VISIBLE);
                 tv_classify1.setText(list.get(0).getName());
-                classifyId2 = list.get(0).getId();
+                classifyId2 = list.get(0).getClassifyId()+"";
                 tv_classify2.setVisibility(View.VISIBLE);
                 tv_classify2.setText(list.get(1).getName());
-                classifyId3 = list.get(1).getId();
+                classifyId3 = list.get(1).getClassifyId()+"";
             }else if (list.size() > 2){
                 tv_classify1.setVisibility(View.VISIBLE);
                 tv_classify1.setText(list.get(0).getName());
-                classifyId2 = list.get(0).getId();
+                classifyId2 = list.get(0).getClassifyId()+"";
                 tv_classify2.setVisibility(View.VISIBLE);
                 tv_classify2.setText(list.get(1).getName());
-                classifyId3 = list.get(1).getId();
+                classifyId3 = list.get(1).getClassifyId()+"";
                 tv_classify3.setVisibility(View.VISIBLE);
                 tv_classify3.setText(list.get(2).getName());
-                classifyId4 = list.get(2).getId();
+                classifyId4 = list.get(2).getClassifyId()+"";
             }
 
 
             if (list.size()>3){
                 iv_xiala.setVisibility(View.VISIBLE);
-                List<ClassifyModel> classifyModels = list.subList(3, list.size());
+                List<ClassifysModel> classifyModels = list.subList(3, list.size());
                 gridViewAdapter = new ClassifyGridViewAdapter(mContext,classifyModels);
                 gr_tab.setAdapter(gridViewAdapter);
 
@@ -407,33 +401,39 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
             rl_classify.setVisibility(View.GONE);
         }
 
-        mPresenter.classifyQuery(gender,classifyId1,tagName,progress,sort,startWord,endWord,pageNo,pageSize);
+        mPresenter.classifyQuery(firstClassify,classifyId,progress,sort,startWord,endWord,pageNo,pageSize);
     }
 
     @Override
     public void getListSuccess(BaseModel<ClassifySecondModel> classifySecondModel) {
-        List<BookBean> datas = classifySecondModel.getData().getDatas();
+        List<BookBean> datas = classifySecondModel.getData().getList();
         lv_list.setNoMore(false);
-        if (onLoadMore){
-            onLoadMore = false;
-            adapter.addAll(datas);
-            if (datas.size()<10){
-                lv_list.setNoMore(true);
-            }
-        }else {
-            if (datas.size()>0){
-                adapter.setDataList(datas);
-                lv_list.setVisibility(View.VISIBLE);
-                ll_toBookNull.setVisibility(View.GONE);
+        if (datas != null){
+            if (onLoadMore){
+                onLoadMore = false;
+                adapter.addAll(datas);
+                if (datas.size()<10){
+                    lv_list.setNoMore(true);
+                }
             }else {
-                lv_list.setVisibility(View.GONE);
-                ll_toBookNull.setVisibility(View.VISIBLE);
+                if (datas.size()>0){
+                    adapter.setDataList(datas);
+                    lv_list.setVisibility(View.VISIBLE);
+                    ll_toBookNull.setVisibility(View.GONE);
+                }else {
+
+                    lv_list.setVisibility(View.GONE);
+                    ll_toBookNull.setVisibility(View.VISIBLE);
+                }
             }
+            pageNo++;
+            adapter.notifyDataSetChanged();
+            mLRecyclerViewAdapter.notifyDataSetChanged();
+            lv_list.refreshComplete(10);
+        }else {
+            lv_list.setVisibility(View.GONE);
+            ll_toBookNull.setVisibility(View.VISIBLE);
         }
-        pageNo++;
-        adapter.notifyDataSetChanged();
-        mLRecyclerViewAdapter.notifyDataSetChanged();
-        lv_list.refreshComplete(10);
     }
 
     @Override
@@ -445,11 +445,11 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
 
     private void chooseRedu(int state){
         if (0 == state){
-            sort = 0;
+            sort = "heat";
             tv_redu.setTextColor(getResources().getColor(R.color.colorTheme));
             tv_pingfen.setTextColor(getResources().getColor(R.color.text_33));
         }else if (1 == state){
-            sort = 2;
+            sort = "score";
             tv_redu.setTextColor(getResources().getColor(R.color.text_33));
             tv_pingfen.setTextColor(getResources().getColor(R.color.colorTheme));
         }
@@ -472,7 +472,7 @@ public class ClassifySecondActivity extends BaseActivity<ClassifySecondActivityP
         tv_classify3.setTextColor(getResources().getColor(R.color.text_33));
         tv_classify3.setBackground(getResources().getDrawable(R.drawable.background_corners_search_white));
         if (position == 0){
-            classifyId = classifyId1;
+            classifyId = "-1";
             tv_all.setTextColor(getResources().getColor(R.color.white));
             tv_all.setBackground(getResources().getDrawable(R.drawable.background_corners_search_null));
         }else if (position == 1){

@@ -5,24 +5,34 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.RequiresApi;
-import android.text.Html;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bytedance.sdk.openadsdk.AdSlot;
+import com.bytedance.sdk.openadsdk.TTAdNative;
+import com.bytedance.sdk.openadsdk.TTFeedAd;
+import com.bytedance.sdk.openadsdk.TTImage;
+import com.bytedance.sdk.openadsdk.TTNativeAd;
 import com.huajie.readbook.R;
 import com.huajie.readbook.adapter.BookDetailAdapter;
 import com.huajie.readbook.base.BaseActivity;
+import com.huajie.readbook.base.BaseContent;
 import com.huajie.readbook.base.mvp.BaseModel;
+import com.huajie.readbook.bean.BookDetailList;
 import com.huajie.readbook.bean.BookDetailModel;
+import com.huajie.readbook.bean.BookList;
 import com.huajie.readbook.bean.BookMiddleModel;
+import com.huajie.readbook.bean.BooksModel;
 import com.huajie.readbook.bean.PublicBean;
+import com.huajie.readbook.config.TTAdManagerHolder;
 import com.huajie.readbook.db.entity.BookBean;
 import com.huajie.readbook.db.entity.CollBookBean;
 import com.huajie.readbook.db.helper.CollBookHelper;
@@ -47,7 +57,6 @@ import java.util.List;
 
 import butterknife.BindView;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 
 /**
  * 描述：书籍详情
@@ -90,6 +99,19 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     @BindView(R.id.ll_score)
     LinearLayout ll_score;
 
+    @BindView(R.id.rl_book_ad)
+    RelativeLayout rl_book_ad;
+    @BindView(R.id.iv_bookImg_ad)
+    ImageView iv_bookImg_ad;
+    @BindView(R.id.tv_bookName_ad)
+    TextView tv_bookName_ad;
+    @BindView(R.id.tv_message_ad)
+    TextView tv_message_ad;
+    @BindView(R.id.iv_cancel)
+    ImageView iv_cancel;
+    @BindView(R.id.view_line)
+    View view_line;
+
     private List<BookBean> gv_bookList = new ArrayList<>();
     private BookDetailAdapter detailAdapter;
 
@@ -100,6 +122,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     private ShareBookDialog shareDialog;
     private String shareUrl;
     private boolean isCollected = false; //是否加入书架
+    public String loadListAd = "933628137";
 
     @Override
     protected BookDetailActivityPresenter createPresenter() {
@@ -145,6 +168,10 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             case R.id.tv_synopsis:
                 setTextLine(textLine);
                 break;
+            case R.id.iv_cancel:
+                view_line.setVisibility(View.GONE);
+                rl_book_ad.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -167,6 +194,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         iv_xiala.setOnClickListener(this);
         tv_read.setOnClickListener(this);
         tv_addBookShelf.setOnClickListener(this);
+        iv_cancel.setOnClickListener(this);
         setBaseBackListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,7 +211,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BookBean bookBean = gv_bookList.get(position);
-                String bookId = bookBean.getId();
+                String bookId = bookBean.getBookId();
                 SwitchActivityManager.startBookDetailActivity(mContext,bookId);
             }
         });
@@ -195,6 +223,8 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             }
         });
     }
+
+    private TTAdNative mTTAdNative;
 
     @Override
     protected void initView() {
@@ -217,6 +247,70 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
         MobclickAgent.onEvent(mContext, "detail_vc", "书籍详情页");
 
         MobclickAgent.onPageStart("书籍详情页");
+
+        mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
+
+    }
+
+    /**
+     * 加载feed广告
+     */
+    private TTFeedAd ttFeedAd;
+    private void loadListAd() {
+        //step4:创建feed广告请求类型参数AdSlot,具体参数含义参考文档
+        AdSlot adSlot = new AdSlot.Builder()
+                .setCodeId(loadListAd)
+                .setSupportDeepLink(true)
+                .setImageAcceptedSize(640, 320)
+                .setAdCount(3) //请求广告数量为1到3条
+                .build();
+        //step5:请求广告，调用feed广告异步请求接口，加载到广告后，拿到广告素材自定义渲染
+        mTTAdNative.loadFeedAd(adSlot, new TTAdNative.FeedAdListener() {
+            @Override
+            public void onError(int code, String message) {
+                view_line.setVisibility(View.GONE);
+                rl_book_ad.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFeedAdLoad(List<TTFeedAd> ads) {
+                ttFeedAd = ads.get(0);
+                if (ttFeedAd != null){
+                    if (ttFeedAd.getImageList() != null && !ttFeedAd.getImageList().isEmpty()) {
+                        TTImage image = ttFeedAd.getImageList().get(0);
+                        if (image != null && image.isValid()) {
+                            Glide.with(mContext).load(image.getImageUrl()).into(iv_bookImg_ad);
+                        }
+                        tv_bookName_ad.setText(ttFeedAd.getTitle());
+                        tv_message_ad.setText(ttFeedAd.getDescription());
+                    }
+
+                    ttFeedAd.registerViewForInteraction((ViewGroup) rl_book_ad, rl_book_ad, new TTNativeAd.AdInteractionListener() {
+                        @Override
+                        public void onAdClicked(View view, TTNativeAd ad) {
+                            if (ad != null) {
+//                                ToastUtil.showToast( "广告" + ad.getTitle() + "被点击");
+                            }
+                        }
+
+                        @Override
+                        public void onAdCreativeClick(View view, TTNativeAd ad) {
+                            if (ad != null) {
+//                                ToastUtil.showToast("广告" + ad.getTitle() + "被创意按钮被点击");
+                            }
+                        }
+
+                        @Override
+                        public void onAdShow(TTNativeAd ad) {
+                            if (ad != null) {
+//                                ToastUtil.showToast("广告" + ad.getTitle() + "展示");
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
     }
 
     @Override
@@ -229,6 +323,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+
     }
 
     @Override
@@ -252,18 +347,24 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             tv_addBookShelf.setTextColor(getResources().getColor(R.color.d0d0d0));
             tv_addBookShelf.setEnabled(false);
         }
+        if (mTTAdNative != null){
+            loadListAd();
+        }else {
+            mTTAdNative = TTAdManagerHolder.get().createAdNative(this);
+            loadListAd();
+        }
     }
 
     @Override
     public void bookSuccess(BaseModel<BookDetailModel> o) {
-        book = o.getData().getBook();
+        book = o.getData().getAppBook();
         if (book != null){
-            Glide.with(mContext).load(ImageUrl+book.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
+            Glide.with(mContext).load(book.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg);
             tv_bookName.setText(book.getName());
             tv_authorName.setText(book.getAuthorName());
             String score = book.getScore();
             if (StringUtils.isNotBlank(score)){
-                if ("0.0".equals(score)){
+                if ("0.00".equals(score)|| "0.0".equals(score)){
                     ll_score.setVisibility(View.INVISIBLE);
                 }else {
                     ll_score.setVisibility(View.VISIBLE);
@@ -272,19 +373,19 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                 ll_score.setVisibility(View.INVISIBLE);
             }
             tv_score.setText(book.getScore());
-            int words = book.getWords();
+            int words = book.getWordCount();
             String amount = NumberUtils.amountConversion((double) words);
             int progress = book.getProgress();
             if (progress == 0){
                 tv_txtNum.setText("完结 | "+amount);
-                tv_totalCounts.setText("已完结  共"+book.getTotalCounts()+"章");
+                tv_totalCounts.setText("已完结  共"+book.getChapterCount()+"章");
             }else {
                 tv_txtNum.setText("连载 | "+amount);
-                tv_totalCounts.setText("连载中  共"+book.getTotalCounts()+"章");
+                tv_totalCounts.setText("连载中  共"+book.getChapterCount()+"章");
                 tv_updateTime.setText(RelativeDateFormat.format(book.getMtime()));
             }
 
-            tv_tag.setText(book.getClassifyName());
+            tv_tag.setText(book.getFirstClassifyName());
             tv_synopsis.setText(book.getNotes());
             tv_synopsis.post(new Runnable() {
                 @Override
@@ -299,7 +400,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
             });
 
             tv_disclaimer.setText(book.getDisclaimer());
-            totalCounts = book.getTotalCounts();
+            totalCounts = book.getChapterCount();
 
 
             if (StringUtils.isNotBlank(ConfigUtils.getToken())){
@@ -311,16 +412,16 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
                 }
             }
 
-            classifyId = book.getClassifyId();
+            classifyId = book.getSecondClassify();
             mPresenter.bookDetailsList(classifyId,bookId);
         }
     }
 
     @Override
-    public void bookListSuccess(BaseModel<BookMiddleModel> o) {
-        BookMiddleModel data = o.getData();
-        gv_bookList = data.getMiddlelist();
-        detailAdapter.setList(gv_bookList);
+    public void bookListSuccess(BaseModel<BookDetailList> o) {
+        List<BookBean> list = o.getData().getList();
+
+        detailAdapter.setList(list);
     }
 
     @Override
@@ -344,35 +445,35 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     @Override
     public void shareWeiXin() {
         ShareUtils.shareWeb(this, shareUrl+bookId,book.getName()
-                , book.getNotes(),ImageUrl+book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
+                , book.getNotes(),book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN
         );
     }
 
     @Override
     public void shareWeiXinCircle() {
         ShareUtils.shareWeb(this,shareUrl+bookId,book.getName()
-                , book.getNotes(),ImageUrl+book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
+                , book.getNotes(),book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.WEIXIN_CIRCLE
         );
     }
 
     @Override
     public void shareQQ() {
         ShareUtils.shareWeb(this, shareUrl+bookId,book.getName()
-                , book.getNotes(),ImageUrl+book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
+                , book.getNotes(),book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QQ
         );
     }
 
     @Override
     public void shareQzone() {
         ShareUtils.shareWeb(this, shareUrl+bookId,book.getName()
-                , book.getNotes(),ImageUrl+book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
+                , book.getNotes(),book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.QZONE
         );
     }
 
     @Override
     public void shareSina() {
         ShareUtils.shareWeb(this, shareUrl+bookId,book.getName()
-                , book.getNotes(),ImageUrl+book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
+                , book.getNotes(),book.getLogo(), R.mipmap.icon_logo, SHARE_MEDIA.SINA
         );
     }
 
@@ -421,7 +522,7 @@ public class BookDetailActivity extends BaseActivity<BookDetailActivityPresenter
     @Override
     public void showError(String msg) {
         super.showError(msg);
-        ToastUtil.showToast(msg);
+        ToastUtil.showToast("数据异常");
     }
 
 }

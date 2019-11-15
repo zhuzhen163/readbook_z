@@ -6,7 +6,9 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/ll_message"
         android:layout_marginTop="@dimen/dimen8dp"
+        android:layout_marginBottom="@dimen/dimen10dp"
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_width="match_parent"
@@ -20,13 +22,13 @@
             android:textColor="@color/text_99"/>
 
         <LinearLayout
-            android:paddingTop="@dimen/dimen5dp"
-            android:paddingBottom="@dimen/dimen7dp"
-            android:paddingRight="@dimen/dimen10dp"
-            android:paddingLeft="@dimen/dimen10dp"
+            android:paddingTop="@dimen/dimen10dp"
+            android:paddingBottom="@dimen/dimen14dp"
+            android:paddingRight="@dimen/dimen20dp"
+            android:paddingLeft="@dimen/dimen20dp"
             android:layout_marginTop="@dimen/dimen5dp"
-            android:layout_marginRight="@dimen/dimen10dp"
-            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_marginLeft="@dimen/dimen20dp"
             android:background="@drawable/background_corners_bg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -35,7 +37,7 @@
                 android:id="@+id/tv_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="哈哈"/>
+                android:text=""/>
         </LinearLayout>
 
     </LinearLayout>

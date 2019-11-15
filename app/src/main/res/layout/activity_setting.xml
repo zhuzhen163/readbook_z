@@ -6,6 +6,34 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/ll_manager"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen52dp">
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="账号管理"
+            android:textColor="@color/text_33"
+            android:textSize="@dimen/dimen15dp"
+            android:layout_marginLeft="@dimen/dimen20dp"/>
+
+        <ImageView
+            android:layout_marginLeft="@dimen/dimen10dp"
+            android:layout_marginRight="@dimen/dimen20dp"
+            android:layout_width="@dimen/dimen6dp"
+            android:layout_height="@dimen/dimen10dp"
+            android:src="@drawable/icon_mine_join"/>
+    </LinearLayout>
+
+    <View
+        android:layout_marginLeft="@dimen/dimen20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/color_f1"/>
+    <LinearLayout
         android:background="@color/white"
         android:gravity="center_vertical"
         android:layout_width="match_parent"

@@ -41,7 +41,7 @@ public class CountDownButtonHelper {
             public void onTick(long time) {
                 // 第一次调用会有1-10ms的误差，因此需要+15ms，防止第一个数不显示，第二个数显示2s
                 mTextView.setText( ((time + 15) / 1000) + "s");
-                mTextView.setTextColor(Color.parseColor("#a2a9b2"));
+                mTextView.setTextColor(Color.parseColor("#989898"));
                 textView.setEnabled(false);
             }
 
@@ -49,7 +49,7 @@ public class CountDownButtonHelper {
             public void onFinish() {
                 textView.setEnabled(true);
                 mTextView.setTextColor(Color.parseColor("#5297f7"));
-                textView.setText("点击获取验证码");
+                textView.setText("获取验证码");
                 if (listener != null) {
                     listener.finish();
                 }
@@ -69,7 +69,7 @@ public class CountDownButtonHelper {
     public void cancle(TextView mTextView) {
         textView.setEnabled(true);
         mTextView.setTextColor(Color.parseColor("#5297f7"));
-        textView.setText("点击获取验证码");
+        textView.setText("获取验证码");
         mDownTimer.cancel();
     }
 

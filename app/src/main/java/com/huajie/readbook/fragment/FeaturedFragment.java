@@ -45,7 +45,6 @@ import java.util.List;
 
 import butterknife.BindView;
 
-import static com.huajie.readbook.base.BaseContent.ImageUrl;
 import static com.huajie.readbook.base.BaseContent.pageSize;
 import static com.huajie.readbook.base.BaseContent.tabType;
 
@@ -91,12 +90,13 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
     private List<BookBean> dataList = new ArrayList<>();
     private List<ImageCycleView.ImageInfo> list_banner = new ArrayList<>();
-    private List<AdModel> banner_list = new ArrayList<>();
+    private List<AdModel.Model> banner_list = new ArrayList<>();
 
     private int random = -1;
     private int randomId_1,randomId_2,randomId_3,randomId_4,randomId_5;
     private int pageNo = 1;
     private int tabNum = 1;
+    private int secondClassify = 0;
 
     @Override
     protected FeaturedFragmentPresenter createPresenter() {
@@ -192,21 +192,22 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         switch (view.getId()){
             case R.id.tv_random_1:
                 random = 1;
-                mPresenter.bookList(tabNum,randomId_1,true,1,4);
+                mPresenter.bookList(tabNum,randomId_1,0,secondClassify,1,4);
                 break;
             case R.id.tv_random_3:
                 random = 3;
-                mPresenter.bookList(tabNum,randomId_3,true,1,6);
+                mPresenter.bookList(tabNum,randomId_3,0,secondClassify,1,6);
                 break;
             case R.id.tv_random_4:
                 random = 4;
-                mPresenter.bookList(tabNum,randomId_4,true,1,6);
+                mPresenter.bookList(tabNum,randomId_4,0,secondClassify,1,6);
                 break;
             case R.id.tv_more:
                 SwitchActivityManager.startRankingListActivity(mContext,tv_tab_2.getText().toString(),randomId_2,tabType);
                 break;
             case R.id.tv_reConnected:
-                mPresenter.bookList(tabNum,-1,false,1,pageSize);
+                mPresenter.getAdvertList(tabNum);
+                mPresenter.bookList(tabNum,-1,1,secondClassify,1,pageSize);
                 break;
         }
     }
@@ -223,41 +224,42 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             public void onRefresh() {
                 pageNo = 1;
                 mRecyclerView.setNoMore(false);
-                mPresenter.bookList(tabNum,-1,false,pageNo,pageSize);
+                mPresenter.getAdvertList(tabNum);
+                mPresenter.bookList(tabNum,-1,1,secondClassify,pageNo,pageSize);
             }
         });
         mRecyclerView.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-                mPresenter.bookList(tabNum,randomId_5,false,pageNo,pageSize);
+                mPresenter.bookList(tabNum,randomId_5,1,secondClassify,pageNo,pageSize);
             }
         });
         mLRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 BookBean bookBean = dataList.get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
         gv_position_2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BookBean bookBean = list_position_2.get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
         gv_position_3.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BookBean bookBean = list_position_3.get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
         gv_position_4.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BookBean bookBean = list_position_4.get(position);
-                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
             }
         });
     }
@@ -269,7 +271,8 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
     @Override
     protected void initData() {
-        mPresenter.bookList(tabNum,-1,false,1,pageSize);
+        mPresenter.bookList(tabNum,-1,1,secondClassify,1,pageSize);
+        mPresenter.getAdvertList(tabNum);
 
         twoHeadAdapter = new TwoHeadAdapter(mContext,list_position_2);
         gv_position_2.setAdapter(twoHeadAdapter);
@@ -302,11 +305,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
     @Override
     public void getListSuccess(BaseModel<BookList> bookList) {
         pageNo++;
-        banner_list = bookList.getData().getTopAdverts();
-        if (banner_list.size()>0){
-            setBannerImage();
-        }
-        List<BooksModel> books = bookList.getData().getBooks();
+        List<BooksModel> books = bookList.getData().getList();
         if (books.size()>=5){
             try {
                 setHeadView_2(books.get(0));
@@ -319,7 +318,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
             dataList = books.get(4).getDatas();
             tv_tab_5.setText(books.get(4).getName());
-            randomId_5 = books.get(4).getId();
+            randomId_5 = books.get(4).getRegionId();
             featuredFragmentAdapter.setDataList(dataList);
             notifyDataSetChanged();
         }
@@ -328,7 +327,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
     @Override
     public void getRandomSuccess(BaseModel<BookList> o) {
-        List<BooksModel> books = o.getData().getBooks();
+        List<BooksModel> books = o.getData().getList();
         if (books.size()>=1){
             if (random == 1){
                 setHeadView_2(books.get(0));
@@ -343,22 +342,30 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
     @Override
     public void loadMoreSuccess(BaseModel<BookList> o) {
         pageNo++;
-        List<BooksModel> books = o.getData().getBooks();
+        List<BooksModel> books = o.getData().getList();
         if (books.size()>=1){
             dataList.addAll(books.get(0).getDatas());
             featuredFragmentAdapter.setDataList(dataList);
             notifyDataSetChanged();
         }
-        if (books.size()>=10){
+        if (books.get(0).getDatas().size()>=10){
             mRecyclerView.setNoMore(false);
         }else {
             mRecyclerView.setNoMore(true);
         }
     }
 
+    @Override
+    public void adModel(BaseModel<AdModel> o) {
+        banner_list = o.getData().getList();
+        if (banner_list != null && banner_list.size()>0){
+            setBannerImage();
+        }
+    }
+
     private void setHeadView_4(BooksModel books) {
         tv_tab_4.setText(books.getName());
-        randomId_4 = books.getId();
+        randomId_4 = books.getRegionId();
         list_position_4 = books.getDatas();
         if (list_position_4.size()>6){
             list_position_4 = list_position_4.subList(0,6);
@@ -369,7 +376,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
 
     private void setHeadView_3(BooksModel books) {
         tv_tab_3.setText(books.getName());
-        randomId_3 = books.getId();
+        randomId_3 = books.getRegionId();
         list_position_3 = books.getDatas();
         if (list_position_3.size()>6){
             list_position_3 = list_position_3.subList(0,6);
@@ -381,20 +388,20 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
     public void setHeadView_2(BooksModel books){
         List<BookBean> datas = books.getDatas();
         tv_tab_1.setText(books.getName());
-        randomId_1 = books.getId();
+        randomId_1 = books.getRegionId();
 
         if (datas.size()>=1){
             rl_book_1.setVisibility(View.VISIBLE);
             BookBean bookBean = datas.get(0);
             if (StringUtils.isNotBlank(bookBean.getLogo())){
-                Glide.with(mContext).load(ImageUrl+bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_1);
+                Glide.with(mContext).load(bookBean.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_1);
             }else {
                 Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_1);
             }
             tv_bookName_1.setText(bookBean.getName());
             tv_book_content_1.setText(bookBean.getNotes());
             String score = bookBean.getScore();
-            if (!"0.0".equals(score)){
+            if (score != null){
                 tv_score_1.setText(score);
                 tv_score_1.setVisibility(View.VISIBLE);
                 tv_score_.setVisibility(View.VISIBLE);
@@ -403,11 +410,11 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
                 tv_score_.setVisibility(View.GONE);
             }
             tv_authorName_1.setText(bookBean.getAuthorName());
-            tv_tag_1.setText(bookBean.getClassifyName() );
+            tv_tag_1.setText(bookBean.getFirstClassifyName() );
             rl_book_1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean.getBookId());
                 }
             });
         }else {
@@ -418,7 +425,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             ll_book_2.setVisibility(View.VISIBLE);
             BookBean bookBean1 = datas.get(1);
             if (StringUtils.isNotBlank(bookBean1.getLogo())){
-                Glide.with(mContext).load(ImageUrl+bookBean1.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_2);
+                Glide.with(mContext).load(bookBean1.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_2);
             }else {
                 Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_2);
             }
@@ -426,7 +433,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             ll_book_2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean1.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean1.getBookId());
                 }
             });
         }else {
@@ -437,7 +444,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             ll_book_3.setVisibility(View.VISIBLE);
             BookBean bookBean2 = datas.get(2);
             if (StringUtils.isNotBlank(bookBean2.getLogo())){
-                Glide.with(mContext).load(ImageUrl+bookBean2.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_3);
+                Glide.with(mContext).load(bookBean2.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_3);
             }else {
                 Glide.with(mContext).load(R.drawable.icon_pic_def).into(iv_bookImg_3);
             }
@@ -445,7 +452,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
             ll_book_3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean2.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean2.getBookId());
                 }
             });
         }else {
@@ -455,12 +462,12 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         if (datas.size()>=4){
             ll_book_4.setVisibility(View.VISIBLE);
             BookBean bookBean3 = datas.get(3);
-            Glide.with(mContext).load(ImageUrl+bookBean3.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_4);
+            Glide.with(mContext).load(bookBean3.getLogo()).placeholder(R.drawable.icon_pic_def).into(iv_bookImg_4);
             tv_bookName_4.setText(bookBean3.getName());
             ll_book_4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean3.getId());
+                    SwitchActivityManager.startBookDetailActivity(mContext,bookBean3.getBookId());
                 }
             });
         }else {
@@ -469,7 +476,7 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
     }
 
     public void setHeadView_2(BooksModel books,int position) {
-        randomId_2 = books.getId();
+        randomId_2 = books.getRegionId();
         list_position_2 = books.getDatas();
         tv_tab_2.setText(books.getName());
         if (list_position_2.size()>4){
@@ -488,14 +495,14 @@ public class FeaturedFragment extends BaseFragment <FeaturedFragmentPresenter> i
         list_banner.clear();
         int size = banner_list.size();
         for (int i = 0; i < size; i++) {
-            AdModel adModel = banner_list.get(i);
-            list_banner.add(new ImageCycleView.ImageInfo(adModel.getLogo(), i + "", adModel.getValue(),adModel.getType()));
+            AdModel.Model model = banner_list.get(i);
+            list_banner.add(new ImageCycleView.ImageInfo(model.getLogo(), i + "", model.getValue(),model.getType()));
         }
         icv_topView.loadData(list_banner, new ImageCycleView.LoadImageCallBack() {
             @Override
             public ImageView loadAndDisplay(ImageCycleView.ImageInfo imageInfo) {
                 ImageView imageView = new ImageView(getActivity());
-                Glide.with(getActivity()).load(ImageUrl+imageInfo.image.toString()).placeholder(R.drawable.icon_lunbo_def).into(imageView);
+                Glide.with(getActivity()).load(imageInfo.image.toString()).placeholder(R.drawable.icon_lunbo_def).into(imageView);
                 return imageView;
             }
         });

@@ -4,6 +4,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import com.github.jdsjlzx.interfaces.OnItemClickListener;
 import com.github.jdsjlzx.interfaces.OnLoadMoreListener;
 import com.github.jdsjlzx.interfaces.OnRefreshListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
@@ -24,6 +25,7 @@ import com.huajie.readbook.view.MessageNoticeActivityView;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 
@@ -40,6 +42,8 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
 
     private LRecyclerViewAdapter mLRecyclerViewAdapter = null;
     private MessageNoticeAdapter adapter;
+
+    private Map<String, String> data;
 
     private int pageNo = 1;
     private boolean onLoadMore = false;
@@ -63,11 +67,19 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
             }
         });
 
+        reConnected(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pageNo = 1;
+                mPresenter.getNoticesType();
+            }
+        });
+
         lv_list.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
                 pageNo = 1;
-                mPresenter.getNotices(pageNo, BaseContent.pageSize);
+                mPresenter.getNoticesType();
             }
         });
         lv_list.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -75,6 +87,42 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
             public void onLoadMore() {
                 onLoadMore = true;
                 mPresenter.getNotices(pageNo, BaseContent.pageSize);
+            }
+        });
+
+        mLRecyclerViewAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                MessageNoticeModel.MessageNotice model = adapter.getDataList().get(position);
+
+                String url = model.getUrl();
+                String msgType = model.getMsgType();
+                String title = "";
+                if (msgType.equals("1")){
+                    title = "我的好友";
+                }else if (msgType.equals("2")){
+                    title = "我的钱包";
+                }else {
+                    if (msgType.equals("3") || msgType.equals("4")){
+                        title = "现金提现记录";
+                    }else {
+                        title = "金币提现记录";
+                    }
+                }
+                if (url.contains("my_logged_in")){
+                    SwitchActivityManager.exitActivity(MessageNoticeActivity.this);
+                }else {
+                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+url,title);
+                }
+//                if (model.getMsgType().equals("1")){
+//                    SwitchActivityManager.startWebViewActivity(mContext, BaseContent.mUrl+"friend","我的好友");
+//                }else if (model.getMsgType().equals("2")){
+//                    SwitchActivityManager.startWebViewActivity(mContext,BaseContent.mUrl+"wallet?from=cash","我的钱包");
+//                }else if (model.getMsgType().equals("3")||model.getMsgType().equals("4")){
+//
+//                }else {
+//                    SwitchActivityManager.exitActivity(MessageNoticeActivity.this);
+//                }
             }
         });
     }
@@ -103,7 +151,8 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
         lv_list.setPullRefreshEnabled(true);
         lv_list.setLoadMoreEnabled(true);
 
-        mPresenter.getNotices(pageNo,BaseContent.pageSize);
+        mPresenter.getNoticesType();
+
     }
 
     private void setListView() {
@@ -117,18 +166,18 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
     }
 
     @Override
-    public void getNotices(BaseModel<List<MessageNoticeModel>> noticeModel) {
-        List<MessageNoticeModel> data = noticeModel.getData();
+    public void getNotices(BaseModel<MessageNoticeModel> noticeModel) {
+        List<MessageNoticeModel.MessageNotice> list = noticeModel.getData().getList();
         lv_list.setNoMore(false);
         if (onLoadMore){
             onLoadMore = false;
-            adapter.addAll(data);
-            if (data.size()<10){
+            adapter.addAll(list);
+            if (list.size()<10){
                 lv_list.setNoMore(true);
             }
         }else {
-            if (data.size()>0){
-                adapter.setDataList(data);
+            if (list.size()>0){
+                adapter.setDataList(list);
                 lv_list.setVisibility(View.VISIBLE);
                 ll_noticeNull.setVisibility(View.GONE);
             }else {
@@ -143,9 +192,15 @@ public class MessageNoticeActivity extends BaseActivity <MessageNoticeActivityPr
     }
 
     @Override
+    public void getNoticesType(BaseModel<Map<String,String>> noticeTypeModel) {
+        data = noticeTypeModel.getData();
+        adapter.setType(data);
+        mPresenter.getNotices(pageNo,BaseContent.pageSize);
+    }
+
+    @Override
     public void showError(String msg) {
         super.showError(msg);
-        ToastUtil.showToast(msg);
         lv_list.refreshComplete(10);
     }
 
